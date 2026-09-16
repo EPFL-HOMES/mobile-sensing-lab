@@ -1,0 +1,47 @@
+{
+  "diagnostics": {
+    "accepted_trips": 146,
+    "active_services": 7055,
+    "active_trips_all_routes": 6583,
+    "crossing_trips": 0,
+    "duties": 3,
+    "identity_assumption": "block_then_inferred_duty",
+    "rejected_trips": 0,
+    "reposition_tasks": 143,
+    "route_failures": [],
+    "selected_route_trips_all_services": 400,
+    "selected_routes": 1,
+    "selected_trip_counts_by_route": {
+      "92-13-H-j26-1": 146
+    },
+    "selected_trips": 146,
+    "service_tasks": 146,
+    "source_routes": 46,
+    "source_trips": 31546
+  },
+  "environment": {
+    "artifact_id": "environment_645817138393b9fddac5455c8ea24717",
+    "artifact_kind": "environment",
+    "content_hash": "6af8ca6c722dcd37394dafc91f0529de49597de29161df7ca0f4bae4a9cb5d42"
+  },
+  "reconstruction": {
+    "artifact_id": "dataset_ccc7b39d5d9fae85fef4f0fc8fe50f5f",
+    "artifact_kind": "dataset",
+    "content_hash": "239e066556099022b0e1bdcc0d130a8d09d237f701f42cc7482e8e42e7d2563d"
+  },
+  "route_id": "92-13-H-j26-1",
+  "scenario_impact": {
+    "required_pair_count": 132,
+    "readiness_grade": "scenario_ready_with_quarantine",
+    "route_edge_count": 124,
+    "routes_touch_quarantined_or_repaired_edges": false,
+    "routes_touch_split_conflict_nodes": false,
+    "unreachable_pair_count": 0
+  },
+  "service_date": "2026-01-14",
+  "snap_diagnostics": {
+    "maximum_distance_m": 45.07654980243856,
+    "resolved_stop_count": 14,
+    "unique_snapped_node_count": 12
+  }
+}

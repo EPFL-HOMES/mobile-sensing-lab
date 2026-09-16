@@ -1,0 +1,28 @@
+{
+  "adapter": "demand.upload_od@1",
+  "allow_generated_task_ids": false,
+  "columns": {
+    "destination_location_id": "destination_location_id",
+    "dropoff_service_duration": "dropoff_service_s",
+    "origin_location_id": "origin_location_id",
+    "pickup_service_duration": "pickup_service_s",
+    "quantity": "quantity",
+    "release_time": "release_s",
+    "task_id": "task_id"
+  },
+  "data_semantics": "observed_tasks",
+  "duration_unit": "seconds",
+  "error_policy": "strict",
+  "fleet_id": "fleet_001",
+  "location_representation": "ids",
+  "quantity_mode": "occupancy",
+  "quantity_unit": "passengers",
+  "schema_version": "2.0",
+  "service_duration_default_s": null,
+  "source_crs": null,
+  "structure": "od",
+  "time": {
+    "kind": "elapsed",
+    "unit": "seconds"
+  }
+}

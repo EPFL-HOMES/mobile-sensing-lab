@@ -1,0 +1,2 @@
+vehicle_id,availability_start_s,availability_end_s,initial_location_id,depot_location_id,capacity
+0001,0,10800,L001,L003,20

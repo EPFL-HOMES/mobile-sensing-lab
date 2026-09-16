@@ -1,0 +1,58 @@
+{
+  "example_kind": "lausanne_research_config@1",
+  "schema_version": "2.0",
+  "service_date": "2026-01-14",
+  "route_ids": [
+    "92-13-H-j26-1"
+  ],
+  "study_municipalities": [
+    "Lausanne (suburban)",
+    "Lausanne (urban)"
+  ],
+  "routing_extent_ref": "routing_extent_lausanne",
+  "routing_profile": {
+    "profile_id": "road_static_30kph",
+    "kind": "constant_speed",
+    "speed_mps": 8.333333333333334,
+    "calibrated": false
+  },
+  "grid": {
+    "kind": "regular",
+    "cell_size_m": 100.0,
+    "origin_easting_m": 2530000.0,
+    "origin_northing_m": 1150000.0
+  },
+  "observation": {
+    "duration_s": 7200.0,
+    "reporting_bin_s": 900.0
+  },
+  "replications_R": 2,
+  "master_seed": 20260114,
+  "gtfs": {
+    "duty_scope": "complete_selected_service_day_duties",
+    "identity_provenance": "inferred_duty"
+  },
+  "generated_location_fleet": {
+    "catalog_size": 1,
+    "rate_tasks_per_s": 0.0011111111111111111,
+    "destination_weights": "population_at_exact_covering_cell",
+    "uniform_proxy_if_all_zero": false
+  },
+  "generated_od_fleet": {
+    "catalog_size": 1,
+    "rate_tasks_per_s": 0.0011111111111111111,
+    "od_weights": "explicit_sparse_od"
+  },
+  "reporting_only": {
+    "portfolio_count_enumeration": "deferred_to_M08A"
+  },
+  "execution": {
+    "automatic": false,
+    "reason": "Research-scale scope requires explicit horizon and resource review before composing the M07 application contracts."
+  },
+  "assumptions": [
+    "inferred_vehicle_duties",
+    "synthetic_demand",
+    "uncalibrated_constant_road_speed"
+  ]
+}

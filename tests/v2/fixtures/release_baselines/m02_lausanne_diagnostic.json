@@ -1,0 +1,182 @@
+{
+  "boundary": {
+    "routing_area_km2": 169.88227469467304,
+    "routing_selected_count": 28,
+    "sensing_area_km2": 41.37233971654188,
+    "sensing_selected_count": 2,
+    "source_layer_count": 28
+  },
+  "capabilities": {
+    "environment.local_files@1": true,
+    "environment.osm@1": false,
+    "grid.regular@1": true
+  },
+  "diagnostic_version": "lausanne-geography@2",
+  "external_network_access": false,
+  "grid": {
+    "boundary_area_coverage_fraction": 0.9999999999999991,
+    "fully_included_count": 3739,
+    "nearest_node_distance_m": {
+      "maximum": 308.4767066746019,
+      "median": 53.93080171519654,
+      "within_250m_fraction": 0.993627774115579
+    },
+    "partially_included_count": 812,
+    "positive_area_overlap_pair_count": 0,
+    "sensing_selected_count": 4551,
+    "source_layer_count": 17553
+  },
+  "inputs": {
+    "boundary": {
+      "file": "boundary_lausanne.gpkg",
+      "sha256": "f0ae9b054308f544870f42be85e1e48e9e77aef443adb5296f6ad682b45990aa"
+    },
+    "grid": {
+      "file": "grid_100m.gpkg",
+      "sha256": "f84eca75a27308bb6cadea828175703116d967bf7882204d0943237541b1ef66"
+    },
+    "population": {
+      "file": "population_swiss.csv",
+      "sha256": "a9c0f03763482875616f63f7767ef66a22515bb1653c78364fe7f50e8b9a8f3b"
+    },
+    "roads": {
+      "file": "lausanne_roads_encoded.gpkg",
+      "sha256": "6069a3432588425d6fb70a8874f7cc8895fb997a8f5eb6700632cde026d61276"
+    }
+  },
+  "network": {
+    "diagnostic_directed_edge_count": 107739,
+    "diagnostic_node_count": 20628,
+    "disconnected_multilinestring_count": 2,
+    "endpoint_conflict_node_count": 6,
+    "invalid_other_geometry_count": 0,
+    "nonmergeable_multilinestring_count": 44,
+    "one_way_source_count": 1207,
+    "repairable_branching_multilinestring_count": 42,
+    "required_speed_provenance": "assumed_static_speeds",
+    "routing_extent_selected_count": 54517,
+    "sensing_intersection_count": 19244,
+    "source_layer_count": 54517,
+    "speed_fields_present": [],
+    "strong_component_count": 51,
+    "two_way_source_count": 53266,
+    "valid_line_count_for_diagnostics": 54473,
+    "valid_line_sensing_intersection_count": 19220,
+    "weak_component_count": 1
+  },
+  "population": {
+    "duplicate_coordinate_count": 0,
+    "matched_grid_cell_count": 1560,
+    "matched_resident_mass": 150811.0,
+    "missing_grid_cell_count": 2991,
+    "negative_resident_count": 0,
+    "selected_year": 2024,
+    "selected_year_count": 347736,
+    "source_layer_count": 347736
+  },
+  "routing_extent_municipalities": [
+    "Belmont-sur-Lausanne",
+    "Bottens",
+    "Bretigny-sur-Morrens",
+    "Bussigny",
+    "Chavannes-pr\u00e8s-Renens",
+    "Cheseaux-sur-Lausanne",
+    "Crissier",
+    "Cugy (VD)",
+    "Ecublens (VD)",
+    "Epalinges",
+    "Froideville",
+    "Jorat-M\u00e9zi\u00e8res",
+    "Jouxtens-M\u00e9zery",
+    "Lausanne (suburban)",
+    "Lausanne (urban)",
+    "Le Mont-sur-Lausanne",
+    "Lutry",
+    "Montpreveyres",
+    "Morrens (VD)",
+    "Paudex",
+    "Prilly",
+    "Pully",
+    "Renens (VD)",
+    "Romanel-sur-Lausanne",
+    "Saint-Sulpice (VD)",
+    "Savigny",
+    "Servion",
+    "Villars-Sainte-Croix"
+  ],
+  "selected_municipalities": [
+    "Lausanne (suburban)",
+    "Lausanne (urban)"
+  ],
+  "unresolved_defects": [
+    {
+      "code": "repairable_branching_multilinestring",
+      "count": 42,
+      "examples": [
+        "1093/825/0",
+        "12466/12480/0",
+        "12480/12466/0",
+        "1338/1347/0",
+        "13396/13416/0",
+        "13416/13396/0",
+        "1347/1338/0",
+        "13717/13736/0",
+        "13736/13717/0",
+        "1387/1410/0"
+      ],
+      "resolution": "Use conservative_repair@1 to split existing bidirectional components without adding geometry.",
+      "sensing_region_count": 24,
+      "severity": "warning"
+    },
+    {
+      "code": "disconnected_multilinestring",
+      "count": 2,
+      "examples": [
+        "18392/20653/0",
+        "20653/18392/0"
+      ],
+      "resolution": "Quarantine or replace these records; no gap is bridged automatically.",
+      "sensing_region_count": 0,
+      "severity": "error"
+    },
+    {
+      "code": "inconsistent_node_endpoint",
+      "count": 6,
+      "examples": [
+        {
+          "max_displacement_m": 154.168301,
+          "node_id": "16109"
+        },
+        {
+          "max_displacement_m": 193.567889,
+          "node_id": "17787"
+        },
+        {
+          "max_displacement_m": 176.412678,
+          "node_id": "18053"
+        },
+        {
+          "max_displacement_m": 221.554473,
+          "node_id": "20628"
+        },
+        {
+          "max_displacement_m": 215.856202,
+          "node_id": "20635"
+        },
+        {
+          "max_displacement_m": 116.561046,
+          "node_id": "20659"
+        }
+      ],
+      "resolution": "Disambiguate reused source node IDs upstream.",
+      "severity": "error"
+    },
+    {
+      "code": "population_missing_cells",
+      "count": 2991,
+      "resolution": "Select error, zero, or uniform_proxy explicitly during preparation.",
+      "severity": "warning"
+    }
+  ],
+  "working_crs": "EPSG:2056"
+}

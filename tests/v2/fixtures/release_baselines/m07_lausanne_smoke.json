@@ -1,0 +1,192 @@
+{
+  "schema_version": "2.0",
+  "workflow_version": "lausanne-bounded-smoke@1",
+  "configuration_hash": "ce588471bc6fae0b402d768cbe6142f1a246a4330b7aed6b834b4b8907ef3882",
+  "service_date": "2026-01-14",
+  "route_ids": [
+    "92-13-H-j26-1"
+  ],
+  "study_municipalities": [
+    "Lausanne (suburban)",
+    "Lausanne (urban)"
+  ],
+  "routing_extent_municipalities": [
+    "Belmont-sur-Lausanne",
+    "Bottens",
+    "Bretigny-sur-Morrens",
+    "Bussigny",
+    "Chavannes-pr\u00e8s-Renens",
+    "Cheseaux-sur-Lausanne",
+    "Crissier",
+    "Cugy (VD)",
+    "Ecublens (VD)",
+    "Epalinges",
+    "Froideville",
+    "Jorat-M\u00e9zi\u00e8res",
+    "Jouxtens-M\u00e9zery",
+    "Lausanne (suburban)",
+    "Lausanne (urban)",
+    "Le Mont-sur-Lausanne",
+    "Lutry",
+    "Montpreveyres",
+    "Morrens (VD)",
+    "Paudex",
+    "Prilly",
+    "Pully",
+    "Renens (VD)",
+    "Romanel-sur-Lausanne",
+    "Saint-Sulpice (VD)",
+    "Savigny",
+    "Servion",
+    "Villars-Sainte-Croix"
+  ],
+  "replications_R": 2,
+  "portfolio_sampling_rounds_J": null,
+  "selected_gtfs_vehicle_ids": [
+    "gtfs_vehicle_a682029b81f392bcbc0ac110af1056b6"
+  ],
+  "selected_gtfs_task_ids": [
+    "gtfs_trip_task_ee22fa687f233943699ddc572e2b0a06",
+    "gtfs_reposition_task_fc1c426635611d95ffb88b9a7b254e13",
+    "gtfs_trip_task_3a6ac5a78bf5365d76483a811a26d906",
+    "gtfs_reposition_task_9a1258ca3c53dc43e8acd3b94cb66726"
+  ],
+  "physical_vehicle_count": 3,
+  "task_counts_by_replication": {
+    "replication_26b913438be7119154f39d9ecd1132a9": {
+      "lausanne_transit": 4,
+      "synthetic_location": 8,
+      "synthetic_od": 9
+    },
+    "replication_b4cd5f05042d8cf6a820bb8d30225ee9": {
+      "lausanne_transit": 4,
+      "synthetic_location": 11,
+      "synthetic_od": 12
+    }
+  },
+  "source_diagnostics": {
+    "accepted_trips": 146,
+    "active_services": 7055,
+    "active_trips_all_routes": 6583,
+    "crossing_trips": 0,
+    "duties": 3,
+    "identity_assumption": "block_then_inferred_duty",
+    "rejected_trips": 0,
+    "reposition_tasks": 143,
+    "route_failures": [],
+    "selected_route_trips_all_services": 400,
+    "selected_routes": 1,
+    "selected_trip_counts_by_route": {
+      "92-13-H-j26-1": 146
+    },
+    "selected_trips": 146,
+    "service_tasks": 146,
+    "source_routes": 46,
+    "source_trips": 31546
+  },
+  "population_weight_diagnostics": {
+    "allocation_rule": "snapped_point_exact_covering_100m_cell",
+    "positive_weight_location_count": 13,
+    "zero_or_unmatched_location_count": 1,
+    "total_location_weight": 650.0,
+    "uniform_proxy_requested": false,
+    "uniform_proxy_used": false
+  },
+  "assumptions": [
+    "bounded_gtfs_selection",
+    "inferred_vehicle_duties",
+    "population_alignment=exact_lattice_coordinate",
+    "synthetic_demand",
+    "synthetic_population_weighted_destinations",
+    "uncalibrated_constant_road_speed_mps=8.33333333333333"
+  ],
+  "scenario_impact": [
+    {
+      "fleet_id": "lausanne_transit",
+      "profile_id": "road_static_30kph",
+      "required_pair_count": 14,
+      "route_edge_count": 83,
+      "readiness_grade": "scenario_ready_with_quarantine",
+      "unreachable_pair_count": 0,
+      "dynamic_pickup_validation": "on demand in the shared eligibility engine"
+    },
+    {
+      "fleet_id": "synthetic_location",
+      "profile_id": "road_static_30kph",
+      "required_pair_count": 0,
+      "route_edge_count": 0,
+      "readiness_grade": "scenario_ready_with_quarantine",
+      "unreachable_pair_count": 0,
+      "dynamic_pickup_validation": "on demand in the shared eligibility engine"
+    },
+    {
+      "fleet_id": "synthetic_od",
+      "profile_id": "road_static_30kph",
+      "required_pair_count": 1,
+      "route_edge_count": 10,
+      "readiness_grade": "scenario_ready_with_quarantine",
+      "unreachable_pair_count": 0,
+      "dynamic_pickup_validation": "on demand in the shared eligibility engine"
+    }
+  ],
+  "artifacts": {
+    "environment": {
+      "artifact_id": "environment_645817138393b9fddac5455c8ea24717",
+      "artifact_kind": "environment",
+      "content_hash": "6af8ca6c722dcd37394dafc91f0529de49597de29161df7ca0f4bae4a9cb5d42"
+    },
+    "gtfs_reconstruction": {
+      "artifact_id": "dataset_ccc7b39d5d9fae85fef4f0fc8fe50f5f",
+      "artifact_kind": "dataset",
+      "content_hash": "239e066556099022b0e1bdcc0d130a8d09d237f701f42cc7482e8e42e7d2563d"
+    },
+    "scenario_validation": {
+      "artifact_id": "dataset_8fb0fa4840b68330053d61f39d42ce7b",
+      "artifact_kind": "dataset",
+      "content_hash": "478ea1d36db59cf4ec2a690e4b580f99709b1a8d78ca494de8491f4fa7a7ab80"
+    },
+    "simulation": {
+      "artifact_id": "simulation_641c03c7c0f04c86e4af3356040c620f",
+      "artifact_kind": "simulation",
+      "content_hash": "21f5ebe52d6d1f722cea47cbd4b9b7cf0afbbfae5ddfd4f4e9ac43770fc28692"
+    },
+    "exposure": {
+      "artifact_id": "exposure_0cefad37e358412b43e9d84621c7c120",
+      "artifact_kind": "exposure",
+      "content_hash": "542833b42fc18ff14446723eb962efb8d1251860dbb91aca9b5942cac3c6c14e"
+    }
+  },
+  "simulation_output_rows": {
+    "activity_intervals": 852,
+    "movements": 741,
+    "operational_events": 154,
+    "replication_status": 2,
+    "stationary_locations": 28,
+    "task_outcomes": 48,
+    "vehicle_catalog": 3
+  },
+  "exposure_output_rows": {
+    "edge_grid_pieces": 170,
+    "exposure": 331,
+    "grid_axis": 3776,
+    "replication_status": 2,
+    "time_bins": 8,
+    "vehicle_catalog": 3
+  },
+  "logical_vehicle_exposure_matrices": 6,
+  "grid_cell_count": 3776,
+  "reporting_bin_count": 8,
+  "timing_s": {
+    "environment_s": 2.0803418010473251e-07,
+    "gtfs_reconstruction_s": 1.9117685839300975,
+    "scenario_validation_s": 0.24943266599439085,
+    "simulation_s": 0.40730233292561024,
+    "exposure_s": 3.267901291954331,
+    "total_s": 5.862250000005588
+  },
+  "memory": {
+    "python_tracemalloc_peak_bytes": 27368426,
+    "conservative_scenario_estimate_bytes": 55461376,
+    "configured_limit_bytes": 536870912
+  }
+}

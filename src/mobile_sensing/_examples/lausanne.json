@@ -1,0 +1,2240 @@
+{
+  "version": "lausanne-example@1",
+  "example_key": "lausanne",
+  "bundle_id": "example_bd7d8ba4676c13b1f94e3b7b70db4253",
+  "name": "[Example] Lausanne — Five-Fleet Weekday",
+  "config": {
+    "schema_version": "3.4",
+    "environment": {
+      "boundary_input": "input_76690e370afdbf68b436b039010938de",
+      "region_query": "",
+      "drawn_boundary": null,
+      "network_input": "input_085d2392cf848e94fdb0bb40da12a6dc",
+      "grid_input": "input_50efb3323bbe32ae2beeb63487a3ea20",
+      "speed_input": null,
+      "working_crs": "EPSG:2056",
+      "timezone": "Europe/Zurich",
+      "snap_distance_m": 250.0,
+      "grid_size_m": 100.0,
+      "routing_buffer_m": 1000.0,
+      "speed_source": "constant",
+      "speed_kph": 30.0,
+      "speed_column": "speed_kph",
+      "road_columns": {},
+      "features": [
+        {
+          "input_id": "input_7e1a4969f463748576c2ee8872c69ea8",
+          "name": "population",
+          "value_column": "residents",
+          "unit": "residents",
+          "year": 2024,
+          "source_cell_size_m": 100.0,
+          "x_column": "easting",
+          "y_column": "northing",
+          "coordinate_anchor": "point"
+        }
+      ],
+      "osm_features": [],
+      "topology_policy": "conservative_repair@1"
+    },
+    "prepared_environment": {
+      "artifact": {
+        "artifact_id": "environment_bcafddd4c2fbb07a091d906ef2f22c4c",
+        "artifact_kind": "environment",
+        "content_hash": "61fa66b7b64dc069cb207a2b6359f89794bf7c1465d8b16a5278f8a85204150e"
+      },
+      "features": {
+        "artifact_id": "dataset_c387bfdecd7ce6e8380aae00eb2017a3",
+        "artifact_kind": "dataset",
+        "content_hash": "d64e9558c857ca8c5d9a1c63e97fbf8ed7263ac203c6f147491b5b34e3ecdc45"
+      },
+      "feature_names": [
+        "population",
+        "uniform"
+      ],
+      "working_crs": "EPSG:2056",
+      "timezone": "Europe/Zurich",
+      "assumptions": [
+        "Uncalibrated uniform road speed: 30.0 km/h"
+      ]
+    },
+    "fleets": [
+      {
+        "fleet_id": "bus_1",
+        "name": "Bus · line 1",
+        "demand": {
+          "source": "import",
+          "task_type": "ordered",
+          "input_id": "input_fc99cdec6cc3d43a2b47730f97c5d01a",
+          "template": "gtfs",
+          "content": "instances",
+          "count_semantics": null,
+          "columns": {},
+          "coordinate_kind": "cell_id",
+          "time_unit": "clock",
+          "rate_unit": "per_hour",
+          "generation_timing": "offline",
+          "volume_mode": "fixed",
+          "task_volume": 100.0,
+          "start_time": "08:00",
+          "end_time": "18:00",
+          "release_mode": "uniform",
+          "temporal_mode": "window",
+          "time_profile": [],
+          "time_profile_input": null,
+          "spatial_feature": "uniform",
+          "spatial_weights": [],
+          "destination_feature": "uniform",
+          "destination_spatial_weights": [],
+          "location_condition": "all_resolved",
+          "od_distribution_input": null,
+          "service_seconds": 60.0,
+          "pickup_seconds": 0.0,
+          "quantity": 1.0,
+          "route_ids": [
+            "92-1-V-j26-1"
+          ],
+          "imported_assignment": "execute"
+        },
+        "supply": {
+          "source": "timetable",
+          "input_id": null,
+          "columns": {},
+          "fleet_size": null,
+          "timetable_catalog_complete": false,
+          "operating_start": null,
+          "operating_end": null,
+          "activation": "simultaneous",
+          "latest_start": "16:00",
+          "work_hours": 8.0,
+          "initial_location": "input",
+          "spatial_feature": "uniform",
+          "spatial_weights": [],
+          "post_service": "stationary",
+          "capacity_mode": "none",
+          "capacity": 1.0,
+          "capacity_unit": "units",
+          "depot_cell_id": null,
+          "depot_longitude": null,
+          "depot_latitude": null,
+          "synthetic_depot": false,
+          "service_area_mode": "none",
+          "service_area_input": null,
+          "area_assignment_input": null,
+          "auto_service_area_count": null,
+          "turnaround_seconds": 0.0,
+          "depot_min_stay_minutes": 10.0,
+          "timetable_idle_break_minutes": 60.0,
+          "shift_groups": []
+        },
+        "dispatch": {
+          "mode": "scheduled",
+          "assignment_input": null,
+          "max_pickup_minutes": 15.0,
+          "batch_minutes": 2.0,
+          "solution_limit": 100,
+          "planning_timeout_seconds": 120.0,
+          "max_cost_pairs": 250000,
+          "allow_replenishment": true,
+          "max_replenishments_per_vehicle": 4
+        },
+        "routing_profile": "default",
+        "sensing_mode": "operating_duration",
+        "sensing_movements": [
+          "service_pickup",
+          "service_inter_step",
+          "cruise",
+          "depot_return",
+          "reposition"
+        ]
+      },
+      {
+        "fleet_id": "bus_3",
+        "name": "Bus · line 3",
+        "demand": {
+          "source": "import",
+          "task_type": "ordered",
+          "input_id": "input_fc99cdec6cc3d43a2b47730f97c5d01a",
+          "template": "gtfs",
+          "content": "instances",
+          "count_semantics": null,
+          "columns": {},
+          "coordinate_kind": "cell_id",
+          "time_unit": "clock",
+          "rate_unit": "per_hour",
+          "generation_timing": "offline",
+          "volume_mode": "fixed",
+          "task_volume": 100.0,
+          "start_time": "08:00",
+          "end_time": "18:00",
+          "release_mode": "uniform",
+          "temporal_mode": "window",
+          "time_profile": [],
+          "time_profile_input": null,
+          "spatial_feature": "uniform",
+          "spatial_weights": [],
+          "destination_feature": "uniform",
+          "destination_spatial_weights": [],
+          "location_condition": "all_resolved",
+          "od_distribution_input": null,
+          "service_seconds": 60.0,
+          "pickup_seconds": 0.0,
+          "quantity": 1.0,
+          "route_ids": [
+            "92-3-S-j26-1"
+          ],
+          "imported_assignment": "execute"
+        },
+        "supply": {
+          "source": "timetable",
+          "input_id": null,
+          "columns": {},
+          "fleet_size": null,
+          "timetable_catalog_complete": false,
+          "operating_start": null,
+          "operating_end": null,
+          "activation": "simultaneous",
+          "latest_start": "16:00",
+          "work_hours": 8.0,
+          "initial_location": "input",
+          "spatial_feature": "uniform",
+          "spatial_weights": [],
+          "post_service": "stationary",
+          "capacity_mode": "none",
+          "capacity": 1.0,
+          "capacity_unit": "units",
+          "depot_cell_id": null,
+          "depot_longitude": null,
+          "depot_latitude": null,
+          "synthetic_depot": false,
+          "service_area_mode": "none",
+          "service_area_input": null,
+          "area_assignment_input": null,
+          "auto_service_area_count": null,
+          "turnaround_seconds": 0.0,
+          "depot_min_stay_minutes": 10.0,
+          "timetable_idle_break_minutes": 60.0,
+          "shift_groups": []
+        },
+        "dispatch": {
+          "mode": "scheduled",
+          "assignment_input": null,
+          "max_pickup_minutes": 15.0,
+          "batch_minutes": 2.0,
+          "solution_limit": 100,
+          "planning_timeout_seconds": 120.0,
+          "max_cost_pairs": 250000,
+          "allow_replenishment": true,
+          "max_replenishments_per_vehicle": 4
+        },
+        "routing_profile": "default",
+        "sensing_mode": "operating_duration",
+        "sensing_movements": [
+          "service_pickup",
+          "service_inter_step",
+          "cruise",
+          "depot_return",
+          "reposition"
+        ]
+      },
+      {
+        "fleet_id": "bus_7",
+        "name": "Bus · line 7",
+        "demand": {
+          "source": "import",
+          "task_type": "ordered",
+          "input_id": "input_fc99cdec6cc3d43a2b47730f97c5d01a",
+          "template": "gtfs",
+          "content": "instances",
+          "count_semantics": null,
+          "columns": {},
+          "coordinate_kind": "cell_id",
+          "time_unit": "clock",
+          "rate_unit": "per_hour",
+          "generation_timing": "offline",
+          "volume_mode": "fixed",
+          "task_volume": 100.0,
+          "start_time": "08:00",
+          "end_time": "18:00",
+          "release_mode": "uniform",
+          "temporal_mode": "window",
+          "time_profile": [],
+          "time_profile_input": null,
+          "spatial_feature": "uniform",
+          "spatial_weights": [],
+          "destination_feature": "uniform",
+          "destination_spatial_weights": [],
+          "location_condition": "all_resolved",
+          "od_distribution_input": null,
+          "service_seconds": 60.0,
+          "pickup_seconds": 0.0,
+          "quantity": 1.0,
+          "route_ids": [
+            "92-7-P-j26-1"
+          ],
+          "imported_assignment": "execute"
+        },
+        "supply": {
+          "source": "timetable",
+          "input_id": null,
+          "columns": {},
+          "fleet_size": null,
+          "timetable_catalog_complete": false,
+          "operating_start": null,
+          "operating_end": null,
+          "activation": "simultaneous",
+          "latest_start": "16:00",
+          "work_hours": 8.0,
+          "initial_location": "input",
+          "spatial_feature": "uniform",
+          "spatial_weights": [],
+          "post_service": "stationary",
+          "capacity_mode": "none",
+          "capacity": 1.0,
+          "capacity_unit": "units",
+          "depot_cell_id": null,
+          "depot_longitude": null,
+          "depot_latitude": null,
+          "synthetic_depot": false,
+          "service_area_mode": "none",
+          "service_area_input": null,
+          "area_assignment_input": null,
+          "auto_service_area_count": null,
+          "turnaround_seconds": 0.0,
+          "depot_min_stay_minutes": 10.0,
+          "timetable_idle_break_minutes": 60.0,
+          "shift_groups": []
+        },
+        "dispatch": {
+          "mode": "scheduled",
+          "assignment_input": null,
+          "max_pickup_minutes": 15.0,
+          "batch_minutes": 2.0,
+          "solution_limit": 100,
+          "planning_timeout_seconds": 120.0,
+          "max_cost_pairs": 250000,
+          "allow_replenishment": true,
+          "max_replenishments_per_vehicle": 4
+        },
+        "routing_profile": "default",
+        "sensing_mode": "operating_duration",
+        "sensing_movements": [
+          "service_pickup",
+          "service_inter_step",
+          "cruise",
+          "depot_return",
+          "reposition"
+        ]
+      },
+      {
+        "fleet_id": "postal",
+        "name": "Postal · synthetic deliveries",
+        "demand": {
+          "source": "generator",
+          "task_type": "location",
+          "input_id": null,
+          "template": "table",
+          "content": "instances",
+          "count_semantics": null,
+          "columns": {},
+          "coordinate_kind": "cell_id",
+          "time_unit": "clock",
+          "rate_unit": "per_hour",
+          "generation_timing": "offline",
+          "volume_mode": "expected",
+          "task_volume": 2000.0,
+          "start_time": "07:00",
+          "end_time": "18:00",
+          "release_mode": "at_start",
+          "temporal_mode": "window",
+          "time_profile": [],
+          "time_profile_input": null,
+          "spatial_feature": "population",
+          "spatial_weights": [],
+          "destination_feature": "uniform",
+          "destination_spatial_weights": [],
+          "location_condition": "depot_roundtrip",
+          "od_distribution_input": null,
+          "service_seconds": 120.0,
+          "pickup_seconds": 0.0,
+          "quantity": 1.0,
+          "route_ids": [],
+          "imported_assignment": "execute"
+        },
+        "supply": {
+          "source": "generated",
+          "input_id": null,
+          "columns": {},
+          "fleet_size": 20,
+          "timetable_catalog_complete": false,
+          "operating_start": "07:00",
+          "operating_end": "18:00",
+          "activation": "uniform_bounded",
+          "latest_start": "08:00",
+          "work_hours": 8.0,
+          "initial_location": "depot",
+          "spatial_feature": "population",
+          "spatial_weights": [],
+          "post_service": "return_after_plan",
+          "capacity_mode": "consumable",
+          "capacity": 100.0,
+          "capacity_unit": "units",
+          "depot_cell_id": null,
+          "depot_longitude": 6.6290923032,
+          "depot_latitude": 46.5167918355,
+          "synthetic_depot": true,
+          "service_area_mode": "auto",
+          "service_area_input": null,
+          "area_assignment_input": null,
+          "auto_service_area_count": 4,
+          "turnaround_seconds": 0.0,
+          "depot_min_stay_minutes": 15.0,
+          "timetable_idle_break_minutes": 60.0,
+          "shift_groups": []
+        },
+        "dispatch": {
+          "mode": "one_shot",
+          "assignment_input": null,
+          "max_pickup_minutes": 15.0,
+          "batch_minutes": 2.0,
+          "solution_limit": 100,
+          "planning_timeout_seconds": 600.0,
+          "max_cost_pairs": 5000000,
+          "allow_replenishment": true,
+          "max_replenishments_per_vehicle": 4
+        },
+        "routing_profile": "default",
+        "sensing_mode": "operating_duration",
+        "sensing_movements": [
+          "service_pickup",
+          "service_inter_step",
+          "cruise",
+          "depot_return",
+          "reposition"
+        ]
+      },
+      {
+        "fleet_id": "ride_hailing",
+        "name": "Ride-hailing · synthetic requests",
+        "demand": {
+          "source": "generator",
+          "task_type": "od",
+          "input_id": null,
+          "template": "table",
+          "content": "instances",
+          "count_semantics": null,
+          "columns": {},
+          "coordinate_kind": "cell_id",
+          "time_unit": "clock",
+          "rate_unit": "per_hour",
+          "generation_timing": "online",
+          "volume_mode": "expected",
+          "task_volume": 600.0,
+          "start_time": "00:00",
+          "end_time": "24:00",
+          "release_mode": "uniform",
+          "temporal_mode": "shares",
+          "time_profile": [
+            {
+              "start_time": "00:00",
+              "end_time": "06:00",
+              "value": 0.05
+            },
+            {
+              "start_time": "06:00",
+              "end_time": "09:00",
+              "value": 0.18
+            },
+            {
+              "start_time": "09:00",
+              "end_time": "12:00",
+              "value": 0.13
+            },
+            {
+              "start_time": "12:00",
+              "end_time": "16:00",
+              "value": 0.2
+            },
+            {
+              "start_time": "16:00",
+              "end_time": "19:00",
+              "value": 0.24
+            },
+            {
+              "start_time": "19:00",
+              "end_time": "21:00",
+              "value": 0.12
+            },
+            {
+              "start_time": "21:00",
+              "end_time": "24:00",
+              "value": 0.08
+            }
+          ],
+          "time_profile_input": null,
+          "spatial_feature": "population",
+          "spatial_weights": [],
+          "destination_feature": "population",
+          "destination_spatial_weights": [],
+          "location_condition": "all_resolved",
+          "od_distribution_input": null,
+          "service_seconds": 30.0,
+          "pickup_seconds": 60.0,
+          "quantity": 1.0,
+          "route_ids": [],
+          "imported_assignment": "execute"
+        },
+        "supply": {
+          "source": "generated",
+          "input_id": null,
+          "columns": {},
+          "fleet_size": 40,
+          "timetable_catalog_complete": false,
+          "operating_start": "00:00",
+          "operating_end": "24:00",
+          "activation": "uniform_bounded",
+          "latest_start": "16:00",
+          "work_hours": 8.0,
+          "initial_location": "spatial_feature",
+          "spatial_feature": "population",
+          "spatial_weights": [],
+          "post_service": "stationary",
+          "capacity_mode": "occupancy",
+          "capacity": 1.0,
+          "capacity_unit": "units",
+          "depot_cell_id": null,
+          "depot_longitude": null,
+          "depot_latitude": null,
+          "synthetic_depot": false,
+          "service_area_mode": "none",
+          "service_area_input": null,
+          "area_assignment_input": null,
+          "auto_service_area_count": null,
+          "turnaround_seconds": 0.0,
+          "depot_min_stay_minutes": 10.0,
+          "timetable_idle_break_minutes": 60.0,
+          "shift_groups": [
+            {
+              "name": "Night",
+              "count": 4,
+              "start_time": "00:00",
+              "latest_start": "00:00",
+              "day_offset": 0,
+              "work_hours": 8.0
+            },
+            {
+              "name": "Morning",
+              "count": 12,
+              "start_time": "05:00",
+              "latest_start": "06:00",
+              "day_offset": 0,
+              "work_hours": 8.0
+            },
+            {
+              "name": "Daytime",
+              "count": 12,
+              "start_time": "09:00",
+              "latest_start": "11:00",
+              "day_offset": 0,
+              "work_hours": 8.0
+            },
+            {
+              "name": "Afternoon",
+              "count": 12,
+              "start_time": "15:00",
+              "latest_start": "16:00",
+              "day_offset": 0,
+              "work_hours": 8.0
+            }
+          ]
+        },
+        "dispatch": {
+          "mode": "sequential",
+          "assignment_input": null,
+          "max_pickup_minutes": 15.0,
+          "batch_minutes": 2.0,
+          "solution_limit": 100,
+          "planning_timeout_seconds": 120.0,
+          "max_cost_pairs": 250000,
+          "allow_replenishment": true,
+          "max_replenishments_per_vehicle": 4
+        },
+        "routing_profile": "default",
+        "sensing_mode": "operating_duration",
+        "sensing_movements": [
+          "service_pickup",
+          "service_inter_step",
+          "cruise",
+          "depot_return",
+          "reposition"
+        ]
+      }
+    ],
+    "simulation": {
+      "time_mode": "calendar",
+      "timezone": null,
+      "service_date": "2026-01-14",
+      "weekday": 2,
+      "calendar_period_start": null,
+      "calendar_period_end": null,
+      "warmup_hours": 0.0,
+      "start_time": "00:00",
+      "end_time": "24:00",
+      "replications": 10,
+      "temporal_resolution_minutes": 60.0,
+      "seed": 20260114
+    },
+    "portfolio": {
+      "source_run_id": "dataset_7f739112ae44059709005186b8f2ebfc",
+      "sampling_runs": 100,
+      "seed": 20260115,
+      "cost_unit": "abstract cost units",
+      "budgets": [
+        30.0,
+        40.0,
+        50.0
+      ],
+      "budget_range": null,
+      "fleets": [
+        {
+          "fleet_id": "bus_1",
+          "unit_cost": 1.0,
+          "counts": [
+            0,
+            5,
+            10,
+            15,
+            17
+          ],
+          "count_range": {
+            "minimum": 0.0,
+            "maximum": 17.0,
+            "step": 5.0
+          }
+        },
+        {
+          "fleet_id": "bus_3",
+          "unit_cost": 1.0,
+          "counts": [
+            0,
+            5,
+            6
+          ],
+          "count_range": {
+            "minimum": 0.0,
+            "maximum": 6.0,
+            "step": 5.0
+          }
+        },
+        {
+          "fleet_id": "bus_7",
+          "unit_cost": 1.0,
+          "counts": [
+            0,
+            5,
+            10,
+            11
+          ],
+          "count_range": {
+            "minimum": 0.0,
+            "maximum": 11.0,
+            "step": 5.0
+          }
+        },
+        {
+          "fleet_id": "postal",
+          "unit_cost": 1.0,
+          "counts": [
+            0,
+            5,
+            10,
+            15,
+            20
+          ],
+          "count_range": {
+            "minimum": 0.0,
+            "maximum": 20.0,
+            "step": 5.0
+          }
+        },
+        {
+          "fleet_id": "ride_hailing",
+          "unit_cost": 1.0,
+          "counts": [
+            0,
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            40
+          ],
+          "count_range": {
+            "minimum": 0.0,
+            "maximum": 40.0,
+            "step": 5.0
+          }
+        }
+      ],
+      "utility": "exponential",
+      "saturation_minutes": 5.0,
+      "utility_temporal_resolution_minutes": 1440.0,
+      "spatial_weight": "population",
+      "risk_metric": "p05"
+    },
+    "source_revision": null,
+    "linked_run_ids": [
+      "dataset_7f739112ae44059709005186b8f2ebfc"
+    ],
+    "linked_analysis_ids": [
+      "dataset_6e071286ca0e24492a2bcdc0c8ad9dc4"
+    ],
+    "example_bundle_id": null,
+    "read_only": false,
+    "saved_views": {}
+  },
+  "files": [
+    {
+      "path": "analysis_cache/frontier-8c18cb0d5b878ed28fa13f22725de04e32b70e89faf874882646df36bc96f385.json",
+      "sha256": "e229ad539e58c1501bdd54fbf624cce7649752da835becb7b84d6763eb54274c",
+      "size_bytes": 540
+    },
+    {
+      "path": "analysis_cache/samples-afbe76ac9ddc701e6b3911d45dd019cce5d35e752e3d2aa6cfd1df3c0667e6b2.json",
+      "sha256": "8399610259248fb9762daad482e454501c93fd22574d11a02a9fc1c27bd5d068",
+      "size_bytes": 1059
+    },
+    {
+      "path": "datasets/dataset_1b8ac6dd3a13b286db73e38ded89d8a6/_SUCCESS",
+      "sha256": "37a40f08d8548dba289b9b0bb35bcf63b359f6d37ee86044ebc6b6da080b9ec1",
+      "size_bytes": 9
+    },
+    {
+      "path": "datasets/dataset_1b8ac6dd3a13b286db73e38ded89d8a6/assignments.parquet",
+      "sha256": "9c483463bc8aa9d540d3548d9d765f60fb06b8a07215e50ca1cd283e709918e5",
+      "size_bytes": 19471
+    },
+    {
+      "path": "datasets/dataset_1b8ac6dd3a13b286db73e38ded89d8a6/catalog_identity.parquet",
+      "sha256": "7bc49997521ba7e69d6f374698d913fea2251a5981c189427ef83da6c16f2e12",
+      "size_bytes": 4454
+    },
+    {
+      "path": "datasets/dataset_1b8ac6dd3a13b286db73e38ded89d8a6/deadheads.parquet",
+      "sha256": "afa9edd7cdb616d0faef14ac73c8ca4f7eb6791abd61a6b15398e1269b28402b",
+      "size_bytes": 8473
+    },
+    {
+      "path": "datasets/dataset_1b8ac6dd3a13b286db73e38ded89d8a6/diagnostics.parquet",
+      "sha256": "f26a81a66969d79ffcd4c377d5a328285796fa384772fd2f3bb6b3fe3469ae0b",
+      "size_bytes": 3077
+    },
+    {
+      "path": "datasets/dataset_1b8ac6dd3a13b286db73e38ded89d8a6/duties.parquet",
+      "sha256": "bf59a371366220024ea78fe7e391d6669bb61ac065c83af5a8ff2419c78852e6",
+      "size_bytes": 9236
+    },
+    {
+      "path": "datasets/dataset_1b8ac6dd3a13b286db73e38ded89d8a6/gtfs_metadata.parquet",
+      "sha256": "9f7769daadb09fdaed74dcf988f2b9d68b7b060ecb1532da2d857b7401489c77",
+      "size_bytes": 3936
+    },
+    {
+      "path": "datasets/dataset_1b8ac6dd3a13b286db73e38ded89d8a6/locations.parquet",
+      "sha256": "41cb1e055cf6a2a2bc9b5dd5d835d7581e1a4829636f33795a26dd2b3c068e69",
+      "size_bytes": 8010
+    },
+    {
+      "path": "datasets/dataset_1b8ac6dd3a13b286db73e38ded89d8a6/manifest.json",
+      "sha256": "6b1672e1b7e2142a979b261be6e3e767ed2073e4fbb984f15512313cb9763e49",
+      "size_bytes": 6794
+    },
+    {
+      "path": "datasets/dataset_1b8ac6dd3a13b286db73e38ded89d8a6/route_failures.parquet",
+      "sha256": "b81ac4e72889ca24a8ee7b3debc2ef2310ff51bf1a054d9f1f8ed2caa53f96ba",
+      "size_bytes": 1410
+    },
+    {
+      "path": "datasets/dataset_1b8ac6dd3a13b286db73e38ded89d8a6/task_steps.parquet",
+      "sha256": "a8233f6e94de848865a2a9a847b4ca48d56a4d6e3c5987b86aac077b2a81e561",
+      "size_bytes": 55190
+    },
+    {
+      "path": "datasets/dataset_1b8ac6dd3a13b286db73e38ded89d8a6/tasks.parquet",
+      "sha256": "ed5a444d31de76042a8b4399cab0e40f088e653266e7dec78a0bec635bb0d451",
+      "size_bytes": 24648
+    },
+    {
+      "path": "datasets/dataset_1b8ac6dd3a13b286db73e38ded89d8a6/trip_diagnostics.parquet",
+      "sha256": "e731dfeae2eb2a812127c1c0a2abb33640ca3ef1ff3eb9339891f6f14baf860e",
+      "size_bytes": 7338
+    },
+    {
+      "path": "datasets/dataset_1b8ac6dd3a13b286db73e38ded89d8a6/trip_stops.parquet",
+      "sha256": "97ec8f8f6f6277c5dcf534daea6e0beb522bf659695e024b20c75429d097f47a",
+      "size_bytes": 27986
+    },
+    {
+      "path": "datasets/dataset_1b8ac6dd3a13b286db73e38ded89d8a6/vehicle_availability.parquet",
+      "sha256": "4a1654ea327ed29c02461eaeaf26facd3fe3ea5b77a9464fb103f7adec6b0168",
+      "size_bytes": 5222
+    },
+    {
+      "path": "datasets/dataset_1b8ac6dd3a13b286db73e38ded89d8a6/vehicle_catalog.parquet",
+      "sha256": "d7bde714bf9a3e0412583ec4b2d53365289df6006206ca1da13790e2105b004c",
+      "size_bytes": 7247
+    },
+    {
+      "path": "datasets/dataset_2b28fa7b261081fa5985ef31752661f3/_SUCCESS",
+      "sha256": "37a40f08d8548dba289b9b0bb35bcf63b359f6d37ee86044ebc6b6da080b9ec1",
+      "size_bytes": 9
+    },
+    {
+      "path": "datasets/dataset_2b28fa7b261081fa5985ef31752661f3/assignments.parquet",
+      "sha256": "d899b6a33823415b31b1337918423f9eb7e8c333aa4113c72547b35dae0bef24",
+      "size_bytes": 24879
+    },
+    {
+      "path": "datasets/dataset_2b28fa7b261081fa5985ef31752661f3/catalog_identity.parquet",
+      "sha256": "4ef980b7824ee807047a93fe7b41395f1f8df108065164cb051b0f922e51f27f",
+      "size_bytes": 4856
+    },
+    {
+      "path": "datasets/dataset_2b28fa7b261081fa5985ef31752661f3/deadheads.parquet",
+      "sha256": "e988f527813440c45f629e3bc470d29e792231a1a437020ae20a9b1717f8d21f",
+      "size_bytes": 10663
+    },
+    {
+      "path": "datasets/dataset_2b28fa7b261081fa5985ef31752661f3/diagnostics.parquet",
+      "sha256": "cf96a6f7a1df325bc62a57bd84116292b94e21146250ab76a8e63509038d2a60",
+      "size_bytes": 3096
+    },
+    {
+      "path": "datasets/dataset_2b28fa7b261081fa5985ef31752661f3/duties.parquet",
+      "sha256": "087fae3730fbba7c92bb5f71c1e2537dde38a3db7839824239ec2e9ffdb25264",
+      "size_bytes": 7937
+    },
+    {
+      "path": "datasets/dataset_2b28fa7b261081fa5985ef31752661f3/gtfs_metadata.parquet",
+      "sha256": "c6f8c2790b094031e5157af461bc2638683f4b1f165895e12ab01f4eaff477c8",
+      "size_bytes": 3936
+    },
+    {
+      "path": "datasets/dataset_2b28fa7b261081fa5985ef31752661f3/locations.parquet",
+      "sha256": "0c0c2d1a49a42ae88bb232b31047b6be02138080de67638821218219c4f3b7a2",
+      "size_bytes": 12729
+    },
+    {
+      "path": "datasets/dataset_2b28fa7b261081fa5985ef31752661f3/manifest.json",
+      "sha256": "58b78ec13545169cc7df7547f4ec209b3311dccae2f9abf51d05c292acba664a",
+      "size_bytes": 6800
+    },
+    {
+      "path": "datasets/dataset_2b28fa7b261081fa5985ef31752661f3/route_failures.parquet",
+      "sha256": "b81ac4e72889ca24a8ee7b3debc2ef2310ff51bf1a054d9f1f8ed2caa53f96ba",
+      "size_bytes": 1410
+    },
+    {
+      "path": "datasets/dataset_2b28fa7b261081fa5985ef31752661f3/task_steps.parquet",
+      "sha256": "5cafb81f339451b9f5e0421866d42333ab6ce12e2c5062a77c2aaddec23a43de",
+      "size_bytes": 110859
+    },
+    {
+      "path": "datasets/dataset_2b28fa7b261081fa5985ef31752661f3/tasks.parquet",
+      "sha256": "1bc721e3073c8d04307bc7acb98ab43edaa86ff28c24cc2c020149c8bda68c66",
+      "size_bytes": 32216
+    },
+    {
+      "path": "datasets/dataset_2b28fa7b261081fa5985ef31752661f3/trip_diagnostics.parquet",
+      "sha256": "0d4b6e270f28187e06cd4ecf76ba080889120d76be9d3a0594aabaf9ed9f51f5",
+      "size_bytes": 8792
+    },
+    {
+      "path": "datasets/dataset_2b28fa7b261081fa5985ef31752661f3/trip_stops.parquet",
+      "sha256": "a83c39081e4c6030095755184926f87c4d6d673a66ffe47b2b9748c650890227",
+      "size_bytes": 48746
+    },
+    {
+      "path": "datasets/dataset_2b28fa7b261081fa5985ef31752661f3/vehicle_availability.parquet",
+      "sha256": "05d1ba5305e40a273a6abbf5b5cdcbe579c4df72dcf0addccb35b53dbd1bf9ef",
+      "size_bytes": 5859
+    },
+    {
+      "path": "datasets/dataset_2b28fa7b261081fa5985ef31752661f3/vehicle_catalog.parquet",
+      "sha256": "96652f4a92bea8f4c9d4a727a8ef406c0c2d822580e34d4ad4a75eb76d1866ee",
+      "size_bytes": 7882
+    },
+    {
+      "path": "datasets/dataset_478d9490e39d6aa84e988272e1c21baf/_SUCCESS",
+      "sha256": "37a40f08d8548dba289b9b0bb35bcf63b359f6d37ee86044ebc6b6da080b9ec1",
+      "size_bytes": 9
+    },
+    {
+      "path": "datasets/dataset_478d9490e39d6aa84e988272e1c21baf/assignments.parquet",
+      "sha256": "62c8c6088286f751cb341534da3870cabb424998f75a80fb5dab3a0a13efbadc",
+      "size_bytes": 24880
+    },
+    {
+      "path": "datasets/dataset_478d9490e39d6aa84e988272e1c21baf/catalog_identity.parquet",
+      "sha256": "6b7c3b1242f96d5ee19e21e34ef58ef3a488f11af2ffc0aed13c4ede2780d7f4",
+      "size_bytes": 4857
+    },
+    {
+      "path": "datasets/dataset_478d9490e39d6aa84e988272e1c21baf/deadheads.parquet",
+      "sha256": "167700e3ec7fdb529e344315e88191c6c2608bde831d2f9bae545d5bf8239cde",
+      "size_bytes": 10712
+    },
+    {
+      "path": "datasets/dataset_478d9490e39d6aa84e988272e1c21baf/diagnostics.parquet",
+      "sha256": "cf96a6f7a1df325bc62a57bd84116292b94e21146250ab76a8e63509038d2a60",
+      "size_bytes": 3096
+    },
+    {
+      "path": "datasets/dataset_478d9490e39d6aa84e988272e1c21baf/duties.parquet",
+      "sha256": "8902136a2bf22b62fe44bd7a1f424ca85d7c46f37256fe5298a64b16297db47e",
+      "size_bytes": 7955
+    },
+    {
+      "path": "datasets/dataset_478d9490e39d6aa84e988272e1c21baf/gtfs_metadata.parquet",
+      "sha256": "f0f7695ac8d737588e2e44b8daa671b6d25bc6a8949950daa6ade3226c290555",
+      "size_bytes": 3936
+    },
+    {
+      "path": "datasets/dataset_478d9490e39d6aa84e988272e1c21baf/locations.parquet",
+      "sha256": "0c0c2d1a49a42ae88bb232b31047b6be02138080de67638821218219c4f3b7a2",
+      "size_bytes": 12729
+    },
+    {
+      "path": "datasets/dataset_478d9490e39d6aa84e988272e1c21baf/manifest.json",
+      "sha256": "135786f35e3d7d1a0de8d8c37285116ec7cf111a729b8ceff1ff1334b76359d9",
+      "size_bytes": 6800
+    },
+    {
+      "path": "datasets/dataset_478d9490e39d6aa84e988272e1c21baf/route_failures.parquet",
+      "sha256": "b81ac4e72889ca24a8ee7b3debc2ef2310ff51bf1a054d9f1f8ed2caa53f96ba",
+      "size_bytes": 1410
+    },
+    {
+      "path": "datasets/dataset_478d9490e39d6aa84e988272e1c21baf/task_steps.parquet",
+      "sha256": "969973fb57a84d93253ef01fe05d08f376d267653269a310979ff217f093c056",
+      "size_bytes": 110792
+    },
+    {
+      "path": "datasets/dataset_478d9490e39d6aa84e988272e1c21baf/tasks.parquet",
+      "sha256": "8d664db782a2a3eb9492ee72fa2aa940131f8267156c4cf991893609578c84f6",
+      "size_bytes": 32290
+    },
+    {
+      "path": "datasets/dataset_478d9490e39d6aa84e988272e1c21baf/trip_diagnostics.parquet",
+      "sha256": "0d4b6e270f28187e06cd4ecf76ba080889120d76be9d3a0594aabaf9ed9f51f5",
+      "size_bytes": 8792
+    },
+    {
+      "path": "datasets/dataset_478d9490e39d6aa84e988272e1c21baf/trip_stops.parquet",
+      "sha256": "a83c39081e4c6030095755184926f87c4d6d673a66ffe47b2b9748c650890227",
+      "size_bytes": 48746
+    },
+    {
+      "path": "datasets/dataset_478d9490e39d6aa84e988272e1c21baf/vehicle_availability.parquet",
+      "sha256": "6f9f357b9321bd6b4791c6a7f87e099fe9767dc06a4d290f266321b61dcac233",
+      "size_bytes": 5861
+    },
+    {
+      "path": "datasets/dataset_478d9490e39d6aa84e988272e1c21baf/vehicle_catalog.parquet",
+      "sha256": "0a5cce4efcff1deccbddf2347a88556c595dc345abb2623e2e07d569286be18d",
+      "size_bytes": 7884
+    },
+    {
+      "path": "datasets/dataset_4c89af9f71d68b7300fea68999de2c76/_SUCCESS",
+      "sha256": "37a40f08d8548dba289b9b0bb35bcf63b359f6d37ee86044ebc6b6da080b9ec1",
+      "size_bytes": 9
+    },
+    {
+      "path": "datasets/dataset_4c89af9f71d68b7300fea68999de2c76/assignments.parquet",
+      "sha256": "4133f4908ba445d2086c116ec8ac614bf50937aba77d1dae902d762593ed6aa6",
+      "size_bytes": 19386
+    },
+    {
+      "path": "datasets/dataset_4c89af9f71d68b7300fea68999de2c76/catalog_identity.parquet",
+      "sha256": "1bd1112ea7cf29c11598976aed72195baed6f8822a214f013cdcb67c1c1153f7",
+      "size_bytes": 4453
+    },
+    {
+      "path": "datasets/dataset_4c89af9f71d68b7300fea68999de2c76/deadheads.parquet",
+      "sha256": "1342125c3846a31c3b6d38e202a43a82b3aac1bdf77bfccc077da59c72cf80bd",
+      "size_bytes": 8477
+    },
+    {
+      "path": "datasets/dataset_4c89af9f71d68b7300fea68999de2c76/diagnostics.parquet",
+      "sha256": "f26a81a66969d79ffcd4c377d5a328285796fa384772fd2f3bb6b3fe3469ae0b",
+      "size_bytes": 3077
+    },
+    {
+      "path": "datasets/dataset_4c89af9f71d68b7300fea68999de2c76/duties.parquet",
+      "sha256": "3c02656bb4e0f2c403374b3a4c70f0327c4d0a0467fcfbd98727dd6065b8a002",
+      "size_bytes": 9250
+    },
+    {
+      "path": "datasets/dataset_4c89af9f71d68b7300fea68999de2c76/gtfs_metadata.parquet",
+      "sha256": "05801e72d6760fff9574224018e716a073eeb02fb8d6760fa74c902c118dfc4f",
+      "size_bytes": 3936
+    },
+    {
+      "path": "datasets/dataset_4c89af9f71d68b7300fea68999de2c76/locations.parquet",
+      "sha256": "41cb1e055cf6a2a2bc9b5dd5d835d7581e1a4829636f33795a26dd2b3c068e69",
+      "size_bytes": 8010
+    },
+    {
+      "path": "datasets/dataset_4c89af9f71d68b7300fea68999de2c76/manifest.json",
+      "sha256": "04f4c69ac7dee5a0eea83c1c49f4419e89a3b5705673e466d99bcf03512aca1b",
+      "size_bytes": 6794
+    },
+    {
+      "path": "datasets/dataset_4c89af9f71d68b7300fea68999de2c76/route_failures.parquet",
+      "sha256": "b81ac4e72889ca24a8ee7b3debc2ef2310ff51bf1a054d9f1f8ed2caa53f96ba",
+      "size_bytes": 1410
+    },
+    {
+      "path": "datasets/dataset_4c89af9f71d68b7300fea68999de2c76/task_steps.parquet",
+      "sha256": "826e9f799e918a19bfdcf323f17d6edc0c62863f496cf0b4e2067d92b8c3ccc2",
+      "size_bytes": 55122
+    },
+    {
+      "path": "datasets/dataset_4c89af9f71d68b7300fea68999de2c76/tasks.parquet",
+      "sha256": "3f8f5acea05d27510ade65b186a8f6f1def9f35889015915ddd97c7289bb3cac",
+      "size_bytes": 24591
+    },
+    {
+      "path": "datasets/dataset_4c89af9f71d68b7300fea68999de2c76/trip_diagnostics.parquet",
+      "sha256": "e731dfeae2eb2a812127c1c0a2abb33640ca3ef1ff3eb9339891f6f14baf860e",
+      "size_bytes": 7338
+    },
+    {
+      "path": "datasets/dataset_4c89af9f71d68b7300fea68999de2c76/trip_stops.parquet",
+      "sha256": "97ec8f8f6f6277c5dcf534daea6e0beb522bf659695e024b20c75429d097f47a",
+      "size_bytes": 27986
+    },
+    {
+      "path": "datasets/dataset_4c89af9f71d68b7300fea68999de2c76/vehicle_availability.parquet",
+      "sha256": "bda88dbad8f612562567cf62cd6206abd998b6537287a8b175d69f7c926e3227",
+      "size_bytes": 5222
+    },
+    {
+      "path": "datasets/dataset_4c89af9f71d68b7300fea68999de2c76/vehicle_catalog.parquet",
+      "sha256": "d094000eb5a376084b236af47974773fe0cd668430a4c0964e7c76e75d17b8b9",
+      "size_bytes": 7247
+    },
+    {
+      "path": "datasets/dataset_692e8644a73989f82fb467f77acebd91/_SUCCESS",
+      "sha256": "37a40f08d8548dba289b9b0bb35bcf63b359f6d37ee86044ebc6b6da080b9ec1",
+      "size_bytes": 9
+    },
+    {
+      "path": "datasets/dataset_692e8644a73989f82fb467f77acebd91/assignments.parquet",
+      "sha256": "44e75be9bfaffa156e10e2512f6a0c8def9b8a29a5b238f71086af7c6866474b",
+      "size_bytes": 19446
+    },
+    {
+      "path": "datasets/dataset_692e8644a73989f82fb467f77acebd91/catalog_identity.parquet",
+      "sha256": "8c5e4f447b83a99ea9f8333bb5525babd5c0ad65e6722f8a296928f7e67391ce",
+      "size_bytes": 4453
+    },
+    {
+      "path": "datasets/dataset_692e8644a73989f82fb467f77acebd91/deadheads.parquet",
+      "sha256": "a7b69ecc991a7febca496ba43a4dd3787dfa1631c154e243c0d9485e8b784e9c",
+      "size_bytes": 8441
+    },
+    {
+      "path": "datasets/dataset_692e8644a73989f82fb467f77acebd91/diagnostics.parquet",
+      "sha256": "f26a81a66969d79ffcd4c377d5a328285796fa384772fd2f3bb6b3fe3469ae0b",
+      "size_bytes": 3077
+    },
+    {
+      "path": "datasets/dataset_692e8644a73989f82fb467f77acebd91/duties.parquet",
+      "sha256": "624e61aada7189a35b7d8bec16602484a57fad14994763b7e587d81e21705dfe",
+      "size_bytes": 9239
+    },
+    {
+      "path": "datasets/dataset_692e8644a73989f82fb467f77acebd91/gtfs_metadata.parquet",
+      "sha256": "9082e18f7079fe3477545ef7ee7f3bf7c600842d6c6d0462f16ba08a592c4ae6",
+      "size_bytes": 3936
+    },
+    {
+      "path": "datasets/dataset_692e8644a73989f82fb467f77acebd91/locations.parquet",
+      "sha256": "41cb1e055cf6a2a2bc9b5dd5d835d7581e1a4829636f33795a26dd2b3c068e69",
+      "size_bytes": 8010
+    },
+    {
+      "path": "datasets/dataset_692e8644a73989f82fb467f77acebd91/manifest.json",
+      "sha256": "0fba903c11b6f2b0d1523072510850f7a18e2930d1450a13e57a9d1f09d0d85a",
+      "size_bytes": 6794
+    },
+    {
+      "path": "datasets/dataset_692e8644a73989f82fb467f77acebd91/route_failures.parquet",
+      "sha256": "b81ac4e72889ca24a8ee7b3debc2ef2310ff51bf1a054d9f1f8ed2caa53f96ba",
+      "size_bytes": 1410
+    },
+    {
+      "path": "datasets/dataset_692e8644a73989f82fb467f77acebd91/task_steps.parquet",
+      "sha256": "cc55201907248af28964772b01fc0bf27fda2dc8072459f3d768fd4b0e491212",
+      "size_bytes": 55117
+    },
+    {
+      "path": "datasets/dataset_692e8644a73989f82fb467f77acebd91/tasks.parquet",
+      "sha256": "b1f6b03cd637ee2a4bcf558569231729d2a5c576c24af68f62c66917dfb319cc",
+      "size_bytes": 24595
+    },
+    {
+      "path": "datasets/dataset_692e8644a73989f82fb467f77acebd91/trip_diagnostics.parquet",
+      "sha256": "e731dfeae2eb2a812127c1c0a2abb33640ca3ef1ff3eb9339891f6f14baf860e",
+      "size_bytes": 7338
+    },
+    {
+      "path": "datasets/dataset_692e8644a73989f82fb467f77acebd91/trip_stops.parquet",
+      "sha256": "97ec8f8f6f6277c5dcf534daea6e0beb522bf659695e024b20c75429d097f47a",
+      "size_bytes": 27986
+    },
+    {
+      "path": "datasets/dataset_692e8644a73989f82fb467f77acebd91/vehicle_availability.parquet",
+      "sha256": "e75f3aaa401c8ec584e04482b239c17f265ccc8774159ffa4d4edd0c8d97342e",
+      "size_bytes": 5222
+    },
+    {
+      "path": "datasets/dataset_692e8644a73989f82fb467f77acebd91/vehicle_catalog.parquet",
+      "sha256": "a54a73a791053f461638cafc543b9b908aaa0a9e288627182122a2da077b9cd9",
+      "size_bytes": 7247
+    },
+    {
+      "path": "datasets/dataset_6e071286ca0e24492a2bcdc0c8ad9dc4/_SUCCESS",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "datasets/dataset_6e071286ca0e24492a2bcdc0c8ad9dc4/manifest.json",
+      "sha256": "71fe677e003d1cf7dbdcdd225f62ce61f7aa0a18ce91a030c47e7c3391e907c2",
+      "size_bytes": 3500
+    },
+    {
+      "path": "datasets/dataset_6e071286ca0e24492a2bcdc0c8ad9dc4/tables/stage_metrics/part-000000.parquet",
+      "sha256": "6f6d525d3bfd7b326fb4dd73c0c27f6aec7ac7a0430d746bbe09f5d3ec428f5d",
+      "size_bytes": 1730
+    },
+    {
+      "path": "datasets/dataset_773e17aad81e0d9e7975a32a062aa371/_SUCCESS",
+      "sha256": "37a40f08d8548dba289b9b0bb35bcf63b359f6d37ee86044ebc6b6da080b9ec1",
+      "size_bytes": 9
+    },
+    {
+      "path": "datasets/dataset_773e17aad81e0d9e7975a32a062aa371/assignments.parquet",
+      "sha256": "2e0782a9d74efdc5c39f7592157d22fe40119d5a166da5406daa58592222f11e",
+      "size_bytes": 23337
+    },
+    {
+      "path": "datasets/dataset_773e17aad81e0d9e7975a32a062aa371/catalog_identity.parquet",
+      "sha256": "497f4582aeebec99e84a37065dda48863fd1dd05b9a6a82108012d0566fdd6db",
+      "size_bytes": 4636
+    },
+    {
+      "path": "datasets/dataset_773e17aad81e0d9e7975a32a062aa371/deadheads.parquet",
+      "sha256": "a65a79aeb1df456d515eba9c00d125e420f5274d70d8f089c60ce28503f6b927",
+      "size_bytes": 9479
+    },
+    {
+      "path": "datasets/dataset_773e17aad81e0d9e7975a32a062aa371/diagnostics.parquet",
+      "sha256": "31dbb539a6584add03e8260fc3fd2893068c34d84714c7dd5aa3e3d619519a38",
+      "size_bytes": 3085
+    },
+    {
+      "path": "datasets/dataset_773e17aad81e0d9e7975a32a062aa371/duties.parquet",
+      "sha256": "fbd4417adf910b6cc22ec4645589ea1ce18084db74a740eaf11250c1356aa817",
+      "size_bytes": 9070
+    },
+    {
+      "path": "datasets/dataset_773e17aad81e0d9e7975a32a062aa371/gtfs_metadata.parquet",
+      "sha256": "74ee4691458b132751b9f2c7b4c91462894b00914e4d96ff554352d55db0d88a",
+      "size_bytes": 3936
+    },
+    {
+      "path": "datasets/dataset_773e17aad81e0d9e7975a32a062aa371/locations.parquet",
+      "sha256": "754753166bd1e276c7a018c4dc79d3af0327918bba3d80974ae9d61edcc992c4",
+      "size_bytes": 8723
+    },
+    {
+      "path": "datasets/dataset_773e17aad81e0d9e7975a32a062aa371/manifest.json",
+      "sha256": "50c67af5ea05beebc8e342d04702b3f91afc98a1f63b8ceb80d680f9ff825e68",
+      "size_bytes": 6800
+    },
+    {
+      "path": "datasets/dataset_773e17aad81e0d9e7975a32a062aa371/route_failures.parquet",
+      "sha256": "b81ac4e72889ca24a8ee7b3debc2ef2310ff51bf1a054d9f1f8ed2caa53f96ba",
+      "size_bytes": 1410
+    },
+    {
+      "path": "datasets/dataset_773e17aad81e0d9e7975a32a062aa371/task_steps.parquet",
+      "sha256": "104fb6858265d72b7eb37f8ca5c7d3b0cb851c19ea4363d00738c2c8a877368e",
+      "size_bytes": 79984
+    },
+    {
+      "path": "datasets/dataset_773e17aad81e0d9e7975a32a062aa371/tasks.parquet",
+      "sha256": "47f4ce11642f8b84eba8e0db59c7303b07d5534d50396e0e608323aa4d6c5b76",
+      "size_bytes": 29664
+    },
+    {
+      "path": "datasets/dataset_773e17aad81e0d9e7975a32a062aa371/trip_diagnostics.parquet",
+      "sha256": "cb6a3135d3682e5b1935ef42cc1d8f195ae90ff9521a8b675e348d0da33424e9",
+      "size_bytes": 7993
+    },
+    {
+      "path": "datasets/dataset_773e17aad81e0d9e7975a32a062aa371/trip_stops.parquet",
+      "sha256": "f995e33c0e2301b6333e1c251ca0ef458222fb6f7f10b452897a3a333a9fe5d3",
+      "size_bytes": 35394
+    },
+    {
+      "path": "datasets/dataset_773e17aad81e0d9e7975a32a062aa371/vehicle_availability.parquet",
+      "sha256": "1ce00df997342f08cf4b14a9a7b1cb74f5a2c2c1ed27ec01dd2e833240ebb337",
+      "size_bytes": 5469
+    },
+    {
+      "path": "datasets/dataset_773e17aad81e0d9e7975a32a062aa371/vehicle_catalog.parquet",
+      "sha256": "9f194098fd64f0bf3ca155d32d1a878e72cb8ec6bedbe44ce5ed9278ab2554f0",
+      "size_bytes": 7493
+    },
+    {
+      "path": "datasets/dataset_7f739112ae44059709005186b8f2ebfc/_SUCCESS",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "datasets/dataset_7f739112ae44059709005186b8f2ebfc/manifest.json",
+      "sha256": "34632f01b277188e5667b5026b74381dc0dc826320464bdbe528aeffd2bc3e9b",
+      "size_bytes": 16568
+    },
+    {
+      "path": "datasets/dataset_7f739112ae44059709005186b8f2ebfc/tables/stage_metrics/part-000000.parquet",
+      "sha256": "203624c406dcf9b0ffa0d8e336945d789d379ca8fd2a970dbdab52e2367976e2",
+      "size_bytes": 1744
+    },
+    {
+      "path": "datasets/dataset_89238798cccaa7d04b64ee21c26bbc82/_SUCCESS",
+      "sha256": "37a40f08d8548dba289b9b0bb35bcf63b359f6d37ee86044ebc6b6da080b9ec1",
+      "size_bytes": 9
+    },
+    {
+      "path": "datasets/dataset_89238798cccaa7d04b64ee21c26bbc82/assignments.parquet",
+      "sha256": "4d232fa4d9f1498b40e7173cb1781995d1efc47a29a03d75e7f853b4f180d1c5",
+      "size_bytes": 23258
+    },
+    {
+      "path": "datasets/dataset_89238798cccaa7d04b64ee21c26bbc82/catalog_identity.parquet",
+      "sha256": "f54fad10349f5ca932e699985ddb70f262f6a4932c2e152856d831de816b65bf",
+      "size_bytes": 4637
+    },
+    {
+      "path": "datasets/dataset_89238798cccaa7d04b64ee21c26bbc82/deadheads.parquet",
+      "sha256": "3985ddc19191db924af1d7513e13fc2ee18a91afdc9330c186d5cf4e39dfef7c",
+      "size_bytes": 9460
+    },
+    {
+      "path": "datasets/dataset_89238798cccaa7d04b64ee21c26bbc82/diagnostics.parquet",
+      "sha256": "31dbb539a6584add03e8260fc3fd2893068c34d84714c7dd5aa3e3d619519a38",
+      "size_bytes": 3085
+    },
+    {
+      "path": "datasets/dataset_89238798cccaa7d04b64ee21c26bbc82/duties.parquet",
+      "sha256": "ec41621baf9191a9f7aebbf4f6385ad98aac3012caadaf81db684cd48f637c2e",
+      "size_bytes": 9054
+    },
+    {
+      "path": "datasets/dataset_89238798cccaa7d04b64ee21c26bbc82/gtfs_metadata.parquet",
+      "sha256": "211158885b540a6567154c4498f6a0b2e6754ddc15ec2373436141bad0b7116d",
+      "size_bytes": 3936
+    },
+    {
+      "path": "datasets/dataset_89238798cccaa7d04b64ee21c26bbc82/locations.parquet",
+      "sha256": "754753166bd1e276c7a018c4dc79d3af0327918bba3d80974ae9d61edcc992c4",
+      "size_bytes": 8723
+    },
+    {
+      "path": "datasets/dataset_89238798cccaa7d04b64ee21c26bbc82/manifest.json",
+      "sha256": "be2a11cfbe5048166e3ddc55d1de24601f6275d9318f3c5af0276e26b94eb782",
+      "size_bytes": 6800
+    },
+    {
+      "path": "datasets/dataset_89238798cccaa7d04b64ee21c26bbc82/route_failures.parquet",
+      "sha256": "b81ac4e72889ca24a8ee7b3debc2ef2310ff51bf1a054d9f1f8ed2caa53f96ba",
+      "size_bytes": 1410
+    },
+    {
+      "path": "datasets/dataset_89238798cccaa7d04b64ee21c26bbc82/task_steps.parquet",
+      "sha256": "60f4b5cad5304367b29175746ca35dff1cbb5aa22a368c476b6ec97a02626bd0",
+      "size_bytes": 79989
+    },
+    {
+      "path": "datasets/dataset_89238798cccaa7d04b64ee21c26bbc82/tasks.parquet",
+      "sha256": "b09e4cb2b4ba2aca138e31b9d65c178d441a3779b80f91109e35de40f0735d75",
+      "size_bytes": 29663
+    },
+    {
+      "path": "datasets/dataset_89238798cccaa7d04b64ee21c26bbc82/trip_diagnostics.parquet",
+      "sha256": "cb6a3135d3682e5b1935ef42cc1d8f195ae90ff9521a8b675e348d0da33424e9",
+      "size_bytes": 7993
+    },
+    {
+      "path": "datasets/dataset_89238798cccaa7d04b64ee21c26bbc82/trip_stops.parquet",
+      "sha256": "f995e33c0e2301b6333e1c251ca0ef458222fb6f7f10b452897a3a333a9fe5d3",
+      "size_bytes": 35394
+    },
+    {
+      "path": "datasets/dataset_89238798cccaa7d04b64ee21c26bbc82/vehicle_availability.parquet",
+      "sha256": "95b88dab4f3be2c283c7c3fa81a1a993c4d6cff6c36d01f98c3cd0327456435b",
+      "size_bytes": 5473
+    },
+    {
+      "path": "datasets/dataset_89238798cccaa7d04b64ee21c26bbc82/vehicle_catalog.parquet",
+      "sha256": "d7f1f87c7a673513196ca03fa6ad0b25a42e05915fffa74e52aafaacc11289ef",
+      "size_bytes": 7497
+    },
+    {
+      "path": "datasets/dataset_c387bfdecd7ce6e8380aae00eb2017a3/_SUCCESS",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "datasets/dataset_c387bfdecd7ce6e8380aae00eb2017a3/manifest.json",
+      "sha256": "794546491dd9989104e8724b76661faaed1c168cf79920a2a92aa1e8dcce7c54",
+      "size_bytes": 5760
+    },
+    {
+      "path": "datasets/dataset_c387bfdecd7ce6e8380aae00eb2017a3/tables/grid_features/part-000000.parquet",
+      "sha256": "6d9a3f34da7e492fda95017e61687aba8554cb9d77295794ea03ec3059548be5",
+      "size_bytes": 105697
+    },
+    {
+      "path": "datasets/dataset_c43fb6515c6cf8d5f67945882188a3ab/_SUCCESS",
+      "sha256": "37a40f08d8548dba289b9b0bb35bcf63b359f6d37ee86044ebc6b6da080b9ec1",
+      "size_bytes": 9
+    },
+    {
+      "path": "datasets/dataset_c43fb6515c6cf8d5f67945882188a3ab/assignments.parquet",
+      "sha256": "4ceee98dce87e81547d4d20227bf510f335c907011aecda2817eaac64167bb9b",
+      "size_bytes": 24924
+    },
+    {
+      "path": "datasets/dataset_c43fb6515c6cf8d5f67945882188a3ab/catalog_identity.parquet",
+      "sha256": "6864747bb4afee0c5b92a9afa8cc0b591c903f0ee6bced52d841e8b127fcf816",
+      "size_bytes": 4855
+    },
+    {
+      "path": "datasets/dataset_c43fb6515c6cf8d5f67945882188a3ab/deadheads.parquet",
+      "sha256": "6190a4b2d8de1e90b2bfe27e18d82d9da190f1e33526e864ddce852451a4e95b",
+      "size_bytes": 10726
+    },
+    {
+      "path": "datasets/dataset_c43fb6515c6cf8d5f67945882188a3ab/diagnostics.parquet",
+      "sha256": "cf96a6f7a1df325bc62a57bd84116292b94e21146250ab76a8e63509038d2a60",
+      "size_bytes": 3096
+    },
+    {
+      "path": "datasets/dataset_c43fb6515c6cf8d5f67945882188a3ab/duties.parquet",
+      "sha256": "b9560724d34a40a8fe947455041f0b97e6e5b74349a7718016772db8735a0d0d",
+      "size_bytes": 7933
+    },
+    {
+      "path": "datasets/dataset_c43fb6515c6cf8d5f67945882188a3ab/gtfs_metadata.parquet",
+      "sha256": "4b4679382d371ddefef4b9537e7d13c119cff47a6d10cbebda7f1fe5d2887bad",
+      "size_bytes": 3936
+    },
+    {
+      "path": "datasets/dataset_c43fb6515c6cf8d5f67945882188a3ab/locations.parquet",
+      "sha256": "0c0c2d1a49a42ae88bb232b31047b6be02138080de67638821218219c4f3b7a2",
+      "size_bytes": 12729
+    },
+    {
+      "path": "datasets/dataset_c43fb6515c6cf8d5f67945882188a3ab/manifest.json",
+      "sha256": "f46ab87733b2b347ea5dcbe75ad3ce5b688a7e3cc1d0b8e6e031157ad75f72b9",
+      "size_bytes": 6800
+    },
+    {
+      "path": "datasets/dataset_c43fb6515c6cf8d5f67945882188a3ab/route_failures.parquet",
+      "sha256": "b81ac4e72889ca24a8ee7b3debc2ef2310ff51bf1a054d9f1f8ed2caa53f96ba",
+      "size_bytes": 1410
+    },
+    {
+      "path": "datasets/dataset_c43fb6515c6cf8d5f67945882188a3ab/task_steps.parquet",
+      "sha256": "9646ee8ad1ae410ec4812284a19afd917694b753bfbbb15dea41cd3a0b3054d0",
+      "size_bytes": 110914
+    },
+    {
+      "path": "datasets/dataset_c43fb6515c6cf8d5f67945882188a3ab/tasks.parquet",
+      "sha256": "fbe0ef108346de9f6b52e72f95b9483a32888d90d386caa958b1d82c7f3ae557",
+      "size_bytes": 32243
+    },
+    {
+      "path": "datasets/dataset_c43fb6515c6cf8d5f67945882188a3ab/trip_diagnostics.parquet",
+      "sha256": "0d4b6e270f28187e06cd4ecf76ba080889120d76be9d3a0594aabaf9ed9f51f5",
+      "size_bytes": 8792
+    },
+    {
+      "path": "datasets/dataset_c43fb6515c6cf8d5f67945882188a3ab/trip_stops.parquet",
+      "sha256": "a83c39081e4c6030095755184926f87c4d6d673a66ffe47b2b9748c650890227",
+      "size_bytes": 48746
+    },
+    {
+      "path": "datasets/dataset_c43fb6515c6cf8d5f67945882188a3ab/vehicle_availability.parquet",
+      "sha256": "5230f0856ddb2e99615417768998deb738ac59d27b3fc6aeb0659fcccf9c6689",
+      "size_bytes": 5862
+    },
+    {
+      "path": "datasets/dataset_c43fb6515c6cf8d5f67945882188a3ab/vehicle_catalog.parquet",
+      "sha256": "cb5badfd3df4adc2a919954280390d8f6d86cf41617b1804600a2187aa65518f",
+      "size_bytes": 7885
+    },
+    {
+      "path": "datasets/dataset_ca1d9ae70a2c4a4a1523f7019ec1dcb3/_SUCCESS",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "datasets/dataset_ca1d9ae70a2c4a4a1523f7019ec1dcb3/manifest.json",
+      "sha256": "fd97af4093318161e0d42651688415b6a429cdcaf60b49e05db9ef0c21c7ab15",
+      "size_bytes": 3229030
+    },
+    {
+      "path": "datasets/dataset_ca1d9ae70a2c4a4a1523f7019ec1dcb3/tables/availability/part-000000.parquet",
+      "sha256": "692b4663678c462e6b55578110fb0f759fcca9b89be30d849abb26c0db6d5c62",
+      "size_bytes": 22151
+    },
+    {
+      "path": "datasets/dataset_ca1d9ae70a2c4a4a1523f7019ec1dcb3/tables/od_rejections/part-000000.parquet",
+      "sha256": "1ed08cc5f788cf7f0f929c053dd333b7673317bed2913ab46cba8393de7f4476",
+      "size_bytes": 5818
+    },
+    {
+      "path": "datasets/dataset_ca1d9ae70a2c4a4a1523f7019ec1dcb3/tables/physical_catalog/part-000000.parquet",
+      "sha256": "c53fdc17676599485efdfb2b434245f224c6501f8d15d602444b962c18629f4a",
+      "size_bytes": 7187
+    },
+    {
+      "path": "datasets/dataset_ca1d9ae70a2c4a4a1523f7019ec1dcb3/tables/planning_metrics/part-000000.parquet",
+      "sha256": "171cad3cc03298abb798e473c39b6b6548f5d4410cd7c642146a78ebceb39aff",
+      "size_bytes": 2799
+    },
+    {
+      "path": "datasets/dataset_ca1d9ae70a2c4a4a1523f7019ec1dcb3/tables/realized_tasks/part-000000.parquet",
+      "sha256": "14e93791d1e4a31c222df10ee78d2e67f2a5285c16ad99f2261b92f7975c278c",
+      "size_bytes": 5837979
+    },
+    {
+      "path": "datasets/dataset_ca1d9ae70a2c4a4a1523f7019ec1dcb3/tables/replication_plans/part-000000.parquet",
+      "sha256": "8e983930193abf5265265fe3245fc97c80b41837f56556def937b5dad44310c2",
+      "size_bytes": 396902
+    },
+    {
+      "path": "datasets/dataset_ca1d9ae70a2c4a4a1523f7019ec1dcb3/tables/resolved_locations/part-000000.parquet",
+      "sha256": "901f5f78361d2f57995e8f1f8332022a143c3e8ad90b3ba642f856276bc19675",
+      "size_bytes": 1351135
+    },
+    {
+      "path": "datasets/dataset_ca1d9ae70a2c4a4a1523f7019ec1dcb3/tables/spatial_support/part-000000.parquet",
+      "sha256": "981f043e33a19ddf2ae9a2fed88b2d03a18045415a6d62f4792517fd6a2e1aa0",
+      "size_bytes": 607605
+    },
+    {
+      "path": "datasets/dataset_e27132adab407e5708f9744d84da39b7/_SUCCESS",
+      "sha256": "37a40f08d8548dba289b9b0bb35bcf63b359f6d37ee86044ebc6b6da080b9ec1",
+      "size_bytes": 9
+    },
+    {
+      "path": "datasets/dataset_e27132adab407e5708f9744d84da39b7/assignments.parquet",
+      "sha256": "59924f8d46f8dc907cb628914c8f71abf1dd0073d27e1c4538ceb64c6271ddea",
+      "size_bytes": 23221
+    },
+    {
+      "path": "datasets/dataset_e27132adab407e5708f9744d84da39b7/catalog_identity.parquet",
+      "sha256": "b5ce4d263b415c2cac6e7e995a629be193508332bbbe47c321bd3038d531cf63",
+      "size_bytes": 4637
+    },
+    {
+      "path": "datasets/dataset_e27132adab407e5708f9744d84da39b7/deadheads.parquet",
+      "sha256": "66fe3c60c9d3feb677774ee7ac2302601c0bcd8fc6126592ecbd5fbbcd4655d7",
+      "size_bytes": 9500
+    },
+    {
+      "path": "datasets/dataset_e27132adab407e5708f9744d84da39b7/diagnostics.parquet",
+      "sha256": "31dbb539a6584add03e8260fc3fd2893068c34d84714c7dd5aa3e3d619519a38",
+      "size_bytes": 3085
+    },
+    {
+      "path": "datasets/dataset_e27132adab407e5708f9744d84da39b7/duties.parquet",
+      "sha256": "e7be135ae37ee1617c4ea3ff115aebb2aa6865d33ec6d424ce4971b948dd1f04",
+      "size_bytes": 9048
+    },
+    {
+      "path": "datasets/dataset_e27132adab407e5708f9744d84da39b7/gtfs_metadata.parquet",
+      "sha256": "eb099cce42b751a429d497bb4ff5a8cff3314c727123cd5ba13a5ebcf9428ba5",
+      "size_bytes": 3936
+    },
+    {
+      "path": "datasets/dataset_e27132adab407e5708f9744d84da39b7/locations.parquet",
+      "sha256": "754753166bd1e276c7a018c4dc79d3af0327918bba3d80974ae9d61edcc992c4",
+      "size_bytes": 8723
+    },
+    {
+      "path": "datasets/dataset_e27132adab407e5708f9744d84da39b7/manifest.json",
+      "sha256": "5d1ae2a1136a5fbf4e8568e89550cd661219ea564725a72099a746380d095580",
+      "size_bytes": 6800
+    },
+    {
+      "path": "datasets/dataset_e27132adab407e5708f9744d84da39b7/route_failures.parquet",
+      "sha256": "b81ac4e72889ca24a8ee7b3debc2ef2310ff51bf1a054d9f1f8ed2caa53f96ba",
+      "size_bytes": 1410
+    },
+    {
+      "path": "datasets/dataset_e27132adab407e5708f9744d84da39b7/task_steps.parquet",
+      "sha256": "7d4b5965c989d04061444f69b583b658f6d02795dc35832d99fa6e3f25d7f22a",
+      "size_bytes": 79923
+    },
+    {
+      "path": "datasets/dataset_e27132adab407e5708f9744d84da39b7/tasks.parquet",
+      "sha256": "9b43d611d23986c27e8442ad51f8c976e36f554cd9f93fa83358cf06ec18731b",
+      "size_bytes": 29680
+    },
+    {
+      "path": "datasets/dataset_e27132adab407e5708f9744d84da39b7/trip_diagnostics.parquet",
+      "sha256": "cb6a3135d3682e5b1935ef42cc1d8f195ae90ff9521a8b675e348d0da33424e9",
+      "size_bytes": 7993
+    },
+    {
+      "path": "datasets/dataset_e27132adab407e5708f9744d84da39b7/trip_stops.parquet",
+      "sha256": "f995e33c0e2301b6333e1c251ca0ef458222fb6f7f10b452897a3a333a9fe5d3",
+      "size_bytes": 35394
+    },
+    {
+      "path": "datasets/dataset_e27132adab407e5708f9744d84da39b7/vehicle_availability.parquet",
+      "sha256": "d8c5fc029383bc2b10f8188dcac93dd1eb9f837532ce893e89bdae4f0a730f1b",
+      "size_bytes": 5470
+    },
+    {
+      "path": "datasets/dataset_e27132adab407e5708f9744d84da39b7/vehicle_catalog.parquet",
+      "sha256": "08fd5296c14d2bc42d415b42473fa0141b12faaa39334d33ddc93c8b83bd0686",
+      "size_bytes": 7494
+    },
+    {
+      "path": "environments/environment_bcafddd4c2fbb07a091d906ef2f22c4c/_SUCCESS",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "environments/environment_bcafddd4c2fbb07a091d906ef2f22c4c/boundary.parquet",
+      "sha256": "05732084ce4e55bd18d3ab16eda42af378a99f51b56826759e2876da2f7ae386",
+      "size_bytes": 113623
+    },
+    {
+      "path": "environments/environment_bcafddd4c2fbb07a091d906ef2f22c4c/edge_lineage.parquet",
+      "sha256": "5f698d7c79b53db9d982be2ee02d9cab6545921384dfb4196ece96b1c400c857",
+      "size_bytes": 4836986
+    },
+    {
+      "path": "environments/environment_bcafddd4c2fbb07a091d906ef2f22c4c/environment.json",
+      "sha256": "ed396a0c94fcdec6928bdb648742894fbf342ace68e1cee51a85d75412c92c88",
+      "size_bytes": 1481
+    },
+    {
+      "path": "environments/environment_bcafddd4c2fbb07a091d906ef2f22c4c/grid_cells.parquet",
+      "sha256": "f3e0eea8952bf25f747dad1f5ba637f7b24d0fcb93bd1e4da46e84477e63ef95",
+      "size_bytes": 1044368
+    },
+    {
+      "path": "environments/environment_bcafddd4c2fbb07a091d906ef2f22c4c/manifest.json",
+      "sha256": "7d7b82d972809a7fa16994d2929bf090fd40a6661eb00fd9fb8cad0ae091c88a",
+      "size_bytes": 7637
+    },
+    {
+      "path": "environments/environment_bcafddd4c2fbb07a091d906ef2f22c4c/node_lineage.parquet",
+      "sha256": "c19ad3d68c2d29fcdc7bd0b7eb78ef6b2603ef4c7f2e00f2a478216d88edcd00",
+      "size_bytes": 669019
+    },
+    {
+      "path": "environments/environment_bcafddd4c2fbb07a091d906ef2f22c4c/nodes.parquet",
+      "sha256": "9a67fa51e31d1b6b956406b4a3b46c7049e076f1d688e179fcaf99ee6e38c5f4",
+      "size_bytes": 927335
+    },
+    {
+      "path": "environments/environment_bcafddd4c2fbb07a091d906ef2f22c4c/population_features.parquet",
+      "sha256": "46b3d9253ab208bde83f83ce847988c637f4eebf20c1dc52e8761ae69ed3d244",
+      "size_bytes": 2325
+    },
+    {
+      "path": "environments/environment_bcafddd4c2fbb07a091d906ef2f22c4c/quarantined_edges.parquet",
+      "sha256": "a6e72eae3a212cce119088f7160865e2071d428052592c843c13770e7ea5b83e",
+      "size_bytes": 14984
+    },
+    {
+      "path": "environments/environment_bcafddd4c2fbb07a091d906ef2f22c4c/repair_actions.parquet",
+      "sha256": "d0cbeb4e8f3ab611a88c3162f0b769f4dbf4cf6abee1250c65d6eba91799da33",
+      "size_bytes": 825514
+    },
+    {
+      "path": "environments/environment_bcafddd4c2fbb07a091d906ef2f22c4c/repair_issues.parquet",
+      "sha256": "182d182835183e9e8350ae3357cd1befa3bb3130c6f80dcbacea908e4b2d866a",
+      "size_bytes": 3651
+    },
+    {
+      "path": "environments/environment_bcafddd4c2fbb07a091d906ef2f22c4c/repair_summary.parquet",
+      "sha256": "a2475912944a4874d937e1e809ab32d5c6412c2da4a008d328f9b489bfc44563",
+      "size_bytes": 9218
+    },
+    {
+      "path": "environments/environment_bcafddd4c2fbb07a091d906ef2f22c4c/repaired_roads.parquet",
+      "sha256": "48c275267a8b57cc5fc310086253b0035ab0d70712a9fc68079be5c3c4544716",
+      "size_bytes": 7517768
+    },
+    {
+      "path": "environments/environment_bcafddd4c2fbb07a091d906ef2f22c4c/road_edges.parquet",
+      "sha256": "c1b572055fdf8a8fd419e67081596fd541d43a57a644d5cf48194998ae563bd3",
+      "size_bytes": 21184437
+    },
+    {
+      "path": "environments/environment_bcafddd4c2fbb07a091d906ef2f22c4c/routing_weights.parquet",
+      "sha256": "ddb221fb8df9dbf2a20106de5067dbd9489cdeff78a27950120b3499d8e786fa",
+      "size_bytes": 3948871
+    },
+    {
+      "path": "example_evidence/evidence_09dc241fd59f456ccda7b30aceccf5b8/example-analysis.json",
+      "sha256": "691b8e6e74b4b1170ed1c6803aaeed18ab384cf348e5c02c529459b261d59fe8",
+      "size_bytes": 1872
+    },
+    {
+      "path": "example_evidence/evidence_09dc241fd59f456ccda7b30aceccf5b8/example-audit.json",
+      "sha256": "23a06a7fab0711d0174a9abcf58ecffc206ce1bf59688ebf1062f86f793a4f17",
+      "size_bytes": 34161
+    },
+    {
+      "path": "example_evidence/evidence_09dc241fd59f456ccda7b30aceccf5b8/example-run.json",
+      "sha256": "ea4d57012b652e6b38b27b0a382fcf862350e5a07be0fab2e8f6becdcc384827",
+      "size_bytes": 14934
+    },
+    {
+      "path": "example_evidence/evidence_09dc241fd59f456ccda7b30aceccf5b8/input-provenance.json",
+      "sha256": "862cad99faf5422daa7d23068d48bead58d40bb8de3e71bb5da6a860c4cfa5fe",
+      "size_bytes": 397
+    },
+    {
+      "path": "exposures/exposure_10d586116957a55a74103f6bf85302de/_SUCCESS",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "exposures/exposure_10d586116957a55a74103f6bf85302de/manifest.json",
+      "sha256": "10dd66d845b94a0094193227ea371e53faef13cc661cfc8f2afc0caa227d559c",
+      "size_bytes": 10513
+    },
+    {
+      "path": "exposures/exposure_10d586116957a55a74103f6bf85302de/tables/edge_grid_pieces/part-000000.parquet",
+      "sha256": "2d82e190a25b9859cec6a50931e96d8ada0bec01d305ed5ff09562a8d8ffab9e",
+      "size_bytes": 1505683
+    },
+    {
+      "path": "exposures/exposure_10d586116957a55a74103f6bf85302de/tables/exposure/part-000000.parquet",
+      "sha256": "addb873de3ca9828b99e5413119305beb6df66f12c70b0637b75cc1fb4f63510",
+      "size_bytes": 567684
+    },
+    {
+      "path": "exposures/exposure_10d586116957a55a74103f6bf85302de/tables/exposure/part-000001.parquet",
+      "sha256": "48f1673f63ac6b9caa8c0913f2ff96e002d6d34654a7f889dc0f96b2e8fc3f79",
+      "size_bytes": 572704
+    },
+    {
+      "path": "exposures/exposure_10d586116957a55a74103f6bf85302de/tables/exposure/part-000002.parquet",
+      "sha256": "02735cf03ac93f32f9df88f50049ce69a6b6bd6e3227592bb5fbabb751737a57",
+      "size_bytes": 568927
+    },
+    {
+      "path": "exposures/exposure_10d586116957a55a74103f6bf85302de/tables/exposure/part-000003.parquet",
+      "sha256": "4a9b45d2432942869fd45851a51969a4289ff41326e792b1d013f6c52b4f1afa",
+      "size_bytes": 579624
+    },
+    {
+      "path": "exposures/exposure_10d586116957a55a74103f6bf85302de/tables/exposure/part-000004.parquet",
+      "sha256": "ae3744329194e157127080ee393e3a2c6674770041848d6a1df3c49588658543",
+      "size_bytes": 579518
+    },
+    {
+      "path": "exposures/exposure_10d586116957a55a74103f6bf85302de/tables/exposure/part-000005.parquet",
+      "sha256": "c0f47956e234350ef444575659ad8a2a2d647e777fde23ac25fe19bfb045ac75",
+      "size_bytes": 589980
+    },
+    {
+      "path": "exposures/exposure_10d586116957a55a74103f6bf85302de/tables/exposure/part-000006.parquet",
+      "sha256": "da79ef10e654aff423d4516ae7de647a3b010c9ceab16cd20b0eec815df8c39e",
+      "size_bytes": 596822
+    },
+    {
+      "path": "exposures/exposure_10d586116957a55a74103f6bf85302de/tables/exposure/part-000007.parquet",
+      "sha256": "b90d6efe74c67f22d67058ff35f408b17671ce9d817e2cb94e49c855bc6e8964",
+      "size_bytes": 603048
+    },
+    {
+      "path": "exposures/exposure_10d586116957a55a74103f6bf85302de/tables/exposure/part-000008.parquet",
+      "sha256": "7541661c0ed2ce8325ecb8f97cd6d1782e6aab9d409e1f0b92245488e960da53",
+      "size_bytes": 586169
+    },
+    {
+      "path": "exposures/exposure_10d586116957a55a74103f6bf85302de/tables/exposure/part-000009.parquet",
+      "sha256": "dd4e57c4fbae4a165b14a67c666aedada5c825c3fbced6392b9cb5485566d0e6",
+      "size_bytes": 577268
+    },
+    {
+      "path": "exposures/exposure_10d586116957a55a74103f6bf85302de/tables/grid_axis/part-000000.parquet",
+      "sha256": "a2c43ef82d997fa82e7cb18718ef67951dbce24e8db32d9700e019c299e9673a",
+      "size_bytes": 87167
+    },
+    {
+      "path": "exposures/exposure_10d586116957a55a74103f6bf85302de/tables/replication_status/part-000000.parquet",
+      "sha256": "0545d2d201a355dc9618cbce5e528fea1427bf7626425ac3274a36d9ed9ad90e",
+      "size_bytes": 4436
+    },
+    {
+      "path": "exposures/exposure_10d586116957a55a74103f6bf85302de/tables/replication_status/part-000001.parquet",
+      "sha256": "443ad6beb05013677980b55174446f8aa0c1de17d745436d13664a7a2f4bc1a2",
+      "size_bytes": 4436
+    },
+    {
+      "path": "exposures/exposure_10d586116957a55a74103f6bf85302de/tables/replication_status/part-000002.parquet",
+      "sha256": "49819117bf83ddfe86a173d6da0783454e7cb1f324836f5f26689fce366c4cf4",
+      "size_bytes": 4436
+    },
+    {
+      "path": "exposures/exposure_10d586116957a55a74103f6bf85302de/tables/replication_status/part-000003.parquet",
+      "sha256": "f54f5e7a7e13eb97b6305d3c74ece07559b39368f371ef32045d831c8a31811d",
+      "size_bytes": 4436
+    },
+    {
+      "path": "exposures/exposure_10d586116957a55a74103f6bf85302de/tables/replication_status/part-000004.parquet",
+      "sha256": "d0ab0e12d14fc76651a45b0c90d449127b98c3fbfbcf3af6fb309e2fee1f00fd",
+      "size_bytes": 4436
+    },
+    {
+      "path": "exposures/exposure_10d586116957a55a74103f6bf85302de/tables/replication_status/part-000005.parquet",
+      "sha256": "be90639f78a9a38eb2fc3b577b6b2aae86c2fd592f631949050317688e562176",
+      "size_bytes": 4436
+    },
+    {
+      "path": "exposures/exposure_10d586116957a55a74103f6bf85302de/tables/replication_status/part-000006.parquet",
+      "sha256": "2c4d4b0151e2d03190992ec8bc221e9ac7192211cd65a89055abd86989a7a61a",
+      "size_bytes": 4436
+    },
+    {
+      "path": "exposures/exposure_10d586116957a55a74103f6bf85302de/tables/replication_status/part-000007.parquet",
+      "sha256": "cd3252892b1b80d8bcd77a4317248082d5acb1331fcf34edca91499ea23451cb",
+      "size_bytes": 4436
+    },
+    {
+      "path": "exposures/exposure_10d586116957a55a74103f6bf85302de/tables/replication_status/part-000008.parquet",
+      "sha256": "ed5f3f96cdf49dca24133fd048fee101f78d5181920fe78cdffbd4eea8a5bad4",
+      "size_bytes": 4436
+    },
+    {
+      "path": "exposures/exposure_10d586116957a55a74103f6bf85302de/tables/replication_status/part-000009.parquet",
+      "sha256": "b10ca24d5aff94281f1663e5f029692d4a80078ee2f5a53594a77871eda7d25c",
+      "size_bytes": 4436
+    },
+    {
+      "path": "exposures/exposure_10d586116957a55a74103f6bf85302de/tables/time_bins/part-000000.parquet",
+      "sha256": "1b30d36f41c01151d26201ddb4894c377fc7d72307fb0f472b08ab1414046535",
+      "size_bytes": 3280
+    },
+    {
+      "path": "exposures/exposure_10d586116957a55a74103f6bf85302de/tables/vehicle_catalog/part-000000.parquet",
+      "sha256": "5232f440876e3c10922d54d6d91313565114b0629ccecea56a162ed6c313e5ca",
+      "size_bytes": 2721
+    },
+    {
+      "path": "inputs/input_085d2392cf848e94fdb0bb40da12a6dc/input.json",
+      "sha256": "cd28799f9d7316856146cc4166d73deacde73dd2da7e844a802eaeec6f474b3b",
+      "size_bytes": 734
+    },
+    {
+      "path": "inputs/input_085d2392cf848e94fdb0bb40da12a6dc/source.gpkg",
+      "sha256": "6069a3432588425d6fb70a8874f7cc8895fb997a8f5eb6700632cde026d61276",
+      "size_bytes": 22290432
+    },
+    {
+      "path": "inputs/input_50efb3323bbe32ae2beeb63487a3ea20/input.json",
+      "sha256": "4f1f31e67d970f203b817595a746df709e175bd1557d076d3c8931256fb46ac1",
+      "size_bytes": 540
+    },
+    {
+      "path": "inputs/input_50efb3323bbe32ae2beeb63487a3ea20/source.gpkg",
+      "sha256": "f84eca75a27308bb6cadea828175703116d967bf7882204d0943237541b1ef66",
+      "size_bytes": 5402624
+    },
+    {
+      "path": "inputs/input_76690e370afdbf68b436b039010938de/input.json",
+      "sha256": "2688a8a0aee59a0cb42a6125975f0b4381bb591da76cb329319f3a9d943cf0a5",
+      "size_bytes": 559
+    },
+    {
+      "path": "inputs/input_76690e370afdbf68b436b039010938de/source.parquet",
+      "sha256": "308d25dc3db200a1659566c3dca62b54c7278050ecf84e7a231a6d631f884917",
+      "size_bytes": 113182
+    },
+    {
+      "path": "inputs/input_7e1a4969f463748576c2ee8872c69ea8/input.json",
+      "sha256": "f3df0be82621ed365a4ff8849f46ea9a687559364032247d73782d8c20298b89",
+      "size_bytes": 1640
+    },
+    {
+      "path": "inputs/input_7e1a4969f463748576c2ee8872c69ea8/source.csv",
+      "sha256": "745c9a4585ba2f5cca2c8d57a4019a5799a4373a7d22ee5571aec303d1e94b1d",
+      "size_bytes": 246980
+    },
+    {
+      "path": "inputs/input_fc99cdec6cc3d43a2b47730f97c5d01a/input.json",
+      "sha256": "2c722b667838edbd0da72f8f78260d72f17d07f9356412eeb6b389c9ce0c2a6a",
+      "size_bytes": 525
+    },
+    {
+      "path": "inputs/input_fc99cdec6cc3d43a2b47730f97c5d01a/source.zip",
+      "sha256": "9409e941d4dbb82c57b25a8f0712e608c156e50c687b1a418cb6c2566b1724f5",
+      "size_bytes": 738404
+    },
+    {
+      "path": "portfolios/portfolio_042a46d07dd278e88dcb3ed3bb5b21fc/_SUCCESS",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "portfolios/portfolio_042a46d07dd278e88dcb3ed3bb5b21fc/manifest.json",
+      "sha256": "74216b251b1a3635a66d7d8c58b5388a0cb55865806462c5bf194e7e380d3f9c",
+      "size_bytes": 5046
+    },
+    {
+      "path": "portfolios/portfolio_042a46d07dd278e88dcb3ed3bb5b21fc/tables/budget_frontiers/part-000000.parquet",
+      "sha256": "cd9fe870efcff9286df81331fd52a609af62c9dd69234ab1d7a5a821869d129d",
+      "size_bytes": 97798
+    },
+    {
+      "path": "portfolios/portfolio_042a46d07dd278e88dcb3ed3bb5b21fc/tables/budget_levels/part-000000.parquet",
+      "sha256": "c3464ee7f17c5a827537ae1d28a3a71f2f574c1f1ad2c9ea532c24c379872678",
+      "size_bytes": 3444
+    },
+    {
+      "path": "portfolios/portfolio_042a46d07dd278e88dcb3ed3bb5b21fc/tables/portfolio_analysis_metadata/part-000000.parquet",
+      "sha256": "125490744a8e86fbaba634cae47b2f9a1b34e8d5d027d9bfcacae472cd44e9ed",
+      "size_bytes": 5669
+    },
+    {
+      "path": "portfolios/portfolio_042a46d07dd278e88dcb3ed3bb5b21fc/tables/portfolio_statistics/part-000000.parquet",
+      "sha256": "61ee8cb48501aabab05c2436b3eeeb82a432c90a12af8f08be03e868455df2ae",
+      "size_bytes": 174554
+    },
+    {
+      "path": "portfolios/portfolio_8d4e5c421c59dda139586fdf67785445/_SUCCESS",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "portfolios/portfolio_8d4e5c421c59dda139586fdf67785445/manifest.json",
+      "sha256": "79f1937804d8ef6217d720eba6f7bad5ee301aa9c0f6b157398fbfa063a81d95",
+      "size_bytes": 654096
+    },
+    {
+      "path": "portfolios/portfolio_8d4e5c421c59dda139586fdf67785445/tables/portfolio_counts/part-000000.parquet",
+      "sha256": "6ace388933f35461734eb1cab5a10a1c66fb0be35d4d7ecbb0453d8620369647",
+      "size_bytes": 39654
+    },
+    {
+      "path": "portfolios/portfolio_8d4e5c421c59dda139586fdf67785445/tables/portfolio_metadata/part-000000.parquet",
+      "sha256": "bd980583ed8ef440d7b34c9aab3936578c3582324eb14fc9da3b1849a2300606",
+      "size_bytes": 3023
+    },
+    {
+      "path": "portfolios/portfolio_8d4e5c421c59dda139586fdf67785445/tables/portfolio_samples/part-000000.parquet",
+      "sha256": "f2c0157e76b450b92af5931eef8e9be1aeb9e4a01119ec74ee8464e2fd331ac0",
+      "size_bytes": 7363116
+    },
+    {
+      "path": "portfolios/portfolio_8d4e5c421c59dda139586fdf67785445/tables/sample_matrices/part-000000.parquet",
+      "sha256": "2b8468e94c76df43ad73b1fd9b90da51a6b6830dd15e024e75e97bb901490b8c",
+      "size_bytes": 9907274
+    },
+    {
+      "path": "portfolios/portfolio_8d4e5c421c59dda139586fdf67785445/tables/sample_selection/part-000000.parquet",
+      "sha256": "d4e386e0ce7d964cb5d8ad4a001291e0cc4eafb8a52e63ab666ab84215ebe263",
+      "size_bytes": 5578323
+    },
+    {
+      "path": "portfolios/portfolio_8d4e5c421c59dda139586fdf67785445/tables/sampling_orderings/part-000000.parquet",
+      "sha256": "c18f74743c4745f4a9e5af815288b454cf35f98cf60eb7a603d1ec84d8139089",
+      "size_bytes": 11089
+    },
+    {
+      "path": "portfolios/portfolio_8d4e5c421c59dda139586fdf67785445/tables/sampling_rounds/part-000000.parquet",
+      "sha256": "6fa907702396358983e276ca7ea827bd97c44e4c2a402633ecc2dc39a503cb7c",
+      "size_bytes": 10835
+    },
+    {
+      "path": "raw_gtfs/gtfs_source_85617bb81ce1a17040774e0c10920033/agency.txt",
+      "sha256": "b27b27e54f3f67b14d69bd2f01069f0e3656722fcd128b299dfe80a0b07bf03d",
+      "size_bytes": 176
+    },
+    {
+      "path": "raw_gtfs/gtfs_source_85617bb81ce1a17040774e0c10920033/calendar.txt",
+      "sha256": "db6d477f5d8c0bc6bdc1494eb460b5431eb32464814ffae36feb65a2b535194f",
+      "size_bytes": 612
+    },
+    {
+      "path": "raw_gtfs/gtfs_source_85617bb81ce1a17040774e0c10920033/calendar_dates.txt",
+      "sha256": "7fac79ad2962cc341320c489aa7b3e32c9f568d3dbd563319094eede5413bcb0",
+      "size_bytes": 24846
+    },
+    {
+      "path": "raw_gtfs/gtfs_source_85617bb81ce1a17040774e0c10920033/routes.txt",
+      "sha256": "1a78cfd3f56dc8fdb6fdf4d2f7456d23ef1143f52d9584d6a7e9729016714419",
+      "size_bytes": 133
+    },
+    {
+      "path": "raw_gtfs/gtfs_source_85617bb81ce1a17040774e0c10920033/stop_times.txt",
+      "sha256": "4e9b00875d3c4e665c05640e9d6957da0f23c62fe0224830ec1271288235c102",
+      "size_bytes": 6719685
+    },
+    {
+      "path": "raw_gtfs/gtfs_source_85617bb81ce1a17040774e0c10920033/stops.txt",
+      "sha256": "c19f9936af1b7d97d011a5c9fc566d39de9f300c3fc3299c827d21d08d88485f",
+      "size_bytes": 13575
+    },
+    {
+      "path": "raw_gtfs/gtfs_source_85617bb81ce1a17040774e0c10920033/trips.txt",
+      "sha256": "c7877d9b459e669e43d3acfcf4b02fb40fb9f23f1c9f7630adb3905d5470e50e",
+      "size_bytes": 692156
+    },
+    {
+      "path": "run_cache/54230c23ceda9360c8b3c566a6f600d5505156401fe08917977c47b18ad2bd80.json",
+      "sha256": "9ad16992998fc2bdd9065c78c4000f077d0cdfc9a6fa097dbd6a6fbe7d9ea9ab",
+      "size_bytes": 1404
+    },
+    {
+      "path": "simulations/simulation_ace541672d667f146b31d9ab09bbe898/_SUCCESS",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "simulations/simulation_ace541672d667f146b31d9ab09bbe898/manifest.json",
+      "sha256": "5da2359714792722847d20ad9120186152e8606cae8d10b3d5790c7aec0e810a",
+      "size_bytes": 25431
+    },
+    {
+      "path": "simulations/simulation_ace541672d667f146b31d9ab09bbe898/tables/activity_intervals/part-000000.parquet",
+      "sha256": "63da516a8fbfdd3b49eafc15950cef00d24058fc35c8fa7dbb944aff7ce43abe",
+      "size_bytes": 6172440
+    },
+    {
+      "path": "simulations/simulation_ace541672d667f146b31d9ab09bbe898/tables/activity_intervals/part-000001.parquet",
+      "sha256": "497ecec0ed7cfb0024abbc0c8eb64934f733a9bca4432bf8b9e070cb43f58b65",
+      "size_bytes": 6153976
+    },
+    {
+      "path": "simulations/simulation_ace541672d667f146b31d9ab09bbe898/tables/activity_intervals/part-000002.parquet",
+      "sha256": "85bdfc1c3283a74a9067b3ca283a54d2168497b94f9e4d25b4db9c7db1dcc93f",
+      "size_bytes": 6192773
+    },
+    {
+      "path": "simulations/simulation_ace541672d667f146b31d9ab09bbe898/tables/activity_intervals/part-000003.parquet",
+      "sha256": "62ca54e8c2cea3468f8a203febf034f177d00d8c5ddb7c1b4181f1d0a85c74b7",
+      "size_bytes": 6186880
+    },
+    {
+      "path": "simulations/simulation_ace541672d667f146b31d9ab09bbe898/tables/activity_intervals/part-000004.parquet",
+      "sha256": "2f931166ece0d203384e76f631bae0fc4d7fb89302fd4c7b990c52d9e309dacf",
+      "size_bytes": 6230753
+    },
+    {
+      "path": "simulations/simulation_ace541672d667f146b31d9ab09bbe898/tables/activity_intervals/part-000005.parquet",
+      "sha256": "8e5c5165cbb2ce8d74cb8699a3cde8e310e9bfb47edf3a7de144fbbc91efa275",
+      "size_bytes": 6259969
+    },
+    {
+      "path": "simulations/simulation_ace541672d667f146b31d9ab09bbe898/tables/activity_intervals/part-000006.parquet",
+      "sha256": "292a6841133a0fbeba46fce0e336637410819b56a3f3f4a8b8128f7fbbba622e",
+      "size_bytes": 6293617
+    },
+    {
+      "path": "simulations/simulation_ace541672d667f146b31d9ab09bbe898/tables/activity_intervals/part-000007.parquet",
+      "sha256": "31695497110b37b107a2f013bca5b871ba12623659387532a1d6a61b21259ab0",
+      "size_bytes": 6307421
+    },
+    {
+      "path": "simulations/simulation_ace541672d667f146b31d9ab09bbe898/tables/activity_intervals/part-000008.parquet",
+      "sha256": "ed3736e8a8b58e097c05336d1b1e6d22c0585c4fbc07615e1982fa699940ff67",
+      "size_bytes": 6248359
+    },
+    {
+      "path": "simulations/simulation_ace541672d667f146b31d9ab09bbe898/tables/activity_intervals/part-000009.parquet",
+      "sha256": "3ce600eeb11eeecba86d73279e937fa94a60fe278c07b5f830493d68cb433cd7",
+      "size_bytes": 6254659
+    },
+    {
+      "path": "simulations/simulation_ace541672d667f146b31d9ab09bbe898/tables/movements/part-000000.parquet",
+      "sha256": "65cfb20ba6efa180062baca524601ab6f9acd959f2fb3347ee9b493b8b5738d1",
+      "size_bytes": 5836498
+    },
+    {
+      "path": "simulations/simulation_ace541672d667f146b31d9ab09bbe898/tables/movements/part-000001.parquet",
+      "sha256": "eeeca3dc64ef1ea2520c026d710a91a1d18c13b36813a5df6be205e9d1dd3317",
+      "size_bytes": 5824710
+    },
+    {
+      "path": "simulations/simulation_ace541672d667f146b31d9ab09bbe898/tables/movements/part-000002.parquet",
+      "sha256": "95a64286a7db8e1d087a6d659beeb2bc1af83b2092ed148a292990370d2d590a",
+      "size_bytes": 5866705
+    },
+    {
+      "path": "simulations/simulation_ace541672d667f146b31d9ab09bbe898/tables/movements/part-000003.parquet",
+      "sha256": "47929b7b00633d4c2450ab1537fc18f437eb668d566abe5afbbac70ea387499d",
+      "size_bytes": 5856444
+    },
+    {
+      "path": "simulations/simulation_ace541672d667f146b31d9ab09bbe898/tables/movements/part-000004.parquet",
+      "sha256": "ae1f18f949490857103acf084bb7d9ffd20605262c74b2e78195956cb9e871d7",
+      "size_bytes": 5897991
+    },
+    {
+      "path": "simulations/simulation_ace541672d667f146b31d9ab09bbe898/tables/movements/part-000005.parquet",
+      "sha256": "339d587bccef37d265841a878625574ab0ef57f63ecfc7392b6d97f9f0cf7739",
+      "size_bytes": 5924116
+    },
+    {
+      "path": "simulations/simulation_ace541672d667f146b31d9ab09bbe898/tables/movements/part-000006.parquet",
+      "sha256": "0738c48e7c879729a5770b6719814d35a21d132180475ef81104f316f595611c",
+      "size_bytes": 5962740
+    },
+    {
+      "path": "simulations/simulation_ace541672d667f146b31d9ab09bbe898/tables/movements/part-000007.parquet",
+      "sha256": "89214c5d5d7efc5cd33f2e7b00875e71746eb54813f537a848608830dcc85193",
+      "size_bytes": 5976512
+    },
+    {
+      "path": "simulations/simulation_ace541672d667f146b31d9ab09bbe898/tables/movements/part-000008.parquet",
+      "sha256": "7d134329eb6b08baaacb87b85d15172258a016aaee6a1fcb81aca694e78a582b",
+      "size_bytes": 5921940
+    },
+    {
+      "path": "simulations/simulation_ace541672d667f146b31d9ab09bbe898/tables/movements/part-000009.parquet",
+      "sha256": "bff8db7a85ef048671f7695d3de611e7c831004ae53e42d043abd8bd035998c4",
+      "size_bytes": 5929512
+    },
+    {
+      "path": "simulations/simulation_ace541672d667f146b31d9ab09bbe898/tables/operational_events/part-000000.parquet",
+      "sha256": "a8e6129d8e95a29fc63d2215fda641cf5ca7d6feabacf20e5577cc871ab0bfa3",
+      "size_bytes": 428673
+    },
+    {
+      "path": "simulations/simulation_ace541672d667f146b31d9ab09bbe898/tables/operational_events/part-000001.parquet",
+      "sha256": "acc9b851d989806fa9062dedb64d74cbe2b0deb20cbc6ab04a833292f7587251",
+      "size_bytes": 420735
+    },
+    {
+      "path": "simulations/simulation_ace541672d667f146b31d9ab09bbe898/tables/operational_events/part-000002.parquet",
+      "sha256": "cbf2b97c6485a0a052ee834fe6720b8341af7f76368304d799420a200dd100f7",
+      "size_bytes": 430480
+    },
+    {
+      "path": "simulations/simulation_ace541672d667f146b31d9ab09bbe898/tables/operational_events/part-000003.parquet",
+      "sha256": "07f48bab3239f3eea9f56dc07adc0e6b119cce8ff7b4d8149603f4feac8be4ee",
+      "size_bytes": 429959
+    },
+    {
+      "path": "simulations/simulation_ace541672d667f146b31d9ab09bbe898/tables/operational_events/part-000004.parquet",
+      "sha256": "fe81a7b042c1279f598b4a13646c28ccab04b6d1bfe91f9e063f641b24c45f7b",
+      "size_bytes": 428803
+    },
+    {
+      "path": "simulations/simulation_ace541672d667f146b31d9ab09bbe898/tables/operational_events/part-000005.parquet",
+      "sha256": "90fc94838e7ab262b48df28e6e198b162cf6fb5bc66fc3e00e3c486c26f8d5ad",
+      "size_bytes": 429880
+    },
+    {
+      "path": "simulations/simulation_ace541672d667f146b31d9ab09bbe898/tables/operational_events/part-000006.parquet",
+      "sha256": "ff9a1a8f57199e249e47fb7a64c4466b663655ae9f651df9ddcf309a3a241183",
+      "size_bytes": 429143
+    },
+    {
+      "path": "simulations/simulation_ace541672d667f146b31d9ab09bbe898/tables/operational_events/part-000007.parquet",
+      "sha256": "c84ba4dd22410c24707e46964fab957dff9c34531e436aba357f706cfbccd2aa",
+      "size_bytes": 429368
+    },
+    {
+      "path": "simulations/simulation_ace541672d667f146b31d9ab09bbe898/tables/operational_events/part-000008.parquet",
+      "sha256": "312ee5a4996d33bf8194269133e0cc930486488f76ee61a312f515567fa7b695",
+      "size_bytes": 431944
+    },
+    {
+      "path": "simulations/simulation_ace541672d667f146b31d9ab09bbe898/tables/operational_events/part-000009.parquet",
+      "sha256": "4857d33b92f95de73d362e389f9fbd66d8ab1cd2bd952c58ecdbb8bad3efe43e",
+      "size_bytes": 427559
+    },
+    {
+      "path": "simulations/simulation_ace541672d667f146b31d9ab09bbe898/tables/replication_status/part-000000.parquet",
+      "sha256": "f92a46fc0ee657db92d4a20ae20d9fd7504552c5688a99eefc2943fe1e6af7a3",
+      "size_bytes": 12857
+    },
+    {
+      "path": "simulations/simulation_ace541672d667f146b31d9ab09bbe898/tables/replication_status/part-000001.parquet",
+      "sha256": "89e640bfd3849679dbef53691ad855bd9ea3c160783ee06a55f28390293190ec",
+      "size_bytes": 12875
+    },
+    {
+      "path": "simulations/simulation_ace541672d667f146b31d9ab09bbe898/tables/replication_status/part-000002.parquet",
+      "sha256": "b65eb9f6acfbc85824ba6871876d268b0669871cb9a1149c190fead403eba36e",
+      "size_bytes": 12854
+    },
+    {
+      "path": "simulations/simulation_ace541672d667f146b31d9ab09bbe898/tables/replication_status/part-000003.parquet",
+      "sha256": "fe9644b0d4ae49033b6619ca5152ab605680fa8a400494cf883a214107e30e6a",
+      "size_bytes": 12873
+    },
+    {
+      "path": "simulations/simulation_ace541672d667f146b31d9ab09bbe898/tables/replication_status/part-000004.parquet",
+      "sha256": "aaaf335f6257acbcbd69d368e28c265771ff71e3480aff994211d1b11d55575a",
+      "size_bytes": 12859
+    },
+    {
+      "path": "simulations/simulation_ace541672d667f146b31d9ab09bbe898/tables/replication_status/part-000005.parquet",
+      "sha256": "65ccafc3469ca62c1d75f9ab0ffe57f0f68c839400fdf698d21d6cb8d4aa70cb",
+      "size_bytes": 12864
+    },
+    {
+      "path": "simulations/simulation_ace541672d667f146b31d9ab09bbe898/tables/replication_status/part-000006.parquet",
+      "sha256": "34dffeffb8b8515510ed98446eca07bf5e3e6fae74438a1d40ee0c791ec72373",
+      "size_bytes": 12869
+    },
+    {
+      "path": "simulations/simulation_ace541672d667f146b31d9ab09bbe898/tables/replication_status/part-000007.parquet",
+      "sha256": "8be812fc0c46196cbb623dab4e3bdf0bd419cf69544ac68b1cb7a6acd5619b17",
+      "size_bytes": 12850
+    },
+    {
+      "path": "simulations/simulation_ace541672d667f146b31d9ab09bbe898/tables/replication_status/part-000008.parquet",
+      "sha256": "d90aa5e585f9387d4fc679bbe77c3a2a7ccf845e21622495b34b9cbc41d1c743",
+      "size_bytes": 12863
+    },
+    {
+      "path": "simulations/simulation_ace541672d667f146b31d9ab09bbe898/tables/replication_status/part-000009.parquet",
+      "sha256": "356a5921797d55a5f24e37b1a01d9f2bc2d396f58beb039ec8b4361a979199f6",
+      "size_bytes": 12861
+    },
+    {
+      "path": "simulations/simulation_ace541672d667f146b31d9ab09bbe898/tables/stationary_locations/part-000000.parquet",
+      "sha256": "3de9b80fab9c0345836f29d92347e099134e88441ef43210c5b17933fbe29ff1",
+      "size_bytes": 157133
+    },
+    {
+      "path": "simulations/simulation_ace541672d667f146b31d9ab09bbe898/tables/stationary_locations/part-000001.parquet",
+      "sha256": "e126de0f6e2515e2c16f5ee31a397e6b995340a0c099e3c03d276e0b466eccc3",
+      "size_bytes": 153119
+    },
+    {
+      "path": "simulations/simulation_ace541672d667f146b31d9ab09bbe898/tables/stationary_locations/part-000002.parquet",
+      "sha256": "b9be81d5ba8be1835621e4b6c94758dcb1ed5fcca8cce205ebea5cc9dbefc9a3",
+      "size_bytes": 159063
+    },
+    {
+      "path": "simulations/simulation_ace541672d667f146b31d9ab09bbe898/tables/stationary_locations/part-000003.parquet",
+      "sha256": "490a4cdf180bfcf497ccc255380684b3f3bd71c52aa9feb3bcaa0916b7f5e762",
+      "size_bytes": 157043
+    },
+    {
+      "path": "simulations/simulation_ace541672d667f146b31d9ab09bbe898/tables/stationary_locations/part-000004.parquet",
+      "sha256": "0c74a51ca05b89ae0c260d1f9aeab91fd6ba4597ba6bdcbd863de7c451e272b6",
+      "size_bytes": 157247
+    },
+    {
+      "path": "simulations/simulation_ace541672d667f146b31d9ab09bbe898/tables/stationary_locations/part-000005.parquet",
+      "sha256": "7501fe89c3731062904c8a905a5d7e2cc2e43321acd92a8645f072100b009300",
+      "size_bytes": 158195
+    },
+    {
+      "path": "simulations/simulation_ace541672d667f146b31d9ab09bbe898/tables/stationary_locations/part-000006.parquet",
+      "sha256": "3466d28437fd067c0e997494a1154f9d18a5a29d8c5db7c1a1d702e4305a911f",
+      "size_bytes": 159065
+    },
+    {
+      "path": "simulations/simulation_ace541672d667f146b31d9ab09bbe898/tables/stationary_locations/part-000007.parquet",
+      "sha256": "9db5fe3b1f64babdac679d93cc4986c26bc1cec632fd1e39f8cacb87e59ac698",
+      "size_bytes": 158876
+    },
+    {
+      "path": "simulations/simulation_ace541672d667f146b31d9ab09bbe898/tables/stationary_locations/part-000008.parquet",
+      "sha256": "f6d2550a87a14abe3c75422ef47e60afd7e476db70903b910de8a18da9756a80",
+      "size_bytes": 161613
+    },
+    {
+      "path": "simulations/simulation_ace541672d667f146b31d9ab09bbe898/tables/stationary_locations/part-000009.parquet",
+      "sha256": "9d90095e1e9b48b20ca889c651717a71f91b84d10818fe69c4d65be185b1e0a3",
+      "size_bytes": 156086
+    },
+    {
+      "path": "simulations/simulation_ace541672d667f146b31d9ab09bbe898/tables/task_outcomes/part-000000.parquet",
+      "sha256": "473a0b72a522d8d21d065c21c6ae5b9510e7811bf5b1d2ab9b1561a3f68709d1",
+      "size_bytes": 422193
+    },
+    {
+      "path": "simulations/simulation_ace541672d667f146b31d9ab09bbe898/tables/task_outcomes/part-000001.parquet",
+      "sha256": "5d792e7d81fc743b47d3f101f6d5501ceb8e972ca86575b4c3a40ac9717e7c17",
+      "size_bytes": 410601
+    },
+    {
+      "path": "simulations/simulation_ace541672d667f146b31d9ab09bbe898/tables/task_outcomes/part-000002.parquet",
+      "sha256": "357a7c42c7408dd47312140d33ba3594c7cdf29e4cb95ba61e69366b19a2c88f",
+      "size_bytes": 424004
+    },
+    {
+      "path": "simulations/simulation_ace541672d667f146b31d9ab09bbe898/tables/task_outcomes/part-000003.parquet",
+      "sha256": "b7c8f8c19a12786cc62a80be058ca56d68a744bec77727380c9da08993eaf3a8",
+      "size_bytes": 421337
+    },
+    {
+      "path": "simulations/simulation_ace541672d667f146b31d9ab09bbe898/tables/task_outcomes/part-000004.parquet",
+      "sha256": "f62e22bbce2161b0e201842bc8d9d66b69d6af1f7561ab7a673573a1ceed1b18",
+      "size_bytes": 419723
+    },
+    {
+      "path": "simulations/simulation_ace541672d667f146b31d9ab09bbe898/tables/task_outcomes/part-000005.parquet",
+      "sha256": "0679645de0865d620fbd633207384c83bee9ff41096cc4c617005d5ff72e1605",
+      "size_bytes": 421176
+    },
+    {
+      "path": "simulations/simulation_ace541672d667f146b31d9ab09bbe898/tables/task_outcomes/part-000006.parquet",
+      "sha256": "f6407dd06f6b0311a7479369734521daddceead3aabecb7b84e97831299834d8",
+      "size_bytes": 420297
+    },
+    {
+      "path": "simulations/simulation_ace541672d667f146b31d9ab09bbe898/tables/task_outcomes/part-000007.parquet",
+      "sha256": "e633b5fbdf663812f71d6f479647aae541a931786f3030aa68d55380b4f792e4",
+      "size_bytes": 421607
+    },
+    {
+      "path": "simulations/simulation_ace541672d667f146b31d9ab09bbe898/tables/task_outcomes/part-000008.parquet",
+      "sha256": "8b506df101b6d574ec5c5c8423f3ab11dcc91219016d0aa03f2a18c152ad2797",
+      "size_bytes": 425607
+    },
+    {
+      "path": "simulations/simulation_ace541672d667f146b31d9ab09bbe898/tables/task_outcomes/part-000009.parquet",
+      "sha256": "60e0d7895136d73859f13cb952d79edd8843938718ecff2fe9335a0abf95cced",
+      "size_bytes": 419753
+    },
+    {
+      "path": "simulations/simulation_ace541672d667f146b31d9ab09bbe898/tables/vehicle_catalog/part-000000.parquet",
+      "sha256": "4b3ffd52707403957d2ba331fb8d8c20786a53617bd98fa99628b55eda214010",
+      "size_bytes": 3711
+    }
+  ],
+  "saved_views": {
+    "Fleet results": "/results?view=fleet&fleet_run=dataset_7f739112ae44059709005186b8f2ebfc",
+    "Portfolio": "/results?view=portfolio&resource=portfolio_042a46d07dd278e88dcb3ed3bb5b21fc&budgets=budget_85a04382162b9f2aab83f90097ca54b0,budget_4c34a36b995270636b349afcde42c791,budget_5ee6a06d1eeecccc4f247be79b16d024&portfolio=portfolio_a93146e11db1305c160b2f79f8941df5"
+  },
+  "description": "Full Lausanne region · 14 January 2026 · 00:00–24:00 · 60-minute reporting · 1440-minute utility interval · Bus, Postal and Ride-hailing · 10 joint replications · 100 fleet sampling runs. Demand, duties, depot, speeds and costs carry explicit demonstration assumptions."
+}

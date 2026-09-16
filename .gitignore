@@ -1,0 +1,55 @@
+# Python bytecode and test caches
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Virtual environments and local environment files
+.venv/
+venv/
+env/
+.env
+.env.*
+
+# OS/editor noise
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Build/package artifacts
+build/
+dist/
+release/
+*.egg-info/
+node_modules/
+*.tsbuildinfo
+
+# Runtime logs and ad hoc scratch outputs
+*.log
+tmp/
+temp/
+
+# Local project settings, source snapshots and computed results
+project/
+
+# Local research sources and generated acceptance work; distributed separately.
+/data/
+/ref/
+/results/
+/.app-venv/
+/.mobile-sensing/
+/.release-venv/
+/src/mobile_sensing/_examples/*.zip
+/src/mobile_sensing/_web/
+**/.ipynb_checkpoints/
+
+# Private project registry, trash and pre-migration backups
+/.project-workspace/
+/.project-before-ownership-*/
+/.project-migration-*/

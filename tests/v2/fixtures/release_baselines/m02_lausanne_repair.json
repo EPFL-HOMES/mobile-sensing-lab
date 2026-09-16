@@ -1,0 +1,48 @@
+{
+  "environment": {
+    "artifact_id": "environment_645817138393b9fddac5455c8ea24717",
+    "artifact_kind": "environment",
+    "content_hash": "6af8ca6c722dcd37394dafc91f0529de49597de29161df7ca0f4bae4a9cb5d42"
+  },
+  "input_network_sha256": "6069a3432588425d6fb70a8874f7cc8895fb997a8f5eb6700632cde026d61276",
+  "post_repair_validation": {
+    "directed_edge_count": 108191,
+    "node_count": 20679,
+    "strong_component_count": 51,
+    "weak_component_count": 1
+  },
+  "quarantined_source_record_ids": [
+    "18392/20653/0",
+    "20653/18392/0"
+  ],
+  "repair_summary": {
+    "algorithm_version": "network-topology-repair@1",
+    "derived_node_count": 20679,
+    "emitted_component_count": 54699,
+    "endpoint_tolerance_m": 0.05,
+    "merged_source_row_count": 0,
+    "policy": "conservative_repair@1",
+    "quarantined_source_row_count": 2,
+    "readiness_grade": "not_ready",
+    "repair_hash": "d5dcafe76bfdae15ab141095296d5a7227d3f8963c49066564f201430b57701f",
+    "retained_source_row_count": 54473,
+    "source_row_count": 54517,
+    "split_source_node_count": 6,
+    "split_source_row_count": 42
+  },
+  "table_row_counts": {
+    "boundary": 1,
+    "edge_lineage": 108191,
+    "grid_cells": 4551,
+    "node_lineage": 20679,
+    "nodes": 20679,
+    "population_features": 4551,
+    "quarantined_edges": 2,
+    "repair_actions": 54517,
+    "repair_issues": 8,
+    "repair_summary": 1,
+    "repaired_roads": 54699,
+    "road_edges": 108191,
+    "routing_weights": 108191
+  }
+}

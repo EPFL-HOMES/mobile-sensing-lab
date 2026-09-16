@@ -1,0 +1,112 @@
+{
+  "evidence_kind": "road_grid_domain_analytic_samples",
+  "portfolio_artifact": {
+    "artifact_id": "portfolio_d209fcd1e7417d6fef460e54620ff398",
+    "artifact_kind": "portfolio",
+    "content_hash": "058103a875bfe2ec821694f05aa5462f012c9af054b04d31db3ee1fc43533b4a"
+  },
+  "replications_R": 1,
+  "sampling_rounds_J": 8,
+  "analytic_one_vehicle_mean": 0.43233235838169365,
+  "utility_of_mean_exposure": 0.6321205588285577,
+  "orderings": [
+    {
+      "round_id": 0,
+      "fleet_id": "fleet",
+      "rank": 0,
+      "vehicle_id": "inactive"
+    },
+    {
+      "round_id": 0,
+      "fleet_id": "fleet",
+      "rank": 1,
+      "vehicle_id": "moving"
+    },
+    {
+      "round_id": 1,
+      "fleet_id": "fleet",
+      "rank": 0,
+      "vehicle_id": "moving"
+    },
+    {
+      "round_id": 1,
+      "fleet_id": "fleet",
+      "rank": 1,
+      "vehicle_id": "inactive"
+    },
+    {
+      "round_id": 2,
+      "fleet_id": "fleet",
+      "rank": 0,
+      "vehicle_id": "inactive"
+    },
+    {
+      "round_id": 2,
+      "fleet_id": "fleet",
+      "rank": 1,
+      "vehicle_id": "moving"
+    },
+    {
+      "round_id": 3,
+      "fleet_id": "fleet",
+      "rank": 0,
+      "vehicle_id": "inactive"
+    },
+    {
+      "round_id": 3,
+      "fleet_id": "fleet",
+      "rank": 1,
+      "vehicle_id": "moving"
+    },
+    {
+      "round_id": 4,
+      "fleet_id": "fleet",
+      "rank": 0,
+      "vehicle_id": "moving"
+    },
+    {
+      "round_id": 4,
+      "fleet_id": "fleet",
+      "rank": 1,
+      "vehicle_id": "inactive"
+    },
+    {
+      "round_id": 5,
+      "fleet_id": "fleet",
+      "rank": 0,
+      "vehicle_id": "moving"
+    },
+    {
+      "round_id": 5,
+      "fleet_id": "fleet",
+      "rank": 1,
+      "vehicle_id": "inactive"
+    },
+    {
+      "round_id": 6,
+      "fleet_id": "fleet",
+      "rank": 0,
+      "vehicle_id": "moving"
+    },
+    {
+      "round_id": 6,
+      "fleet_id": "fleet",
+      "rank": 1,
+      "vehicle_id": "inactive"
+    },
+    {
+      "round_id": 7,
+      "fleet_id": "fleet",
+      "rank": 0,
+      "vehicle_id": "inactive"
+    },
+    {
+      "round_id": 7,
+      "fleet_id": "fleet",
+      "rank": 1,
+      "vehicle_id": "moving"
+    }
+  ],
+  "previous_evidence": "usability-performance/m08a_analytic_samples.json",
+  "revision_reason": "Exposure identity now records the positive-length road-intersection grid domain; analytic utilities and deterministic orderings are unchanged."
+}

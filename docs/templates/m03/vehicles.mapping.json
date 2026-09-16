@@ -1,0 +1,21 @@
+{
+  "adapter": "supply.upload_vehicle_catalog@1",
+  "capacity_mode": "consumable",
+  "columns": {
+    "availability_end": "availability_end_s",
+    "availability_start": "availability_start_s",
+    "capacity": "capacity",
+    "depot_location_id": "depot_location_id",
+    "initial_location_id": "initial_location_id",
+    "vehicle_id": "vehicle_id"
+  },
+  "fleet_id": "fleet_001",
+  "location_representation": "ids",
+  "quantity_unit": "items",
+  "schema_version": "2.0",
+  "source_crs": null,
+  "time": {
+    "kind": "elapsed",
+    "unit": "seconds"
+  }
+}

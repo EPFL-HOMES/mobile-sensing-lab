@@ -1,0 +1,1 @@
+{"event_type":"vehicle_exit","execution_generation":1,"fleet_id":"fleet_001","phase":"vehicle_exit","sequence":0,"stable_tie_key":["fleet_001","vehicle_001"],"task_id":null,"time_s":10800.0,"vehicle_id":"vehicle_001"}

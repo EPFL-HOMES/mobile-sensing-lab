@@ -1,0 +1,2 @@
+interval_start_s,interval_end_s,origin_location_id,destination_location_id,rate_tasks_per_hour
+0,3600,L001,L002,12

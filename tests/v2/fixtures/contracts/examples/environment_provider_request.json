@@ -1,0 +1,1 @@
+{"boundary":{"dataset_id":"boundary_lausanne","kind":"local_municipalities","municipality_names":["Lausanne (suburban)","Lausanne (urban)"]},"cache_policy":"reuse","network_mode":"drive","provider":"environment.local_files@1","requested_features":["population"],"routing_extent_ref":"routing_extent_lausanne","schema_version":"2.0","target_crs":"EPSG:2056"}

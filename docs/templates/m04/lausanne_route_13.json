@@ -1,0 +1,18 @@
+{
+  "adapter": "demand.gtfs_reconstruction@1",
+  "allow_instantaneous_missing_time_copy": false,
+  "civil_day_complete_requested": false,
+  "compatible_group_overrides": {},
+  "error_policy": "strict",
+  "fleet_id": "lausanne_transit",
+  "max_selected_trips": 1000,
+  "max_stop_time_rows": 100000,
+  "route_ids": [
+    "92-13-H-j26-1"
+  ],
+  "routing_profile_id": "road_static_30kph",
+  "schema_version": "2.0",
+  "service_date": "2026-01-14",
+  "turnaround_duration_s": 300.0,
+  "user_vehicle_assignments": {}
+}

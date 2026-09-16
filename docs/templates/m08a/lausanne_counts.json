@@ -1,0 +1,33 @@
+{
+  "schema_version": "2.0",
+  "exposure_id": "exposure_f4aefce4d1689d4c710708adcda42afc",
+  "utility": {
+    "kind": "exponential_saturation",
+    "saturation_s": 900.0,
+    "weights_ref": "lausanne_uniform_spatial_duration_temporal"
+  },
+  "count_enumeration": {
+    "fleets": {
+      "lausanne_transit": {"count_levels": [0, 1]},
+      "synthetic_location": {"count_levels": [0, 1]},
+      "synthetic_od": {"count_levels": [0, 1]}
+    }
+  },
+  "budgets": {"levels_minor": [0, 10000, 20000, 30000]},
+  "costs": {
+    "unit": "CHF",
+    "minor_unit_scale": 100,
+    "by_fleet_minor": {
+      "lausanne_transit": 10000,
+      "synthetic_location": 10000,
+      "synthetic_od": 10000
+    }
+  },
+  "sampling_rounds": 100,
+  "sampling_seed": 20260909,
+  "sampling_design": "joint_replication_uniform_vehicle",
+  "comparison_resolution": {
+    "mean_utility": 1e-12,
+    "std_utility": 1e-12
+  }
+}

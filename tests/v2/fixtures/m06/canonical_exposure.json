@@ -1,0 +1,128 @@
+{
+  "simulation_table_row_counts": {
+    "activity_intervals": 10,
+    "movements": 2,
+    "operational_events": 0,
+    "replication_status": 3,
+    "task_outcomes": 2,
+    "vehicle_catalog": 2
+  },
+  "exposure_table_row_counts": {
+    "edge_grid_pieces": 1,
+    "exposure": 2,
+    "grid_axis": 1,
+    "replication_status": 3,
+    "time_bins": 2,
+    "vehicle_catalog": 2
+  },
+  "movements": [
+    {
+      "replication_id": "r1",
+      "fleet_id": "fleet_a",
+      "vehicle_id": "v1",
+      "start_s": 0.0,
+      "end_s": 10.0,
+      "edge_id": "inside",
+      "movement_kind": "service_pickup"
+    },
+    {
+      "replication_id": "r2",
+      "fleet_id": "fleet_b",
+      "vehicle_id": "v2",
+      "start_s": 0.0,
+      "end_s": 10.0,
+      "edge_id": "inside",
+      "movement_kind": "service_pickup"
+    }
+  ],
+  "activities": [
+    {
+      "replication_id": "r1",
+      "fleet_id": "fleet_a",
+      "vehicle_id": "v1",
+      "activity_kind": "movement",
+      "duration_s": 10.0
+    },
+    {
+      "replication_id": "r1",
+      "fleet_id": "fleet_a",
+      "vehicle_id": "v1",
+      "activity_kind": "service",
+      "duration_s": 2.0
+    },
+    {
+      "replication_id": "r1",
+      "fleet_id": "fleet_a",
+      "vehicle_id": "v1",
+      "activity_kind": "idle",
+      "duration_s": 8.0
+    },
+    {
+      "replication_id": "r1",
+      "fleet_id": "fleet_b",
+      "vehicle_id": "v2",
+      "activity_kind": "idle",
+      "duration_s": 20.0
+    },
+    {
+      "replication_id": "r2",
+      "fleet_id": "fleet_a",
+      "vehicle_id": "v1",
+      "activity_kind": "idle",
+      "duration_s": 20.0
+    },
+    {
+      "replication_id": "r2",
+      "fleet_id": "fleet_b",
+      "vehicle_id": "v2",
+      "activity_kind": "movement",
+      "duration_s": 10.0
+    },
+    {
+      "replication_id": "r2",
+      "fleet_id": "fleet_b",
+      "vehicle_id": "v2",
+      "activity_kind": "service",
+      "duration_s": 2.0
+    },
+    {
+      "replication_id": "r2",
+      "fleet_id": "fleet_b",
+      "vehicle_id": "v2",
+      "activity_kind": "idle",
+      "duration_s": 8.0
+    },
+    {
+      "replication_id": "r3",
+      "fleet_id": "fleet_a",
+      "vehicle_id": "v1",
+      "activity_kind": "idle",
+      "duration_s": 20.0
+    },
+    {
+      "replication_id": "r3",
+      "fleet_id": "fleet_b",
+      "vehicle_id": "v2",
+      "activity_kind": "idle",
+      "duration_s": 20.0
+    }
+  ],
+  "exposure_rows": [
+    {
+      "replication_id": "r1",
+      "fleet_id": "fleet_a",
+      "vehicle_id": "v1",
+      "cell_id": "a",
+      "time_bin_index": 0,
+      "duration_s": 10.0
+    },
+    {
+      "replication_id": "r2",
+      "fleet_id": "fleet_b",
+      "vehicle_id": "v2",
+      "cell_id": "a",
+      "time_bin_index": 0,
+      "duration_s": 10.0
+    }
+  ]
+}

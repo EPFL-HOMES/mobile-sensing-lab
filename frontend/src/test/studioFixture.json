@@ -1,0 +1,432 @@
+{
+  "config": {
+    "schema_version": "3.4",
+    "environment": {
+      "boundary_input": "input_32ce1354827b0fe02f9965fe609bf8f6",
+      "region_query": "",
+      "drawn_boundary": null,
+      "network_input": "input_e3b7a4afa361a2457fadb2f93bed4ad2",
+      "grid_input": null,
+      "speed_input": null,
+      "working_crs": "EPSG:2056",
+      "timezone": "UTC",
+      "snap_distance_m": 250.0,
+      "grid_size_m": 10.0,
+      "routing_buffer_m": 1000.0,
+      "speed_source": "constant",
+      "speed_kph": 7.2,
+      "speed_column": "speed_kph",
+      "road_columns": {},
+      "features": [],
+      "osm_features": [],
+      "topology_policy": "quarantine_invalid@1"
+    },
+    "prepared_environment": {
+      "artifact": {
+        "artifact_id": "environment_62fb08af8c7f546d03511f02f75fa98c",
+        "artifact_kind": "environment",
+        "content_hash": "1bbc6786f52197c90bb49efed3c02c6b58710330adaa94597babce5d1a1a75db"
+      },
+      "features": {
+        "artifact_id": "dataset_c6e74b3d17e25561e7f0de1947a2a9e3",
+        "artifact_kind": "dataset",
+        "content_hash": "9ea3c2b881a9518394d6ffa82ea81b95e0dffd6cf8d3169fe42a35bd4874ca63"
+      },
+      "feature_names": [
+        "uniform"
+      ],
+      "working_crs": "EPSG:2056",
+      "timezone": "UTC",
+      "assumptions": [
+        "Uncalibrated uniform road speed: 7.2 km/h"
+      ]
+    },
+    "fleets": [
+      {
+        "fleet_id": "f",
+        "name": "F",
+        "demand": {
+          "source": "generator",
+          "task_type": "location",
+          "input_id": null,
+          "template": "table",
+          "content": "instances",
+          "count_semantics": null,
+          "columns": {},
+          "coordinate_kind": "cell_id",
+          "time_unit": "clock",
+          "rate_unit": "per_hour",
+          "generation_timing": "offline",
+          "volume_mode": "fixed",
+          "task_volume": 4.0,
+          "start_time": "08:00",
+          "end_time": "18:00",
+          "release_mode": "uniform",
+          "spatial_feature": "uniform",
+          "destination_feature": "uniform",
+          "od_distribution_input": null,
+          "service_seconds": 60.0,
+          "pickup_seconds": 0.0,
+          "quantity": 1.0,
+          "route_ids": [],
+          "imported_assignment": "execute"
+        },
+        "supply": {
+          "source": "generated",
+          "input_id": null,
+          "columns": {},
+          "fleet_size": 2,
+          "timetable_catalog_complete": false,
+          "operating_start": "08:00",
+          "operating_end": "18:00",
+          "activation": "simultaneous",
+          "latest_start": "16:00",
+          "work_hours": 8.0,
+          "initial_location": "spatial_feature",
+          "spatial_feature": "uniform",
+          "post_service": "stationary",
+          "capacity_mode": "none",
+          "capacity": 1.0,
+          "capacity_unit": "units",
+          "depot_cell_id": null,
+          "depot_longitude": null,
+          "depot_latitude": null,
+          "synthetic_depot": false,
+          "service_area_input": null,
+          "area_assignment_input": null,
+          "turnaround_seconds": 0.0
+        },
+        "dispatch": {
+          "mode": "sequential",
+          "assignment_input": null,
+          "max_pickup_minutes": 15.0,
+          "batch_minutes": 2.0,
+          "solution_limit": 100,
+          "planning_timeout_seconds": 120.0,
+          "max_cost_pairs": 250000
+        },
+        "routing_profile": "default",
+        "sensing_movements": [
+          "service_pickup",
+          "service_inter_step",
+          "cruise",
+          "depot_return",
+          "reposition"
+        ]
+      }
+    ],
+    "simulation": {
+      "service_date": "2026-01-14",
+      "start_time": "00:00",
+      "end_time": "24:00",
+      "replications": 2,
+      "temporal_resolution_minutes": 15.0,
+      "seed": 20260114
+    },
+    "portfolio": {
+      "source_run_id": "dataset_e351bf6fa06316f875eec3b48cbf3f3b",
+      "sampling_runs": 100,
+      "seed": 20260115,
+      "cost_unit": "abstract cost units",
+      "budgets": [
+        0.0,
+        1.0,
+        2.0
+      ],
+      "fleets": [
+        {
+          "fleet_id": "f",
+          "unit_cost": 1.0,
+          "counts": [
+            0,
+            1,
+            2
+          ]
+        }
+      ],
+      "utility": "exponential",
+      "saturation_minutes": 15.0,
+      "spatial_weight": "uniform"
+    },
+    "source_revision": null,
+    "linked_run_ids": [],
+    "linked_analysis_ids": []
+  },
+  "run": {
+    "run_id": "dataset_e351bf6fa06316f875eec3b48cbf3f3b",
+    "artifact": {
+      "artifact_id": "dataset_e351bf6fa06316f875eec3b48cbf3f3b",
+      "artifact_kind": "dataset",
+      "content_hash": "6adf92211dc5bb3f72d091167619cfbe8337d67f05fb55cde0bf30d4ac0679d5"
+    },
+    "name": "Validated full day",
+    "source_revision_id": "revision-source",
+    "config": {
+      "schema_version": "3.0",
+      "environment": {
+        "boundary_input": "input_32ce1354827b0fe02f9965fe609bf8f6",
+        "region_query": "",
+        "drawn_boundary": null,
+        "network_input": "input_e3b7a4afa361a2457fadb2f93bed4ad2",
+        "grid_input": null,
+        "speed_input": null,
+        "working_crs": "EPSG:2056",
+        "timezone": "UTC",
+        "snap_distance_m": 250.0,
+        "grid_size_m": 10.0,
+        "routing_buffer_m": 1000.0,
+        "speed_source": "constant",
+        "speed_kph": 7.2,
+        "speed_column": "speed_kph",
+        "road_columns": {},
+        "features": [],
+        "osm_features": [],
+        "topology_policy": "quarantine_invalid@1"
+      },
+      "prepared_environment": {
+        "artifact": {
+          "artifact_id": "environment_62fb08af8c7f546d03511f02f75fa98c",
+          "artifact_kind": "environment",
+          "content_hash": "1bbc6786f52197c90bb49efed3c02c6b58710330adaa94597babce5d1a1a75db"
+        },
+        "features": {
+          "artifact_id": "dataset_c6e74b3d17e25561e7f0de1947a2a9e3",
+          "artifact_kind": "dataset",
+          "content_hash": "9ea3c2b881a9518394d6ffa82ea81b95e0dffd6cf8d3169fe42a35bd4874ca63"
+        },
+        "feature_names": [
+          "uniform"
+        ],
+        "working_crs": "EPSG:2056",
+        "timezone": "UTC",
+        "assumptions": [
+          "Uncalibrated uniform road speed: 7.2 km/h"
+        ]
+      },
+      "fleets": [
+        {
+          "fleet_id": "f",
+          "name": "F",
+          "demand": {
+            "source": "generator",
+            "task_type": "location",
+            "input_id": null,
+            "template": "table",
+            "content": "instances",
+            "count_semantics": null,
+            "columns": {},
+            "coordinate_kind": "cell_id",
+            "time_unit": "clock",
+            "rate_unit": "per_hour",
+            "generation_timing": "offline",
+            "volume_mode": "fixed",
+            "task_volume": 4.0,
+            "start_time": "08:00",
+            "end_time": "18:00",
+            "release_mode": "uniform",
+            "spatial_feature": "uniform",
+            "destination_feature": "uniform",
+            "od_distribution_input": null,
+            "service_seconds": 60.0,
+            "pickup_seconds": 0.0,
+            "quantity": 1.0,
+            "route_ids": [],
+            "imported_assignment": "execute"
+          },
+          "supply": {
+            "source": "generated",
+            "input_id": null,
+            "columns": {},
+            "fleet_size": 2,
+            "timetable_catalog_complete": false,
+            "operating_start": "08:00",
+            "operating_end": "18:00",
+            "activation": "simultaneous",
+            "latest_start": "16:00",
+            "work_hours": 8.0,
+            "initial_location": "spatial_feature",
+            "spatial_feature": "uniform",
+            "post_service": "stationary",
+            "capacity_mode": "none",
+            "capacity": 1.0,
+            "capacity_unit": "units",
+            "depot_cell_id": null,
+            "depot_longitude": null,
+            "depot_latitude": null,
+            "synthetic_depot": false,
+            "service_area_input": null,
+            "area_assignment_input": null,
+            "turnaround_seconds": 0.0
+          },
+          "dispatch": {
+            "mode": "sequential",
+            "assignment_input": null,
+            "max_pickup_minutes": 15.0,
+            "batch_minutes": 2.0,
+            "solution_limit": 100,
+            "planning_timeout_seconds": 120.0,
+            "max_cost_pairs": 250000
+          },
+          "routing_profile": "default",
+          "sensing_movements": [
+            "service_pickup",
+            "service_inter_step",
+            "cruise",
+            "depot_return",
+            "reposition"
+          ]
+        }
+      ],
+      "simulation": {
+        "service_date": "2026-01-14",
+        "start_time": "00:00",
+        "end_time": "24:00",
+        "replications": 2,
+        "temporal_resolution_minutes": 15.0,
+        "seed": 20260114
+      },
+      "portfolio": {
+        "source_run_id": null,
+        "sampling_runs": 100,
+        "seed": 20260115,
+        "cost_unit": "abstract cost units",
+        "budgets": [
+          0.0
+        ],
+        "fleets": [],
+        "utility": "exponential",
+        "saturation_minutes": 15.0,
+        "spatial_weight": "uniform"
+      },
+      "source_revision": null,
+      "linked_run_ids": [],
+      "linked_analysis_ids": []
+    },
+    "simulation": {
+      "artifact_id": "simulation_18926724022805c778edb0693e4bb001",
+      "artifact_kind": "simulation",
+      "content_hash": "b1ca528d9c80a7867a7cbb807df0f39b56b4dc61080152826aba50833a81a47e"
+    },
+    "exposure": {
+      "artifact_id": "exposure_c6ea6937f2bf08141aa919bda5d9015c",
+      "artifact_kind": "exposure",
+      "content_hash": "dc2149981cad011283dccd4dc75e0510c6408bb1512ea81e77bb52d1d5e33aca"
+    },
+    "resolution": {
+      "artifact_id": "dataset_245a20d0bd529f57ab9f7105e5cbd076",
+      "artifact_kind": "dataset",
+      "content_hash": "176642d32a1ac405079412426e8f4860663d9746f24d2305ed078111384eca5c"
+    },
+    "replications": 2,
+    "vehicle_counts": {
+      "f": 2
+    },
+    "task_counts": {
+      "f": [
+        4,
+        4
+      ]
+    },
+    "assumptions": [
+      "Synthetic demand: F",
+      "Uncalibrated uniform road speed: 7.2 km/h"
+    ],
+    "mobility_reused": false,
+    "elapsed_seconds": {
+      "exposure": 0.013609667075797915,
+      "resolution": 0.029698625090532005,
+      "simulation": 0.010576708009466529,
+      "total": 0.07042129209730774
+    }
+  },
+  "fleet": {
+    "fleet_id": "fleet-1",
+    "name": "Fleet 1",
+    "demand": {
+      "source": "generator",
+      "task_type": "location",
+      "input_id": null,
+      "template": "table",
+      "content": "instances",
+      "count_semantics": null,
+      "columns": {},
+      "coordinate_kind": "cell_id",
+      "time_unit": "clock",
+      "rate_unit": "per_hour",
+      "generation_timing": "offline",
+      "volume_mode": "fixed",
+      "task_volume": 100.0,
+      "start_time": "08:00",
+      "end_time": "18:00",
+      "release_mode": "uniform",
+      "spatial_feature": "uniform",
+      "destination_feature": "uniform",
+      "od_distribution_input": null,
+      "service_seconds": 60.0,
+      "pickup_seconds": 0.0,
+      "quantity": 1.0,
+      "route_ids": [],
+      "imported_assignment": "execute"
+    },
+    "supply": {
+      "source": "generated",
+      "input_id": null,
+      "columns": {},
+      "fleet_size": 10,
+      "timetable_catalog_complete": false,
+      "operating_start": "08:00",
+      "operating_end": "18:00",
+      "activation": "simultaneous",
+      "latest_start": "16:00",
+      "work_hours": 8.0,
+      "initial_location": "spatial_feature",
+      "spatial_feature": "uniform",
+      "post_service": "stationary",
+      "capacity_mode": "none",
+      "capacity": 1.0,
+      "capacity_unit": "units",
+      "depot_cell_id": null,
+      "depot_longitude": null,
+      "depot_latitude": null,
+      "synthetic_depot": false,
+      "service_area_input": null,
+      "area_assignment_input": null,
+      "turnaround_seconds": 0.0
+    },
+    "dispatch": {
+      "mode": "sequential",
+      "assignment_input": null,
+      "max_pickup_minutes": 15.0,
+      "batch_minutes": 2.0,
+      "solution_limit": 100,
+      "planning_timeout_seconds": 120.0,
+      "max_cost_pairs": 250000
+    },
+    "routing_profile": "default",
+    "sensing_movements": [
+      "service_pickup",
+      "service_inter_step",
+      "cruise",
+      "depot_return",
+      "reposition"
+    ]
+  },
+  "options": {
+    "workers": 1,
+    "memory_limit_bytes": 4294967296,
+    "job_timeout_s": 7200.0
+  },
+  "curve": {
+    "exposure_minutes": [
+      0,
+      15,
+      30
+    ],
+    "utility": [
+      -0.0,
+      0.6321205588285577,
+      0.8646647167633873
+    ],
+    "interpretation": "Pointwise utility is applied inside each sample"
+  }
+}

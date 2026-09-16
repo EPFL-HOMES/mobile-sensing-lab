@@ -1,0 +1,93 @@
+{
+  "evidence_kind": "road_grid_domain_analytic_analysis",
+  "analysis_artifact": {
+    "artifact_id": "portfolio_1b5773d92a873a14405e3200192dcd3f",
+    "artifact_kind": "portfolio",
+    "content_hash": "fbc249816462561f09378de3e7781213bd1e03f1e8e7735d5b68a535c22e9aa8"
+  },
+  "sample_artifact": {
+    "artifact_id": "portfolio_f4fdf81e32c3c14add396b31ade87728",
+    "artifact_kind": "portfolio",
+    "content_hash": "54262e08a27e914cc598153a943973b23f47fa7c72df90ba44ab33c05754b85d"
+  },
+  "statistics": [
+    {
+      "portfolio_id": "portfolio_158ee3153b2e229c8368779da3dc5483",
+      "count_by_fleet_json": "{\"fleet\":0}",
+      "total_cost_minor": 0,
+      "replications_R": 1,
+      "sampling_rounds_J": 8,
+      "sample_count": 8,
+      "utility_mean": 0.0,
+      "utility_sample_variance": 0.0,
+      "utility_sample_std": 0.0,
+      "conditional_mean_se": 0.0,
+      "utility_min": 0.0,
+      "utility_max": 0.0,
+      "utility_p05": 0.0,
+      "utility_p50": 0.0,
+      "utility_p95": 0.0,
+      "mean_comparison_key": "0",
+      "std_comparison_key": "0"
+    },
+    {
+      "portfolio_id": "portfolio_21ca683bf9edbbcf8160dc3bda513a2b",
+      "count_by_fleet_json": "{\"fleet\":1}",
+      "total_cost_minor": 10,
+      "replications_R": 1,
+      "sampling_rounds_J": 8,
+      "sample_count": 8,
+      "utility_mean": 0.43233235838169365,
+      "utility_sample_variance": 0.2136128778330025,
+      "utility_sample_std": 0.46218273208007515,
+      "conditional_mean_se": 0.1634062720005732,
+      "utility_min": 0.0,
+      "utility_max": 0.8646647167633873,
+      "utility_p05": 0.0,
+      "utility_p50": 0.43233235838169365,
+      "utility_p95": 0.8646647167633873,
+      "mean_comparison_key": "432332358382",
+      "std_comparison_key": "462182732080"
+    },
+    {
+      "portfolio_id": "portfolio_6bd4e27c3ba5ff5447aedaad022c381e",
+      "count_by_fleet_json": "{\"fleet\":2}",
+      "total_cost_minor": 20,
+      "replications_R": 1,
+      "sampling_rounds_J": 8,
+      "sample_count": 8,
+      "utility_mean": 0.8646647167633873,
+      "utility_sample_variance": 0.0,
+      "utility_sample_std": 0.0,
+      "conditional_mean_se": 0.0,
+      "utility_min": 0.8646647167633873,
+      "utility_max": 0.8646647167633873,
+      "utility_p05": 0.8646647167633873,
+      "utility_p50": 0.8646647167633873,
+      "utility_p95": 0.8646647167633873,
+      "mean_comparison_key": "864664716763",
+      "std_comparison_key": "0"
+    }
+  ],
+  "metadata": [
+    {
+      "sample_artifact_id": "portfolio_f4fdf81e32c3c14add396b31ade87728",
+      "exposure_id": "exposure_009e23f0d7727225392252f521c89275",
+      "replications_R": 1,
+      "sampling_rounds_J": 8,
+      "count_portfolios_P": 3,
+      "grid_cell_count": 1,
+      "reporting_bin_count": 1,
+      "quantile_method": "linear-interpolation@1",
+      "risk_metric": "std",
+      "variance_ddof": 1,
+      "absent_sparse_rows_are_zero": true,
+      "variability_interpretation": "allocation_variability_conditional_on_one_operational_realization",
+      "frontier_enabled": true,
+      "inference_scope": "conditional_empirical_analysis_no_confidence_or_global_optimum_claim",
+      "complete": true
+    }
+  ],
+  "previous_evidence": "usability-performance/m08b_portfolio_analysis.json",
+  "revision_reason": "Analysis lineage now depends on an exposure with the positive-length road-intersection grid domain; numerical statistics are unchanged."
+}

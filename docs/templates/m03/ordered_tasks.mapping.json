@@ -1,0 +1,28 @@
+{
+  "adapter": "demand.upload_ordered@1",
+  "allow_generated_task_ids": false,
+  "columns": {
+    "location_id": "location_id",
+    "quantity_delta": "quantity_delta",
+    "release_time": "release_s",
+    "scheduled_time": "scheduled_s",
+    "service_duration": "service_duration_s",
+    "step_index": "step_index",
+    "task_id": "task_id"
+  },
+  "data_semantics": "observed_tasks",
+  "duration_unit": "seconds",
+  "error_policy": "strict",
+  "fleet_id": "fleet_001",
+  "location_representation": "ids",
+  "quantity_mode": "signed_delta",
+  "quantity_unit": "passengers",
+  "schema_version": "2.0",
+  "service_duration_default_s": null,
+  "source_crs": null,
+  "structure": "ordered",
+  "time": {
+    "kind": "elapsed",
+    "unit": "seconds"
+  }
+}

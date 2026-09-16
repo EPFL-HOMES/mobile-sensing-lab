@@ -1,0 +1,19 @@
+{
+  "tasks": [
+    {"fleet_id": "fixed", "task_id": "stops", "status": "completed", "assigned_at_s": 0.0, "terminal_time_s": 8.0, "vehicle_id": "p"},
+    {"fleet_id": "nearest", "task_id": "location", "status": "completed", "assigned_at_s": 0.0, "terminal_time_s": 3.0, "vehicle_id": "n"}
+  ],
+  "executions": [
+    {"fleet_id": "nearest", "vehicle_id": "n", "task_id": "location", "status": "completed", "planned_end_s": 3.0, "realized_end_s": 3.0},
+    {"fleet_id": "fixed", "vehicle_id": "p", "task_id": "stops", "status": "completed", "planned_end_s": 8.0, "realized_end_s": 8.0}
+  ],
+  "activities": [
+    {"fleet_id": "nearest", "vehicle_id": "n", "task_id": "location", "interval_index": 0, "kind": "movement", "start_s": 0.0, "end_s": 2.0, "edge_id": "edge_L0_L1", "location_id": null},
+    {"fleet_id": "nearest", "vehicle_id": "n", "task_id": "location", "interval_index": 1, "kind": "service", "start_s": 2.0, "end_s": 3.0, "edge_id": null, "location_id": "L1"},
+    {"fleet_id": "fixed", "vehicle_id": "p", "task_id": "stops", "interval_index": 0, "kind": "movement", "start_s": 0.0, "end_s": 2.0, "edge_id": "edge_L0_L1", "location_id": null},
+    {"fleet_id": "fixed", "vehicle_id": "p", "task_id": "stops", "interval_index": 1, "kind": "wait", "start_s": 2.0, "end_s": 3.0, "edge_id": null, "location_id": "L1"},
+    {"fleet_id": "fixed", "vehicle_id": "p", "task_id": "stops", "interval_index": 2, "kind": "service", "start_s": 3.0, "end_s": 4.0, "edge_id": null, "location_id": "L1"},
+    {"fleet_id": "fixed", "vehicle_id": "p", "task_id": "stops", "interval_index": 3, "kind": "movement", "start_s": 4.0, "end_s": 7.0, "edge_id": "edge_L1_L2", "location_id": null},
+    {"fleet_id": "fixed", "vehicle_id": "p", "task_id": "stops", "interval_index": 4, "kind": "service", "start_s": 7.0, "end_s": 8.0, "edge_id": null, "location_id": "L2"}
+  ]
+}

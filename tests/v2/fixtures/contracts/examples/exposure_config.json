@@ -1,0 +1,1 @@
+{"active_movement_kinds":["cruise","depot_return","reposition","service_inter_step","service_pickup"],"activity_source_ref":null,"bin_edges_s":[3600.0,7200.0,10800.0],"fleet_idle_break_seconds":{},"fleet_movement_kinds":{},"measurement":"movement_duration","operating_fleet_ids":[],"schema_version":"2.0","sensing_geometry_id":"grid_lausanne_100m","simulation_id":"simulation_001"}

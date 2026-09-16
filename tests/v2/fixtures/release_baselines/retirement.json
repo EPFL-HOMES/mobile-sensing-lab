@@ -1,0 +1,779 @@
+{
+  "status": "removed_after_replacement_validation",
+  "authority": "User requested repository cleanup including unused legacy; three tutorials superseded by one joint Lausanne tutorial.",
+  "files": [
+    {
+      "path": "legacy/README.md",
+      "bytes": 5351,
+      "sha256": "bf9f5c0b1292e9ec3f03a1abf7056fdb3485bb1730b8265e1d7de38892cf37a2"
+    },
+    {
+      "path": "legacy/dist/simulation-0.1.0-py3-none-any.whl",
+      "bytes": 190228,
+      "sha256": "ec2b32c9ecac6629e3f231fc92bbbe79c16d5771b3257ae108753b9f3290f7da"
+    },
+    {
+      "path": "legacy/dist/simulation-0.1.0.tar.gz",
+      "bytes": 141547,
+      "sha256": "fcb08173748ce3862b7bd5463f018852247a7a6e4ab60cec35e56b593aeb5c3d"
+    },
+    {
+      "path": "legacy/docs/milestones/DEVELOPMENT_BASELINE.md",
+      "bytes": 10098,
+      "sha256": "576df831d4512e2fcda88f4c8a0618c3ce023c33ca7f3c29bd7bedc408f0c3a2"
+    },
+    {
+      "path": "legacy/docs/milestones/M02_ENVIRONMENT.md",
+      "bytes": 5808,
+      "sha256": "6bf00c96702c6d50d4d3c2733cb5463331ad10eb1d9b354171349512501cb2e1"
+    },
+    {
+      "path": "legacy/docs/milestones/M03_DATASETS_AND_GENERATORS.md",
+      "bytes": 5138,
+      "sha256": "2ce4ca7408f804a45b79fb9333bc454d7985a2cd15fd9c11ab3ff304b04a91d5"
+    },
+    {
+      "path": "legacy/docs/milestones/M04_GTFS_RECONSTRUCTION.md",
+      "bytes": 5823,
+      "sha256": "eeda9de7d70a5a1bd2d8db7ea461361e3d57eaf8d932b7cfd695a711669994df"
+    },
+    {
+      "path": "legacy/docs/milestones/M05A_EVENT_KERNEL.md",
+      "bytes": 4050,
+      "sha256": "30c1093608b6367e6a05d3b5eee596daee0a93b1c7da2d772ca7713542d44817"
+    },
+    {
+      "path": "legacy/docs/milestones/M05B_EXECUTION_DISPATCH.md",
+      "bytes": 6409,
+      "sha256": "345f672a3fcc169037714731ca5c8371d85e6bf73986bed0479b42ff5cc1c5be"
+    },
+    {
+      "path": "legacy/docs/milestones/M05C_OPERATIONAL_POLICIES.md",
+      "bytes": 4667,
+      "sha256": "93ddfa4977978e46f775cbd2d373f01beaeda66daede621446ab53ee1884429d"
+    },
+    {
+      "path": "legacy/docs/milestones/M06_EXPOSURE_STORAGE.md",
+      "bytes": 7981,
+      "sha256": "7a24c8b1a39092e22b20f9ef6b1db92e378e8e9e5205f3326ef34e394133b836"
+    },
+    {
+      "path": "legacy/docs/milestones/M07_HEADLESS_INTEGRATION.md",
+      "bytes": 9627,
+      "sha256": "2fa64987b0ff5f15318e76c557ffb99536cbb470ceb78114bbfd2673b72eca1a"
+    },
+    {
+      "path": "legacy/docs/milestones/M08A_PORTFOLIO_SAMPLING.md",
+      "bytes": 6558,
+      "sha256": "f1e9e4db9fb43a7d468840d1291fe8703d30364cd7ed2b08a8dd4d81448e283c"
+    },
+    {
+      "path": "legacy/docs/milestones/M08B_PORTFOLIO_ANALYSIS.md",
+      "bytes": 5000,
+      "sha256": "6fcd5db272396ac9a05aa6e552eb41201d2266ed0a072c1ca18ae5f422a00a60"
+    },
+    {
+      "path": "legacy/docs/milestones/M09_LOCAL_APPLICATION.md",
+      "bytes": 5538,
+      "sha256": "44b027cf30d72a0aa0f48cb8dac7c061368391544232bd557487e798ec0d006f"
+    },
+    {
+      "path": "legacy/docs/milestones/M10_FRONTEND_WORKFLOW.md",
+      "bytes": 5093,
+      "sha256": "ee18551aa735b804175a600d5f07e27daced872dc83cf5d3af4c27da365568f0"
+    },
+    {
+      "path": "legacy/docs/milestones/M11_RESULTS.md",
+      "bytes": 5722,
+      "sha256": "4b480de64a5404c0fa676777bd504ca5124fd0bd82b7056da9bf15d1979fedb4"
+    },
+    {
+      "path": "legacy/docs/milestones/README.md",
+      "bytes": 470,
+      "sha256": "5abf98256ae93cb30257588933ef67cf4ca564c8e4fe7a966cbac7a575abec2e"
+    },
+    {
+      "path": "legacy/requirements.txt",
+      "bytes": 308,
+      "sha256": "7de83204369c882cbe42c0f76257ebef1e555adb136549543bdf6f7299452b0c"
+    },
+    {
+      "path": "legacy/src/environment/__init__.py",
+      "bytes": 801,
+      "sha256": "bd55d4499cce9ca011b2c59c18d98a17697e332d951c5f0bd215d646b663ab35"
+    },
+    {
+      "path": "legacy/src/environment/boundary.py",
+      "bytes": 1041,
+      "sha256": "0e2f5a4163487165e522f9f0c60880480b9cf9c6b689568d89f2ebee8aeab5a8"
+    },
+    {
+      "path": "legacy/src/environment/builder.py",
+      "bytes": 3046,
+      "sha256": "eb5be1990080d377cd6f7f7ae5bd23da2302cbfe135abe28ca19fa08619115c1"
+    },
+    {
+      "path": "legacy/src/environment/edge_grid.py",
+      "bytes": 1908,
+      "sha256": "fbb19ce45147f04e0ad38b4391b1f1177cf7b30a822992b0045f2c436da293db"
+    },
+    {
+      "path": "legacy/src/environment/features.py",
+      "bytes": 982,
+      "sha256": "6ae5f1b781787c1cf049d1e1dd144194d452bb6c71a70835ab2ba9a237852c69"
+    },
+    {
+      "path": "legacy/src/environment/grid.py",
+      "bytes": 1393,
+      "sha256": "11358705eeecb73fcef2fb499e3ef453f63934372474c89fe7df2e605dbbe46a"
+    },
+    {
+      "path": "legacy/src/environment/grid_routing.py",
+      "bytes": 3453,
+      "sha256": "6101a766b707f516e97b49be40ef8f9309d6c8e0424325dce5e8832cb98899f0"
+    },
+    {
+      "path": "legacy/src/environment/loaders/__init__.py",
+      "bytes": 228,
+      "sha256": "22238363911b145ba44b9b59c41e77379aa0ab6cd1d49cf4a20305e3a686c56d"
+    },
+    {
+      "path": "legacy/src/environment/loaders/base.py",
+      "bytes": 346,
+      "sha256": "29f742e42f9d0c1b9d7eef97a5c42668fbdfa7da7170c8043b38d3c9d2aedc21"
+    },
+    {
+      "path": "legacy/src/environment/loaders/lausanne.py",
+      "bytes": 4684,
+      "sha256": "578123113bf6b6c2f669fb8b4c8b31156ad7135e7f57d2864c47111be4cc30f6"
+    },
+    {
+      "path": "legacy/src/environment/models.py",
+      "bytes": 1155,
+      "sha256": "0761b851b31fe5c223a5671f8014b60219171dac0e02f781d8df08447abdb65b"
+    },
+    {
+      "path": "legacy/src/environment/network.py",
+      "bytes": 5452,
+      "sha256": "ae42798c1b44d9aee4b00dd6fb46c3a63798eca4ad6209bd9db0f1b8387d2706"
+    },
+    {
+      "path": "legacy/src/environment/schemas.py",
+      "bytes": 2844,
+      "sha256": "3d0b109bcf7fa5b6896fed61ea6de8b4fc25a47e4ab3505ebb87cc094661dc2e"
+    },
+    {
+      "path": "legacy/src/environment/storage.py",
+      "bytes": 3165,
+      "sha256": "708902af255baba97d4cb60bfffb4f62690c8bb3797fabeaf5e4f812af3e2ea4"
+    },
+    {
+      "path": "legacy/src/optimization/__init__.py",
+      "bytes": 617,
+      "sha256": "2761632a3a392c4fa7546fe4b7581d57660d986fd44cec07a4d3f6611763776d"
+    },
+    {
+      "path": "legacy/src/optimization/moments.py",
+      "bytes": 159,
+      "sha256": "11f66c275c92cad27190f3fd9caff777e62d61e1bc329c287d2ee2d46614c9aa"
+    },
+    {
+      "path": "legacy/src/optimization/problem.py",
+      "bytes": 4140,
+      "sha256": "23c211238f6e5e9a2226efbe6a0ee8d0dc5f2afef056ebac29fe850300ce4283"
+    },
+    {
+      "path": "legacy/src/optimization/result.py",
+      "bytes": 2123,
+      "sha256": "4f8c537f1e386702596afdbc738bba2da414aa0eedf8294d31e81f0ca0dbd615"
+    },
+    {
+      "path": "legacy/src/optimization/solvers/__init__.py",
+      "bytes": 130,
+      "sha256": "a31866c07f986f3f095b400733ec4eff5fda6b08618bad95f6ed56d6b85cbe86"
+    },
+    {
+      "path": "legacy/src/optimization/solvers/base.py",
+      "bytes": 357,
+      "sha256": "89e362814a1c5a85cc44dc03bf979328456dcd19dbcdb54bc5e4368977be3397"
+    },
+    {
+      "path": "legacy/src/optimization/solvers/exhaustive.py",
+      "bytes": 6537,
+      "sha256": "da892ed3a6ecd4749b5c27e37069c70ee9cee282b8b364773a0b03bdb75a86fa"
+    },
+    {
+      "path": "legacy/src/optimization/storage.py",
+      "bytes": 4574,
+      "sha256": "69c5acde322ec30cddbe8ad151efc701011d5c8488ed75e28405a30f2704a685"
+    },
+    {
+      "path": "legacy/src/optimization/utility.py",
+      "bytes": 4896,
+      "sha256": "0c88c8300ab54e76067c9d4333f81f1f32435f4b511c8a4bf0be23f800b8f1e6"
+    },
+    {
+      "path": "legacy/src/simulation/__init__.py",
+      "bytes": 2894,
+      "sha256": "c010548df6cc66822970b2044fa41edf824af9d25da99a0c72cd6d6bfb03c93a"
+    },
+    {
+      "path": "legacy/src/simulation/config.py",
+      "bytes": 4563,
+      "sha256": "7d12201cf9de0c5b7b94727b313ab4a0165e4c346845da0e95a3a5245f684e63"
+    },
+    {
+      "path": "legacy/src/simulation/contracts.py",
+      "bytes": 7563,
+      "sha256": "ec6bd7dd73b66d6438bbb69b203c92d52e1097fd17ee0a3847fc46c727c0b7ce"
+    },
+    {
+      "path": "legacy/src/simulation/core/__init__.py",
+      "bytes": 231,
+      "sha256": "b4221574d2cdd5e9151326b38a1357f31ecc0ef4e932a7ba6009059deef36c48"
+    },
+    {
+      "path": "legacy/src/simulation/core/engine.py",
+      "bytes": 3214,
+      "sha256": "d8e070aa1fbcd0972c7e04aa0eb00acc33a627751e97f0d35ec1df0b59902889"
+    },
+    {
+      "path": "legacy/src/simulation/core/event.py",
+      "bytes": 1433,
+      "sha256": "72a22233206633ed6742e1ff36041b79e35694e05d4b843498c39b7de4a4b71a"
+    },
+    {
+      "path": "legacy/src/simulation/demand/__init__.py",
+      "bytes": 760,
+      "sha256": "02d5adf49168a210de4843b75dc29efb53d243302223ab53e5920e8062493317"
+    },
+    {
+      "path": "legacy/src/simulation/demand/generators.py",
+      "bytes": 5538,
+      "sha256": "aaabe5751ed7ac4c7da38cbb47df5c3b80ef66d191e6e81f30d0391d789f7598"
+    },
+    {
+      "path": "legacy/src/simulation/demand/loaders.py",
+      "bytes": 1570,
+      "sha256": "95fe028778bf56e787ad79c5c541671eda3ef14b5fb17b1f64bd3d3f790fc9d6"
+    },
+    {
+      "path": "legacy/src/simulation/demand/models.py",
+      "bytes": 1785,
+      "sha256": "2395f16c839d83a98540d85024518f519890b7961e2d82d99f7cf013d7230b4d"
+    },
+    {
+      "path": "legacy/src/simulation/demand/sampler.py",
+      "bytes": 4653,
+      "sha256": "e5847748d83cccfa96f3008704730c1881bb3d53107b4e42e268184e5ce7aaf1"
+    },
+    {
+      "path": "legacy/src/simulation/demand_driven/__init__.py",
+      "bytes": 45,
+      "sha256": "09c3d2c6d02f203634c740eccb9698c949130a1828f21ec7669d98a9475cb720"
+    },
+    {
+      "path": "legacy/src/simulation/demand_driven/simulator.py",
+      "bytes": 5076,
+      "sha256": "82bf8f6947570c4d1cac74078e071137e36a4983652536d52202c610a808507b"
+    },
+    {
+      "path": "legacy/src/simulation/demand_generation.py",
+      "bytes": 3297,
+      "sha256": "07f99587d6492d9a97e04338b2b6f69df84f18cfed1a099ec23f7c6754170e92"
+    },
+    {
+      "path": "legacy/src/simulation/demo/__init__.py",
+      "bytes": 58,
+      "sha256": "2c0cc3db06179dda4c6520b33b2e698def24e0b63f7c91d0b4654565f631374c"
+    },
+    {
+      "path": "legacy/src/simulation/demo/build_fixed_route_showcase.py",
+      "bytes": 3768,
+      "sha256": "1c1f44c8bbe6d3b722a7129de873bbe12f448345f905d11472159ac4d35b7562"
+    },
+    {
+      "path": "legacy/src/simulation/demo/build_lausanne_urban.py",
+      "bytes": 6618,
+      "sha256": "a5e9b0c635aae04a44d16553a9a7eb290f0247f78779cf7f1a8290c05d7f47d8"
+    },
+    {
+      "path": "legacy/src/simulation/demo/build_logistics_mvp.py",
+      "bytes": 8928,
+      "sha256": "9514f9ed84c6a3cccfaff6e5f2761f59bff75fd0626eaf7db3fe0ea858110245"
+    },
+    {
+      "path": "legacy/src/simulation/demo/build_ondemand_cache.py",
+      "bytes": 6980,
+      "sha256": "9b74eb803d089f44d786922c707e098927b7b2f32ec37fa2ef9c3b44ccb14854"
+    },
+    {
+      "path": "legacy/src/simulation/demo/run_experiment.py",
+      "bytes": 4671,
+      "sha256": "e1cb832b10ba333131de8a8aca8fcde5f3ec577947610773e0373c5f9158a4e9"
+    },
+    {
+      "path": "legacy/src/simulation/demo/run_full_day.py",
+      "bytes": 1513,
+      "sha256": "a2cb67fe812c27e1e565c98f40b164c0ef066541e6e5bd3beff0dab2d06251da"
+    },
+    {
+      "path": "legacy/src/simulation/demo/run_full_showcase.py",
+      "bytes": 2372,
+      "sha256": "34d47beb398ff5c9760bc7fe37c97af49ed8d0138acb2f26f2dba597eb04327e"
+    },
+    {
+      "path": "legacy/src/simulation/demo/visualize_fixed_route.py",
+      "bytes": 1658,
+      "sha256": "a7cb86eee21390593d5a112a27c49b2f07cdd3b1d9980630f69d19002821008b"
+    },
+    {
+      "path": "legacy/src/simulation/demo_pipeline.py",
+      "bytes": 7444,
+      "sha256": "28d125ada5a6113ae7bd67908e6e82ab3f710e34cbedea34b9287a4c4606f65b"
+    },
+    {
+      "path": "legacy/src/simulation/demo_release_gate.py",
+      "bytes": 2794,
+      "sha256": "95b2bf61a3447853e561d3740069af6b6120207c7d89225cdba737a3a47c7c46"
+    },
+    {
+      "path": "legacy/src/simulation/experiment.py",
+      "bytes": 4111,
+      "sha256": "7764565434d41dc4208f87b3ff3c746faa6962721c3cf69097984329dec01a38"
+    },
+    {
+      "path": "legacy/src/simulation/exposure.py",
+      "bytes": 3616,
+      "sha256": "d3a93f4e3ed907c6fda6dc1619b7f9e0e15b5502cd48b11faf0d87f49d92745d"
+    },
+    {
+      "path": "legacy/src/simulation/fixed_route/__init__.py",
+      "bytes": 97,
+      "sha256": "6ffb0cfce8ce652b881295b41da022adfd0459cae6eaa4b79f6d1efcef152487"
+    },
+    {
+      "path": "legacy/src/simulation/fixed_route/duties.py",
+      "bytes": 1099,
+      "sha256": "dbf7441864766f5ba8ad6e0a06b95513ef31cf6ca897c6f491b03bd42c33c98e"
+    },
+    {
+      "path": "legacy/src/simulation/fixed_route/gtfs.py",
+      "bytes": 2434,
+      "sha256": "fc81d4fa565eaf84035929927404bfee1e60b13376b2daa1e6909adfb1f6a090"
+    },
+    {
+      "path": "legacy/src/simulation/fixed_route/simulator.py",
+      "bytes": 4187,
+      "sha256": "eea0b4377ed97bd82e01202b632ff2f7db8516c0e871a54f4c192a12e349af8b"
+    },
+    {
+      "path": "legacy/src/simulation/io/__init__.py",
+      "bytes": 170,
+      "sha256": "2bc7aeafd96c089a8b8a6e3573430d1b8a51cec0d0862410b824c286aee58b98"
+    },
+    {
+      "path": "legacy/src/simulation/io/results.py",
+      "bytes": 5634,
+      "sha256": "901b526b344fbcc4e7a4ec149f99c3212f2a2c79c1c0b47074765301245738bc"
+    },
+    {
+      "path": "legacy/src/simulation/io/standard.py",
+      "bytes": 10987,
+      "sha256": "2e9d541bec7663eeac03f1021f880f49539c7e6f4b76e7f46de579d154f6ba98"
+    },
+    {
+      "path": "legacy/src/simulation/models.py",
+      "bytes": 1706,
+      "sha256": "90922348b30beec5b0db9aa4cecc2bcec0cd4d6c5a837cc0e9371854a534993c"
+    },
+    {
+      "path": "legacy/src/simulation/on_demand/__init__.py",
+      "bytes": 41,
+      "sha256": "4861d71485f983fa41aa00b6211dfa9a4ce6d565cf97335c2d2fa253c31a18bf"
+    },
+    {
+      "path": "legacy/src/simulation/on_demand/simulator.py",
+      "bytes": 6496,
+      "sha256": "3d22190fd033e387be60ca131dd416155e6dde1d04def9493d920db19cf73dc0"
+    },
+    {
+      "path": "legacy/src/simulation/optimization/__init__.py",
+      "bytes": 277,
+      "sha256": "b68ffd279e473e5da45b6e3ca57c55b21a600916bc7ac32257fe2bcf991ce47b"
+    },
+    {
+      "path": "legacy/src/simulation/optimization/portfolio.py",
+      "bytes": 4461,
+      "sha256": "0412bc7646d3cda0f16d73bc776204a9be3de7a437c55d5ea2c59b38b854ca6d"
+    },
+    {
+      "path": "legacy/src/simulation/oracle.py",
+      "bytes": 12618,
+      "sha256": "5c7204534bdba7a7b34c935a878101edfdba4f7d0e7838765c17d526e5aca238"
+    },
+    {
+      "path": "legacy/src/simulation/portfolio.py",
+      "bytes": 16688,
+      "sha256": "6e56940420db6f151a3abf99439c15a9d9dbb78747983e796a4066041b45d3d7"
+    },
+    {
+      "path": "legacy/src/simulation/preprocessing/__init__.py",
+      "bytes": 683,
+      "sha256": "3c4d944af3eb01d7d5dad0ecf955606f811bdb83e65ede1ad634b2e10d04bd76"
+    },
+    {
+      "path": "legacy/src/simulation/preprocessing/edge_grid.py",
+      "bytes": 4818,
+      "sha256": "692d5941bb44cf237c1d15cc9fae68d15c5211669ca2b767391a56653562d246"
+    },
+    {
+      "path": "legacy/src/simulation/preprocessing/fixed_route.py",
+      "bytes": 6312,
+      "sha256": "94191cb0d65d814f3da4dbe41bd2e3de983016d576731e2c7e9baebe66069241"
+    },
+    {
+      "path": "legacy/src/simulation/preprocessing/geo.py",
+      "bytes": 4632,
+      "sha256": "7c9ef0d140b1fb66ddfb7a2d260107d0146e67d48e09cfaaa37f1f0365f2b0f7"
+    },
+    {
+      "path": "legacy/src/simulation/preprocessing/gtfs.py",
+      "bytes": 9164,
+      "sha256": "44cd6b45519236f7f1df65fb51059bad279b2341bf65cc47b9c9bb5d70b45c94"
+    },
+    {
+      "path": "legacy/src/simulation/preprocessing/gtfs_pipeline.py",
+      "bytes": 13742,
+      "sha256": "b23bbebc6e23b9f4fdd7dddf4687f9d09a85f38c2ae1106103cdc6bb278bfc06"
+    },
+    {
+      "path": "legacy/src/simulation/preprocessing/osm.py",
+      "bytes": 3406,
+      "sha256": "2c452a5c8415fd658c18916715f580632b1d0771da547a3c10929e848936fb42"
+    },
+    {
+      "path": "legacy/src/simulation/preprocessing/road_network.py",
+      "bytes": 4004,
+      "sha256": "398f3791f0b985bc48a5114ba40c15c3490a0407f4389446fda2617ac98f6d35"
+    },
+    {
+      "path": "legacy/src/simulation/random.py",
+      "bytes": 894,
+      "sha256": "9da0e3896df6f458b0c421cf32020656fca2e35e5647c8c55a895ff756392852"
+    },
+    {
+      "path": "legacy/src/simulation/registry.py",
+      "bytes": 611,
+      "sha256": "cbf16b37961085c8229be791ba11333b48959e0353655cc03a661d415871d412"
+    },
+    {
+      "path": "legacy/src/simulation/reproducibility.py",
+      "bytes": 2230,
+      "sha256": "06ff8aa6b8ad2ee7e2645dc44eafd6390d3b0e7b171430e0a00b12c8001a8421"
+    },
+    {
+      "path": "legacy/src/simulation/route_segments.py",
+      "bytes": 2916,
+      "sha256": "7175104eb561334dc7c772dd1d25deef636006f166b1007fe3fba717226f6dca"
+    },
+    {
+      "path": "legacy/src/simulation/routing/__init__.py",
+      "bytes": 231,
+      "sha256": "738760fcb78d651472e662f631dc62e3a61d8bee55539c6de34cab88b231adde"
+    },
+    {
+      "path": "legacy/src/simulation/routing/osm_router.py",
+      "bytes": 5702,
+      "sha256": "5b1954e673ef3e7c905380d4268be31b2f1725437e72b4405e82335be8bf6ec9"
+    },
+    {
+      "path": "legacy/src/simulation/sensing/__init__.py",
+      "bytes": 243,
+      "sha256": "60ce023b046227f8808a16ff9a7ac9a28f9fd42978390609008306b30e86bbae"
+    },
+    {
+      "path": "legacy/src/simulation/sensing/exposure.py",
+      "bytes": 1002,
+      "sha256": "f75b9fb6866bc04baa911fc1d6ed4c419748e74436ef80f0bfe061d9b11a9ccf"
+    },
+    {
+      "path": "legacy/src/simulation/sensing/utility.py",
+      "bytes": 1500,
+      "sha256": "5c750e9ef31d034943ee532bfdee8e7d7cfdf4692a6a94f3b9be5ce8cb0826bb"
+    },
+    {
+      "path": "legacy/src/simulation/sensing_assignment.py",
+      "bytes": 2633,
+      "sha256": "aa9b6a714582b249d09343928713841d69c609a09a7a07be2dd9e84e1d649af3"
+    },
+    {
+      "path": "legacy/src/simulation/space/__init__.py",
+      "bytes": 460,
+      "sha256": "c0fbfc546ebd9ff4be920a621a2fd5657d4f0b34e5af7ac4c2f78574c7875bf5"
+    },
+    {
+      "path": "legacy/src/simulation/space/graph_grid.py",
+      "bytes": 2923,
+      "sha256": "11d04749494fe0ec0167d75bf44c83deb0237814d18d9f3962a249424063b673"
+    },
+    {
+      "path": "legacy/src/simulation/space/grid.py",
+      "bytes": 2083,
+      "sha256": "cdda4dff10908fc3a0999167a7627e0ad693e42e4ed2f4b34dbbc0c973de3f75"
+    },
+    {
+      "path": "legacy/src/simulation/space/hex_grid.py",
+      "bytes": 3451,
+      "sha256": "6aa50bb81e3f8f229cb793e671e8cddc31b6c456de5c31fba717b4b792f6ea64"
+    },
+    {
+      "path": "legacy/src/simulation/space/square_grid.py",
+      "bytes": 2085,
+      "sha256": "a3a3c896916a511d60ecfb74bcee0918816741f43b103cdeb5c95747eb1df3cd"
+    },
+    {
+      "path": "legacy/src/simulation/space/time_slicer.py",
+      "bytes": 3173,
+      "sha256": "280f8e6e92831de38679b6bad628ac05b1f414a652e58fc683c63eca71513b4e"
+    },
+    {
+      "path": "legacy/src/simulation/statistics.py",
+      "bytes": 1071,
+      "sha256": "d4ce8e652dd1cfc7ea174e1274833d11e133c62c30a83bb8cadc2ff3a921636f"
+    },
+    {
+      "path": "legacy/src/simulation/storage.py",
+      "bytes": 5533,
+      "sha256": "00b88689ac7ab1473a310f457562c683983a4758000845ff38c3ef6f37bfec17"
+    },
+    {
+      "path": "legacy/src/simulation/tracking/__init__.py",
+      "bytes": 731,
+      "sha256": "da7ef8f0549f4ec584418cb1f05437175b5ab8743c4ef6494c1605345511e26d"
+    },
+    {
+      "path": "legacy/src/simulation/tracking/accumulator.py",
+      "bytes": 6770,
+      "sha256": "38384c67fc072d4b58c6036bdc997a278f21e323ca58ec5a91ddae92337e6ecd"
+    },
+    {
+      "path": "legacy/src/simulation/tracking/statistics.py",
+      "bytes": 3408,
+      "sha256": "c8ffad953c84f3e24114c7e1d5c3aa96442d7ffa7d1758dce5859945bbd89113"
+    },
+    {
+      "path": "legacy/src/simulation/tracking/trajectory.py",
+      "bytes": 9535,
+      "sha256": "617e813f87343daf6ae8dcb46c137abbe7002886855815955ea311b4883adb6e"
+    },
+    {
+      "path": "legacy/src/simulation/vehicles/__init__.py",
+      "bytes": 519,
+      "sha256": "829a810577765a0f56bb3b4c8cd1029cb564f8f9d7bb12617415f2ce4ba97ba2"
+    },
+    {
+      "path": "legacy/src/simulation/vehicles/base.py",
+      "bytes": 1329,
+      "sha256": "501a65a9df29130f148b28ced649d1bb6d0906c5ccc11f911ef655c5a272ed74"
+    },
+    {
+      "path": "legacy/src/simulation/vehicles/fixroute/__init__.py",
+      "bytes": 328,
+      "sha256": "d9512ea83b39d4e098da06ee68c81726e21dbd1168f277f9aec18dac309c6c0a"
+    },
+    {
+      "path": "legacy/src/simulation/vehicles/fixroute/gtfs.py",
+      "bytes": 6221,
+      "sha256": "54774501f686cf9e12c87fe00edceeed73779289bb7b9c92662c701eab2d58bf"
+    },
+    {
+      "path": "legacy/src/simulation/vehicles/fixroute/service.py",
+      "bytes": 6154,
+      "sha256": "c6d27fb723e7b1bb0b06079dd63e4881f37a519557a9a3791f64f7fb0cfd73b4"
+    },
+    {
+      "path": "legacy/src/simulation/vehicles/logistics/__init__.py",
+      "bytes": 349,
+      "sha256": "bc531c36421badb29f008dbbee152ae1fa74ba2a7fbd4d953f64d2f563476a55"
+    },
+    {
+      "path": "legacy/src/simulation/vehicles/logistics/service.py",
+      "bytes": 5475,
+      "sha256": "ce7b3c5b50cf3c6ef6007907321b779d817ce873931346bce26613ddcd6da765"
+    },
+    {
+      "path": "legacy/src/simulation/vehicles/logistics/vrp.py",
+      "bytes": 3095,
+      "sha256": "5f708b736dee1b41ef983b0dd0be69961d0fb953d680216b9a7cbeabeac9067c"
+    },
+    {
+      "path": "legacy/src/simulation/vehicles/ondemand/__init__.py",
+      "bytes": 174,
+      "sha256": "4fe469ddda6903aae66dc3c1bfd12d88b626fd2ac2ce03c0592be0fcd92b162b"
+    },
+    {
+      "path": "legacy/src/simulation/vehicles/ondemand/osm_service.py",
+      "bytes": 6687,
+      "sha256": "7b0d9b1fa0f48d62fae4aa4a20a33bdeec1a70c4bd1cb34bc3139b5e681fd329"
+    },
+    {
+      "path": "legacy/src/simulation/vehicles/ondemand/service.py",
+      "bytes": 7682,
+      "sha256": "949f3665cc4f93e2a121dd595f19d8647f5cdc4f7cc9ee9c21ef7e38b0f02853"
+    },
+    {
+      "path": "legacy/src/simulation/viz/__init__.py",
+      "bytes": 619,
+      "sha256": "8687766b22107aa149ed9e19bd9c1629f6150bac548f3bf81fbd02ed32024fec"
+    },
+    {
+      "path": "legacy/src/simulation/viz/customer_showcase.py",
+      "bytes": 13002,
+      "sha256": "0bc2800ade7f07967a74e3308f45ab0feffa156aea48339d1529ee35c75ac9ee"
+    },
+    {
+      "path": "legacy/src/simulation/viz/fixed_route_all_lines.py",
+      "bytes": 7631,
+      "sha256": "b9726fcaef2c270179eae9b774d43d1473c53e74c01652543f494a8adafbff23"
+    },
+    {
+      "path": "legacy/src/simulation/viz/fixed_route_presentation.py",
+      "bytes": 5592,
+      "sha256": "5f971f381d785d71e08dcf6dd7f0a51348be8d000a9edf500c6f9a013024540f"
+    },
+    {
+      "path": "legacy/src/simulation/viz/full_day_figures.py",
+      "bytes": 9328,
+      "sha256": "5a97e77636fbfc0ecc2382ae777c972e32c3e7e7b530fa19a2e014f335090f8a"
+    },
+    {
+      "path": "legacy/src/simulation/viz/geomap.py",
+      "bytes": 13094,
+      "sha256": "156bb868692ab59f01e27cfd38c4fa9afe6bd175ea4537a348103dfd3cc2f0df"
+    },
+    {
+      "path": "legacy/src/simulation/viz/heatmap.py",
+      "bytes": 5377,
+      "sha256": "eceaad11bcf8ee103c8f89ecf1ae25b00bf439b4ae9b0176b5336859a1eda572"
+    },
+    {
+      "path": "legacy/src/simulation/viz/logistics_presentation.py",
+      "bytes": 6603,
+      "sha256": "3a320c17bb4cd13628b3c6ab72d5be52f2fd914676a1a5dca70147be59e83c92"
+    },
+    {
+      "path": "legacy/src/simulation/viz/ondemand_presentation.py",
+      "bytes": 6788,
+      "sha256": "dd397f7ef7fa8573b97bf60041461d06ae129cace07a62dd26dfaa180fe14958"
+    },
+    {
+      "path": "legacy/src/simulation/viz/playback.py",
+      "bytes": 9323,
+      "sha256": "af0d6cee085a02d3c8a268f96af2cfa2bd62224f415e37c9d33e00c6d3196931"
+    },
+    {
+      "path": "legacy/tests/conftest.py",
+      "bytes": 336,
+      "sha256": "2a3a95d03a2093339b8645f62098fe0c26218a176995ca65b2e4dd69e8e7b44d"
+    },
+    {
+      "path": "legacy/tests/environment/test_lausanne_loader.py",
+      "bytes": 2163,
+      "sha256": "1401684627b9f82a8656bf72a5c73aebee6a8f256863b9ec8a0028ac85bc589e"
+    },
+    {
+      "path": "legacy/tests/environment/test_schemas.py",
+      "bytes": 1006,
+      "sha256": "33892d299e2f9ad9239cd392e5b1169c91ad7f343a2ac8df2e165628f1b899af"
+    },
+    {
+      "path": "legacy/tests/optimization/test_contracts.py",
+      "bytes": 826,
+      "sha256": "2db203fed3f506d04a037ddca5e2035f2706d04657fed9546e186ffc3cde8cbe"
+    },
+    {
+      "path": "legacy/tests/optimization/test_demo02_mean_risk.py",
+      "bytes": 6989,
+      "sha256": "59aad1aa38620f318e0ea8766bf9ce02445f404beb978f47a649cbc3efc2f2de"
+    },
+    {
+      "path": "legacy/tests/simulation/test_contracts.py",
+      "bytes": 1932,
+      "sha256": "db6b6f223a1d1282b2622f1232a0130c5de9eb2daaddc9d49818c38d5b98d059"
+    },
+    {
+      "path": "legacy/tests/simulation/test_demo01_baselines.py",
+      "bytes": 10442,
+      "sha256": "dd9a688d2dbd5a6953258c9d490f78b6628078d08d87bb5944e57255b5e88827"
+    },
+    {
+      "path": "legacy/tests/simulation/test_demo01_lausanne_smoke.py",
+      "bytes": 2293,
+      "sha256": "9a94082c5ea4863cdc91d4b018bf473b91368199ab6b9ab9d6b72318987b0740"
+    },
+    {
+      "path": "legacy/tests/simulation/test_demo03_pipeline.py",
+      "bytes": 6625,
+      "sha256": "028982ef0a8c6d7c96b67a6b10c05b00128251ac2f0715f08cc3ef9f3b3c6d7d"
+    },
+    {
+      "path": "legacy/tests/simulation/test_fixed_route.py",
+      "bytes": 1072,
+      "sha256": "07349431e5aca3745357eec1ff449d9004b94d95654acc460c956fbea24202a5"
+    },
+    {
+      "path": "legacy/tests/simulation/test_iv02_core.py",
+      "bytes": 4193,
+      "sha256": "fd2432c0190e7f61dd0175ee2cf97543592415e0939a3fb30c414e62981f4834"
+    },
+    {
+      "path": "legacy/tests/test_demo_views.py",
+      "bytes": 2043,
+      "sha256": "629a67b66070aadc78175abd505366cc7879e5f1f1aef383929732fbb4ee43a9"
+    },
+    {
+      "path": "legacy/tests/test_import_direction.py",
+      "bytes": 858,
+      "sha256": "0643ea684a0e17d7f8b70fa8aee7368b55073b9418b06dbed0a2cc3ca7a4a759"
+    },
+    {
+      "path": "notebooks/lausanne_logistics_simulation.ipynb",
+      "bytes": 306343,
+      "sha256": "cdadcb56c613c5c909688f7b7e2e25a3f7787a171f9b8b6686f55aa5285054d0"
+    },
+    {
+      "path": "notebooks/lausanne_bus_simulation.ipynb",
+      "bytes": 266924,
+      "sha256": "122238765baeffe7b10ab6a1ea54ac329fecda4df07e6ee4b2aac3952503a8eb"
+    },
+    {
+      "path": "notebooks/lausanne_ride_hailing_simulation.ipynb",
+      "bytes": 323340,
+      "sha256": "523eee6bb1f41767e79d02f517038f11a4b80783af9ee16430c30988c8e1d5f6"
+    }
+  ],
+  "replacements": [
+    "frontend/src/app/App.test.tsx",
+    "frontend/src/features/results/ResultsPage.test.tsx",
+    "tests/v2/run_notebook_workflows.py",
+    "tests/v2/test_contract_identity_and_records.py",
+    "tests/v2/test_m02_environment.py",
+    "tests/v2/test_m03_generators.py",
+    "tests/v2/test_m04_gtfs.py",
+    "tests/v2/test_m05a_event_kernel.py",
+    "tests/v2/test_m05b_execution_dispatch.py",
+    "tests/v2/test_m06_exposure_storage.py",
+    "tests/v2/test_m07_headless_application.py",
+    "tests/v2/test_m08a_portfolio_sampling.py",
+    "tests/v2/test_m08b_portfolio_analysis.py",
+    "tests/v2/test_m09_job_store.py",
+    "tests/v2/test_mr04_dispatch.py",
+    "tests/v2/test_mr09_temporal_profiles.py",
+    "tests/v2/test_mr15_tutorials.py",
+    "tests/v2/test_mr17_p05_frontier.py"
+  ],
+  "incompatible_legacy_assertions": "Moment/delta-method aggregation, covariance/risk-aversion modes, taxonomy simulators and fleet-size-dependent supply are retired semantics, not equivalent implementations of the fixed-catalog sample-utility framework.",
+  "removed_file_count": 150,
+  "removed_bytes": 1802196
+}

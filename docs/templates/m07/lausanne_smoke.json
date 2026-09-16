@@ -1,0 +1,24 @@
+{
+  "agency_timezone": "Europe/Berlin",
+  "allow_uniform_population_proxy": false,
+  "generated_rate_tasks_per_s": 0.0011111111111111111,
+  "generated_service_duration_s": 30.0,
+  "grid_cell_size_m": 100.0,
+  "master_seed": 20260114,
+  "max_gtfs_tasks": 4,
+  "memory_limit_bytes": 536870912,
+  "observation_duration_s": 7200.0,
+  "reporting_bin_s": 900.0,
+  "replications": 2,
+  "road_speed_mps": 8.333333333333334,
+  "route_ids": [
+    "92-13-H-j26-1"
+  ],
+  "routing_profile_id": "road_static_30kph",
+  "schema_version": "2.0",
+  "service_date": "2026-01-14",
+  "study_municipalities": [
+    "Lausanne (suburban)",
+    "Lausanne (urban)"
+  ]
+}

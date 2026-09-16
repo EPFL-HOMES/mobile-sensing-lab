@@ -1,0 +1,26 @@
+{
+  "agency_timezone": "Europe/Berlin",
+  "blocked_dependency": "M02 strict Lausanne network preparation",
+  "blocked_reason": "The supplied road source contains 44 disconnected MultiLineStrings and six endpoint-identity conflicts; no validated prepared Lausanne routing artifact exists.",
+  "counts": {
+    "active_services": 7055,
+    "active_trips_all_routes": 6583,
+    "selected_route_trips_all_services": 400,
+    "selected_routes": 1,
+    "selected_trip_counts_by_route": {
+      "92-13-H-j26-1": 146
+    },
+    "selected_trips": 146,
+    "source_routes": 46,
+    "source_trips": 31546
+  },
+  "execution_scope": "feed_preflight_only",
+  "final_route_ids": [
+    "92-13-H-j26-1"
+  ],
+  "gtfs_source_content_hash": "a8057f0409d4cc7cb0dcd8aa35b07c0a0e63622aaad9dac8d73ecca6cbe5927b",
+  "routed_reconstruction_executed": true,
+  "service_date": "2026-01-14",
+  "service_origin_utc": "2026-01-13T23:00:00+00:00",
+  "status": "feed_preflight_passed_routed_reconstruction_blocked"
+}

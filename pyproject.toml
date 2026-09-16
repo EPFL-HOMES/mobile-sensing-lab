@@ -1,0 +1,74 @@
+[project]
+name = "mobile-sensing"
+version = "0.1.0"
+description = "Reproducible mobile sensing simulation and random-allocation portfolio analysis."
+authors = [{ name = "Berke Argin", email = "berke.argin@epfl.ch" }]
+license = "GPL-3.0-only"
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+keywords = ["mobile sensing", "simulation", "operations research", "sensor portfolio"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Science/Research",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Scientific/Engineering",
+]
+
+dependencies = [
+  "geopandas>=1.0.1,<2",
+  "pandas>=2.2,<3",
+  "shapely>=2.0.6,<3",
+  "pyproj>=3.6.1,<4",
+  "networkx==3.5",
+  "numpy>=1.26.4,<2",
+  "scipy>=1.11.4,<2",
+  "pydantic>=2.10,<3",
+  "pyarrow>=19.0.1,<20",
+]
+
+[project.optional-dependencies]
+web = [
+  "fastapi>=0.115.6,<1",
+  "uvicorn[standard]>=0.32,<1",
+  "python-multipart>=0.0.20,<1",
+]
+notebook = ["matplotlib>=3.8,<4", "ipython>=8.28,<10", "ipykernel>=6.29.5,<7"]
+geography = ["osmnx==2.0.6"]
+optimization = ["ortools==9.11.4210"]
+
+[project.scripts]
+mobile-sensing = "mobile_sensing.cli:main"
+
+[tool.poetry]
+packages = [
+  { include = "mobile_sensing", from = "src" },
+]
+include = [
+  { path = "src/mobile_sensing/_web", format = ["sdist", "wheel"] },
+  { path = "src/mobile_sensing/_examples", format = ["sdist", "wheel"] },
+]
+
+[tool.black]
+line-length = 100
+target-version = ["py312"]
+
+[tool.isort]
+profile = "black"
+line_length = 100
+
+[tool.poetry.group.dev.dependencies]
+pytest = ">=8.3,<9"
+ruff = ">=0.6.9,<1"
+black = ">=24.8,<26"
+isort = ">=5.13.2,<7"
+ipython = ">=8.28,<10"
+httpx = ">=0.28,<1"
+
+[tool.pytest.ini_options]
+testpaths = ["tests/v2"]
+pythonpath = ["src"]
+addopts = ["--import-mode=importlib"]
+
+[build-system]
+requires = ["poetry-core>=1.9.0"]
+build-backend = "poetry.core.masonry.api"

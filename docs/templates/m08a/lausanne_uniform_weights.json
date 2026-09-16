@@ -1,0 +1,8 @@
+{
+  "schema_version": "2.0",
+  "weights_id": "lausanne_uniform_spatial_duration_temporal",
+  "kind": "uniform_spatial_duration_temporal",
+  "missing_policy": "error",
+  "values": [],
+  "provenance": "Illustrative uniform spatial weights and reporting-bin-duration temporal weights; not population calibrated"
+}

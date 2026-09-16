@@ -1,0 +1,3 @@
+task_id,step_index,release_s,location_id,scheduled_s,service_duration_s,quantity_delta
+0001,1,0,L001,0,30,-1
+0001,2,0,L002,300,30,1

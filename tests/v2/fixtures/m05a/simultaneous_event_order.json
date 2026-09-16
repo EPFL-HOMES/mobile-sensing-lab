@@ -1,0 +1,72 @@
+[
+  {
+    "time_s": 0.0,
+    "phase_order": 3,
+    "event_type": "vehicle_entry",
+    "vehicle_id": "old",
+    "task_id": null
+  },
+  {
+    "time_s": 0.0,
+    "phase_order": 4,
+    "event_type": "task_release",
+    "vehicle_id": null,
+    "task_id": "old_task"
+  },
+  {
+    "time_s": 0.0,
+    "phase_order": 5,
+    "event_type": "service_assignment",
+    "vehicle_id": "old",
+    "task_id": "old_task"
+  },
+  {
+    "time_s": 5.0,
+    "phase_order": 1,
+    "event_type": "execution_completion",
+    "vehicle_id": "old",
+    "task_id": "old_task"
+  },
+  {
+    "time_s": 5.0,
+    "phase_order": 2,
+    "event_type": "vehicle_exit",
+    "vehicle_id": "old",
+    "task_id": null
+  },
+  {
+    "time_s": 5.0,
+    "phase_order": 3,
+    "event_type": "vehicle_entry",
+    "vehicle_id": "new",
+    "task_id": null
+  },
+  {
+    "time_s": 5.0,
+    "phase_order": 4,
+    "event_type": "task_release",
+    "vehicle_id": null,
+    "task_id": "new_task"
+  },
+  {
+    "time_s": 5.0,
+    "phase_order": 5,
+    "event_type": "service_assignment",
+    "vehicle_id": "new",
+    "task_id": "new_task"
+  },
+  {
+    "time_s": 5.0,
+    "phase_order": 1,
+    "event_type": "execution_completion",
+    "vehicle_id": "new",
+    "task_id": "new_task"
+  },
+  {
+    "time_s": 20.0,
+    "phase_order": 7,
+    "event_type": "vehicle_exit",
+    "vehicle_id": "new",
+    "task_id": null
+  }
+]
