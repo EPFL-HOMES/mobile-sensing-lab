@@ -5,6 +5,20 @@ on:
   pull_request:
 
 jobs:
+  windows-headless:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install core Python workflow
+        run: python -m pip install ".[optimization]" pytest
+      - name: Check scientific imports
+        run: python -c "from mobile_sensing.simulation import run_event_kernel; from mobile_sensing.portfolio import evaluate_samples; from mobile_sensing.application import HeadlessApplication"
+      - name: Exercise synchronous simulation without the browser or coordinator
+        run: python -m pytest -q tests/v2/test_m07_headless_application.py::test_headless_cli_validates_and_runs_without_http_or_browser
   test:
     runs-on: ubuntu-latest
     steps:
