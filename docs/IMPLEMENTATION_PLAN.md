@@ -15,7 +15,9 @@ The current release implements the complete local workflow from data registratio
 - Reduce cold large-region acquisition time and provide a documented local/offline road-network path.
 - Bound cache growth and expose cache maintenance without changing scientific identities.
 - Reduce first large portfolio-map query latency and large browser bundle sizes.
-- Extend measured Linux browser coverage and evaluate a supported Windows launch path.
+- Extend Linux browser and WSL2 end-to-end coverage beyond the automated checks.
+- Preserve the native Windows synchronous Python smoke test; broaden scientific and multiprocessing coverage before claiming complete native Windows Python support.
+- Replace Unix-only workspace/coordinator locking and decouple tutorial adapters before offering the native Windows App and bundled notebooks.
 
 ## Scientific extensions
 

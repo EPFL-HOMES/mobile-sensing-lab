@@ -35,6 +35,8 @@ poetry build
 
 Some geographic tests require the original immutable Lausanne inputs and skip when those inputs are unavailable. Record every skip and do not describe an unexecuted check as passing.
 
+See [the test directory guide](tests/README.md) for coverage groups, historical naming, fixture ownership, and rules for renaming or retiring tests. Use behavior-based names for new tests rather than adding milestone prefixes.
+
 ## Documentation
 
 Update `README.md` and `docs/QUICKSTART.md` for user-visible workflow changes. Update the corresponding scientific specification for semantic changes and `docs/INTERFACES.md` for serialized fields. Keep `docs/IMPLEMENTATION_STATUS.md` concise: current release state, executed validation, known limitations, and compatibility notes.

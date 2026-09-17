@@ -1,13 +1,18 @@
 # Quickstart
 
-This guide starts from an installed release with the matching Lausanne and San Francisco example archives. See the repository [README](../README.md) for installation.
+This guide covers the browser App after installation. The release wheel already contains both city examples. Start with the [installation and platform guide](INSTALLATION.md): macOS/Linux users run the App locally; Windows users can try the WSL2 route. Native Windows Python-only users should use that guide's headless example instead of this browser workflow.
 
 ## 1. Launch and open an example
 
+Open Terminal on macOS/Linux, or Ubuntu on Windows with WSL2. If you used the README installation folder, enter:
+
 ```bash
+cd ~/mobile-sensing-lab
 source .venv/bin/activate
 mobile-sensing launch --artifact-root ./project --port 8820
 ```
+
+For WSL2, add `--no-browser` and open `http://localhost:8820/` in your Windows browser. For a source installation, enter your source directory instead of `~/mobile-sensing-lab`.
 
 Open the Project page. On a new workspace, the application imports both read-only examples in background jobs. Wait until their status is ready, then open either example. If the examples do not appear, verify that each JSON manifest is beside its matching ZIP archive or that `MOBILE_SENSING_EXAMPLE_DIRECTORY` points to that directory.
 

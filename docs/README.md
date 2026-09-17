@@ -3,6 +3,7 @@
 ## Start here
 
 - [Project README](../README.md): installation, startup, examples, and release assets.
+- [Installation and platforms](INSTALLATION.md): terminal commands for macOS, Windows Python, WSL2, Linux, and source development; tested support boundaries.
 - [Quickstart](QUICKSTART.md): first project, simulation, portfolio analysis, and export.
 - [Lausanne example](LAUSANNE_EXAMPLE.md): data, fleet assumptions, and interpretation.
 - [San Francisco example](SAN_FRANCISCO_EXAMPLE.md): OSM inputs, synthetic operating assumptions, and interpretation.
@@ -25,6 +26,7 @@ Read these documents in order when reviewing or changing scientific behavior:
 ## Development and release
 
 - [Contributing](../CONTRIBUTING.md): environment, generated contracts, tests, and pull requests.
+- [Coding-agent guidance](../AGENTS.md): constraints and required checks for AI-assisted development.
 - [Implementation plan](IMPLEMENTATION_PLAN.md): current public roadmap and acceptance conditions.
 - [Implementation status](IMPLEMENTATION_STATUS.md): current release state and limitations.
 - [Validation](VALIDATION.md): checks executed for the release candidate.

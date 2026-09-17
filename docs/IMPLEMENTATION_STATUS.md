@@ -44,9 +44,11 @@ The release files and complete checksum list are generated under `release/0.1.0/
 
 ## Known limitations
 
+Platform verification on 2026-09-17: [GitHub CI](https://github.com/EPFL-HOMES/mobile-sensing-lab/actions/runs/35205732264) passed both the Ubuntu suite/build and native Windows headless job. The Windows job installs Python 3.12 dependencies, imports scientific services, and runs the small single-worker environment/validation/simulation test. A separate local check blocked `fcntl` imports and passed that same headless test. Neither check establishes native Windows App, tutorial, or multiprocessing support. The [installation guide](INSTALLATION.md) distinguishes these paths and provides terminal-specific commands.
+
 - Local single-user operation only; no authentication, cloud service, or distributed queue.
 - Public Overpass latency and availability are external dependencies for live OSM acquisition.
-- macOS on Apple Silicon has the strongest browser validation. Linux coverage is narrower and native Windows launch is unsupported.
+- macOS on Apple Silicon has the strongest browser validation. Linux desktop and WSL2 coverage remain narrower. Native Windows supports the scoped headless path above; managed App launch and current tutorial adapters remain blocked by Unix-only file locking.
 - Large city preparation and full example recomputation require substantial memory, disk space, and time.
 - Large visualization chunks and first portfolio-map queries remain performance-maintenance areas.
 - The locked frontend dependency graph currently reports deprecation notices for indirect `mumath` and `@plotly/mapbox-gl`; the application uses MapLibre for maps, and migration to a future Plotly major version requires separate compatibility testing.

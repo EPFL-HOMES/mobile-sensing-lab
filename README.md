@@ -4,49 +4,56 @@ Mobile Sensing Lab is a local research application for simulating vehicle fleets
 
 The project is a working research release. Its calibrated scope is explicit: the bundled city examples use synthetic operating assumptions, inferred vehicle duties, assumed road speeds, and in-sample portfolio analysis. They demonstrate the workflow rather than estimate city-wide service performance.
 
-## Recommended installation
+## Choose how to use it
 
-The supported runtime is Python 3.12. The validated desktop platform is macOS on Apple Silicon. Linux requires POSIX file locking and has less browser coverage; native Windows launching is not supported.
+Use **Python 3.12**. You can use the browser App or call the simulator from Python without opening the App.
 
-For ordinary use, download the wheel from [GitHub Releases](https://github.com/EPFL-HOMES/mobile-sensing-lab/releases). A release wheel contains the built browser interface and both example projects; it does not require Node.js.
+| Your environment | Python simulation | Browser App and bundled notebooks |
+|---|---|---|
+| macOS | Validated | Full workflow validated on Apple Silicon |
+| Linux | Automated tests pass on Ubuntu | Build and automated tests pass; desktop interaction coverage is narrower |
+| Windows, native Python | Imports and a small synchronous simulation passed on Windows CI; see the [scope and setup](docs/INSTALLATION.md#windows-native-python) | Not currently supported: these workflows load Unix-only file locking |
+| Windows with WSL2 | Uses the Linux environment | Documented route to try the full App; WSL2 end-to-end testing remains open |
+
+**Windows does not make all project code unusable.** The limitation concerns the managed App and current tutorial adapters, not the entire scientific package. Installing a wheel successfully is not a guarantee that every workflow works on Windows. See the [exact platform boundaries](docs/INSTALLATION.md#platform-boundaries).
+
+## Install and open the App
+
+The release wheel includes the browser interface and both city examples. **Node.js, npm, Poetry, and Git are not needed to run the installed App.** Internet access is needed for installation; the wheel is about 322 MB, plus Python dependencies.
+
+### macOS: enter these commands in Terminal
+
+First install Python 3.12 using a [Python installer](https://www.python.org/downloads/release/python-31210/) or your existing Python environment manager. Open **Applications → Utilities → Terminal**. Copy the following commands there, one line at a time; do not enter them at a Python `>>>` prompt:
 
 ```bash
+mkdir -p ~/mobile-sensing-lab
+cd ~/mobile-sensing-lab
+python3.12 --version
 python3.12 -m venv .venv
 source .venv/bin/activate
-python -m pip install 'mobile_sensing-0.1.0-py3-none-any.whl[web,optimization,geography,notebook]'
-mobile-sensing --help
+python -m pip install --upgrade pip
+python -m pip install "mobile-sensing[web,optimization,geography,notebook] @ https://github.com/EPFL-HOMES/mobile-sensing-lab/releases/download/v0.1.0/mobile_sensing-0.1.0-py3-none-any.whl"
+mobile-sensing launch --artifact-root ./project --port 8820
 ```
 
-For development from a source checkout, Node.js 22.12–22.x and npm are also required:
+The version check should print `Python 3.12.x`. If the browser does not open, visit **http://127.0.0.1:8820/**. Keep Terminal open while using the App; press **Ctrl+C** there to stop. Your projects are saved in `~/mobile-sensing-lab/project/`.
+
+To open it again later, open Terminal and enter only:
 
 ```bash
-python3.12 -m venv .venv
-source .venv/bin/activate
-python -m pip install -e '.[web,optimization,geography,notebook]'
-npm --prefix frontend ci
-npm --prefix frontend run build
-```
-
-Register the environment once if you will use the tutorials:
-
-```bash
-python -m ipykernel install --user --name mobile-sensing --display-name 'Mobile Sensing (Python 3.12)'
-```
-
-Installation, live OpenStreetMap acquisition, and satellite basemaps require internet access. Bundled scientific results remain available offline.
-
-## Start the application
-
-From the repository or release directory:
-
-```bash
+cd ~/mobile-sensing-lab
 source .venv/bin/activate
 mobile-sensing launch --artifact-root ./project --port 8820
 ```
 
-The application opens at `http://127.0.0.1:8820/`. Keep the terminal open and press `Ctrl+C` to stop. Reuse the same `project/` directory to retain projects.
+### Windows and Linux
 
-On macOS, a source checkout can instead launch by double-clicking [Start Mobile Sensing.command](Start%20Mobile%20Sensing.command). Its first run creates a separate `.app-venv`, installs dependencies, and builds the browser interface. Python 3.12, Node.js, npm, and internet access must already be available.
+- **Windows, full App:** follow [Windows with WSL2](docs/INSTALLATION.md#windows-with-wsl2). It explicitly separates commands entered in PowerShell from commands entered in Ubuntu.
+- **Windows, Python only:** follow [native Windows Python setup](docs/INSTALLATION.md#windows-native-python), including the supported entry points and a small executable simulation check.
+- **Ubuntu/Linux:** follow [Linux setup](docs/INSTALLATION.md#linux).
+- **Editing the source:** follow [source installation](docs/INSTALLATION.md#install-from-source). This is where Node.js and npm are required for the browser interface.
+
+See [installation troubleshooting](docs/INSTALLATION.md#troubleshooting) if a command fails, and [Quickstart](docs/QUICKSTART.md) once the App opens. Live OpenStreetMap acquisition and satellite basemaps require internet access; bundled results remain available offline.
 
 ## Example projects
 
@@ -93,6 +100,8 @@ The source notebooks contain no saved execution outputs. They use temporary work
 
 ## Development
 
+For AI-assisted development, ask your assistant to read [AGENTS.md](AGENTS.md) before editing code. This file describes scientific invariants, repository boundaries, and required checks. It is a development guide, not an App installation step. Human contributors should also read [CONTRIBUTING.md](CONTRIBUTING.md).
+
 ```bash
 poetry install --all-extras
 python -m pytest -q tests/v2
@@ -107,16 +116,14 @@ The geographic regression tests additionally require the immutable local Lausann
 <summary>Prompt for an AI coding assistant</summary>
 
 ```text
-Set up and launch Mobile Sensing Simulator from <PROJECT_FOLDER>. Read
-README.md and AGENTS.md first. Preserve existing project, data, and result
-directories. Use Python 3.12 in a local virtual environment. For a source
-checkout, install the web, optimization, geography, and notebook extras,
-install the locked frontend dependencies, and build the frontend. For a
-release wheel, do not require Node.js. Verify mobile-sensing --help, then
-launch the existing ./project workspace. Confirm whether the matching
-Lausanne and San Francisco example manifest/archive pairs are installed;
-do not recompute them. Report the local URL and whether both examples appear
-on the Project page. Do not upload files or alter immutable inputs.
+Help me use or develop Mobile Sensing Lab in <PROJECT_FOLDER>. First read
+README.md, docs/INSTALLATION.md, and AGENTS.md. Identify my operating system
+and whether I need the browser App or the Python-only workflow. On native
+Windows, do not assume the App or bundled notebooks work; explain the
+headless Python and WSL2 alternatives. Use Python 3.12 and preserve existing
+projects, data, and results. For an installed wheel, do not require Node.js.
+Before changing code, read the relevant specifications and follow AGENTS.md.
+Run the applicable checks and distinguish tested behavior from assumptions.
 ```
 
 </details>
@@ -126,7 +133,7 @@ on the Project page. Do not upload files or alter immutable inputs.
 - This is a local, single-user application without authentication, cloud deployment, or a distributed job queue.
 - Large-region live OSM downloads depend on public Overpass availability and may require cached or local network data.
 - Synthetic demand, inferred duties, uncalibrated speeds, greedy dispatch, and illustrative costs require independent calibration before policy use.
-- macOS is the fully validated desktop platform; equivalent Linux browser coverage and native Windows support remain open.
+- macOS has full desktop validation. Linux desktop and WSL2 end-to-end coverage, native Windows App support, and portable tutorial adapters remain open; Python-only scope is documented separately.
 - Large visualization bundles and first-query latency remain performance-maintenance items.
 
 ## License

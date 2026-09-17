@@ -1,10 +1,14 @@
 # Notebook tutorials
 
-Use Python 3.12 with the `notebook` and `optimization` extras. Register and select the project kernel:
+Use Python 3.12 with the `web`, `notebook`, `geography`, and `optimization` extras, as installed by the README's App instructions. These notebooks use project/API adapters that currently import Unix-only file locking: **native Windows Python is not supported for these three tutorials**, even though the lower-level headless simulator has a working Windows path. Windows users can try a WSL2 Linux kernel; notebook execution on WSL2 has not been validated. See [installation and platform boundaries](../docs/INSTALLATION.md).
+
+Download or clone the repository to obtain the `.ipynb` files. In Terminal (macOS/Linux) or Ubuntu (WSL2), activate the installed environment and register its kernel:
 
 ```bash
 python -m ipykernel install --user --name mobile-sensing --display-name 'Mobile Sensing (Python 3.12)'
 ```
+
+Open a notebook in your notebook editor and select **Mobile Sensing (Python 3.12)**. When using WSL2, connect the editor to WSL and select the Linux kernel, not a Windows Python interpreter. The `notebook` extra installs plotting libraries and the kernel; a notebook editor or Jupyter frontend is still required.
 
 Run each notebook from top to bottom:
 
