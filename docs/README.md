@@ -32,4 +32,4 @@ Read these documents in order when reviewing or changing scientific behavior:
 - [Validation](VALIDATION.md): checks executed for the release candidate.
 - [Mapping templates](templates/): strict example inputs and mappings used by the application and tests.
 
-Historical milestone reports, browser captures, machine-specific logs, and acceptance workspaces are retained outside the public documentation tree. Test-owned regression baselines are stored under `tests/v2/fixtures/`.
+Historical milestone reports, browser captures, machine-specific logs, and acceptance workspaces are retained outside the public documentation tree. Test-owned regression baselines are stored under `tests/fixtures/`.

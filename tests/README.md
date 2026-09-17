@@ -1,41 +1,43 @@
-# Tests and validation tools
+# Tests and fixtures
 
-The current Python suite lives in `v2/`. The `mXX` and `mrXX` prefixes record historical implementation stages; they do not mean a test is obsolete. There are 56 `test_*.py` modules, plus shared fixtures and nine validation/helper scripts. Frontend tests are colocated with their components in `frontend/src/`.
+Python tests are grouped by behavior. All 56 test modules and 290 collected cases are retained from the previous layout. Frontend tests remain beside their components in `frontend/src/`.
 
-## Find a test by behavior
-
-| Behavior | Current test modules |
+| Directory | Coverage |
 |---|---|
-| Schemas, scientific invariants and dependency boundaries | `test_contract_*`, `test_m00_baseline.py` |
-| Networks, inputs, GTFS and local Lausanne regression | `test_m02_*`, `test_m03_*`, `test_m04_*` |
-| Event kernel, execution, dispatch and idle policies | `test_m05*`, `test_mr04_dispatch.py` |
-| Exposure, headless application and portfolios | `test_m06_*`, `test_m07_*`, `test_m08*` |
-| Jobs, HTTP, queries, exports and reload behavior | `test_m09_*`, `test_m10_*`, `test_m11_*` |
-| Packaging, startup and result comparison | `test_m12_*` |
-| Current project editor, workspace, temporal/spatial features and regressions | `test_mr*` |
-| Notebook adapters and workflows | `test_notebook_workflow.py`, `test_mr15_tutorials.py` |
+| `contracts/` | Schemas, identifiers and scientific invariants |
+| `environment/` | Networks, geometry, acquisition, features and service areas |
+| `datasets/` | Normalization, generation, GTFS and local-data regressions |
+| `simulation/` | Event ordering, task execution, dispatch and operational policies |
+| `exposure/` | Sparse storage and fleet sensing statistics |
+| `portfolio/` | Sampling, utility, frontiers and numerical optimizations |
+| `application/` | Headless workflows, authoring, examples and notebook adapters |
+| `api/` | HTTP contracts, reload, queries and exports |
+| `jobs/` | Durable jobs, ownership, project folders and access |
+| `packaging/` | Repository invariants, launcher, distributions and result comparison |
+| `support/` | Shared fixture builders, contract generation and comparison helpers |
+| `fixtures/` | Small inputs, schemas and expected scientific results |
 
-Run the Python suite from the repository root in the development environment:
+## Run tests
+
+From the repository root, with the development environment active:
 
 ```bash
-python -m pytest -q tests/v2
+python -m pytest -q tests
+python -m pytest -q tests/simulation
 ```
 
-The clean public checkout skips six tests that need local Lausanne source data. Keep those tests: they run when the maintainer's immutable dataset is present. A skip is not a pass. Native Windows currently runs the scoped headless check documented in [the installation guide](../docs/INSTALLATION.md#windows-native-python), not the full suite.
+The second command runs one group. CI and release preparation run the full suite. Native Windows runs the narrower [headless simulation check](../docs/INSTALLATION.md#windows-native-python). Six local Lausanne regressions skip when undistributed source data are absent; they run against the maintainer's immutable dataset when available. A skip is not a pass.
 
-## What belongs in Git
+## Fixtures and tools
 
-- Keep behavioral tests, meaningful regressions, shared fixture builders, and small checked-in scientific/contract baselines.
-- Keep expected JSON/schema files under `fixtures/`; they are test inputs and expected results, not disposable run outputs.
-- Keep reproducible validation tools when they still verify a release, archive, notebook, or performance claim. Ordinary App users do not need to run them.
-- Exclude caches, generated reports, screenshots, test workspaces, and large local datasets. The repository ignore rules cover these artifacts.
+`fixtures/contracts/` contains byte-checked schemas and examples. Other fixture directories follow functional names. `fixtures/release_baselines/` stores expected outputs and migration evidence. These are validation inputs, not disposable run outputs. Historical schema versions and scientific IDs inside them are intentionally preserved.
 
-## Naming maintenance
+Shared helpers live in `support/`. Run contract regeneration with `python -m tests.support.generate_contract_fixtures`, then review the changes. Manually invoked packaging, browser, notebook, performance and example audits live under [scripts/validation](../scripts/validation/README.md).
 
-New tests should use behavioral names such as `test_event_kernel.py`, `test_headless_application.py`, or `test_workspace_ownership.py`, without new milestone numbers. Existing names remain for now so imports, fixture paths, CI selectors, and documentation links stay valid.
+## Naming and maintenance
 
-A future naming-only cleanup should rename modules by behavior, update all references in the same change, and compare collected test cases before and after. For example, `test_m05a_event_kernel.py` can become `test_event_kernel.py`; `test_mr34_auto_service_areas.py` can become `test_auto_service_areas.py`. Do not change assertions or delete coverage in that cleanup.
+Use `test_<behavior>.py` for tests, descriptive nouns for fixtures, and `<action>_<object>.py` for tools. Do not add milestone numbers to filenames. User-editable input templates belong in [docs/templates](../docs/templates/README.md); test-only inputs belong here.
 
-The nine non-test helpers mix fixture generation, comparisons, acceptance workspaces, packaging checks, browser checks, notebook execution, and bundle auditing. Group them under a clearly named support/tools directory in a separate migration. `generate_contract_fixtures.py`, `m12_compare_runs.py`, and `build_m11_acceptance_workspace.py` are directly imported by tests; they cannot simply be removed.
+For a rename, update imports, fixture paths, CI selectors, scripts, documentation and notebooks together. Compare collected test IDs after mapping old paths to new paths, and run the applicable suite. Keep scientific assertions unchanged during naming cleanup.
 
-Only retire a test or helper after identifying its replacement or establishing that its behavior is intentionally unsupported. A historical filename, lack of automatic collection, or overlap in the feature name is insufficient evidence for deletion.
+Keep small fixtures and meaningful regressions in Git. Exclude caches, screenshots, generated reports, workspaces and large local datasets. Retire a test only after identifying replacement coverage or explicitly withdrawing the behavior it protects.

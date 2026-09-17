@@ -2,6 +2,8 @@
 
 ## Current candidate
 
+Repository organization maintenance: templates use functional directories, Python tests are grouped by behavior, shared helpers live in `tests/support/`, and manual validation tools live in `scripts/validation/`. All 56 test modules and 290 collected cases are preserved after applying the old-to-new path mapping. Scientific fixture content and serialized identities are unchanged; the retirement record only updates references to relocated replacement tests. The migrated local Python suite passed with 289 tests and one sandbox-only network skip. Ruff, Black, lock consistency and Markdown link checks passed. CI selectors, notebook commands and release tooling use the new paths.
+
 Version `0.1.0` is being prepared as a public working-project release. It provides a local browser application, importable Python package, command-line interface, durable background jobs, immutable scientific artifacts, and portable project export.
 
 Implemented workflow:
@@ -53,4 +55,4 @@ Platform verification on 2026-09-17: [GitHub CI](https://github.com/EPFL-HOMES/m
 - Large visualization chunks and first portfolio-map queries remain performance-maintenance areas.
 - The locked frontend dependency graph currently reports deprecation notices for indirect `mumath` and `@plotly/mapbox-gl`; the application uses MapLibre for maps, and migration to a future Plotly major version requires separate compatibility testing.
 
-Historical milestone reports and machine-specific acceptance evidence are archived outside the public documentation tree. Current regression baselines are test-owned fixtures under `tests/v2/fixtures/`.
+Historical milestone reports and machine-specific acceptance evidence are archived outside the public documentation tree. Current regression baselines are test-owned fixtures under `tests/fixtures/`.

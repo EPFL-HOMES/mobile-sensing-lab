@@ -21,8 +21,8 @@ The matching Lausanne example manifest and archive must be available from the in
 Maintainers can validate the notebooks without modifying their source files:
 
 ```bash
-python -m tests.v2.run_notebook_workflows --variant default
-python -m tests.v2.run_notebook_workflows --variant custom
+python -m scripts.validation.run_notebook_workflows --variant default
+python -m scripts.validation.run_notebook_workflows --variant custom
 ```
 
 The validation runner writes ignored records under `results/`; those records are not notebook exports.

@@ -20,14 +20,14 @@ for required in src/mobile_sensing/_examples/lausanne.json src/mobile_sensing/_e
   fi
 done
 
-"$POETRY_EXECUTABLE" run ruff check src/mobile_sensing tests/v2
-"$POETRY_EXECUTABLE" run black --check src/mobile_sensing tests/v2
+"$POETRY_EXECUTABLE" run ruff check src/mobile_sensing tests scripts/validation
+"$POETRY_EXECUTABLE" run black --check src/mobile_sensing tests scripts/validation
 "$POETRY_EXECUTABLE" check --lock
 npm --prefix frontend ci
 npm --prefix frontend run typecheck
 npm --prefix frontend test
 npm --prefix frontend run build
-"$POETRY_EXECUTABLE" run pytest -q tests/v2
+"$POETRY_EXECUTABLE" run pytest -q tests
 "$POETRY_EXECUTABLE" build
 
 RELEASE_VERSION="$("$POETRY_EXECUTABLE" version -s)"

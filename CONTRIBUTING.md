@@ -12,23 +12,23 @@ npm --prefix frontend ci
 npm --prefix frontend run build
 ```
 
-Production Python is under `src/mobile_sensing/`. Browser code is under `frontend/src/`. Current tests are under `tests/v2/`. Raw research inputs, reference implementations, user workspaces, and generated results are intentionally outside the public source tree.
+Production Python is under `src/mobile_sensing/`. Browser code is under `frontend/src/`. Current tests are under `tests/`. Raw research inputs, reference implementations, user workspaces, and generated results are intentionally outside the public source tree.
 
 ## Contracts
 
 `docs/INTERFACES.md` owns serialized names. Python schemas generate `frontend/src/api/generated.ts`; do not edit the generated TypeScript file by hand.
 
-After changing a public model, regenerate and verify the OpenAPI and TypeScript contracts using the generator in `mobile_sensing.api.generate_contracts`, then update the checked fixture only after reviewing the semantic change. Canonical scientific fixtures and checksums are under `tests/v2/fixtures/contracts/`.
+After changing a public model, regenerate and verify the OpenAPI and TypeScript contracts using the generator in `mobile_sensing.api.generate_contracts`, then update the checked fixture only after reviewing the semantic change. Canonical scientific fixtures and checksums are under `tests/fixtures/contracts/`.
 
 ## Required checks
 
 ```bash
-python -m pytest -q tests/v2
+python -m pytest -q tests
 npm --prefix frontend test
 npm --prefix frontend run typecheck
 npm --prefix frontend run build
-ruff check src/mobile_sensing tests/v2
-black --check src/mobile_sensing tests/v2
+ruff check src/mobile_sensing tests scripts/validation
+black --check src/mobile_sensing tests scripts/validation
 poetry check --lock
 poetry build
 ```

@@ -18,7 +18,7 @@ jobs:
       - name: Check scientific imports
         run: python -c "from mobile_sensing.simulation import run_event_kernel; from mobile_sensing.portfolio import evaluate_samples; from mobile_sensing.application import HeadlessApplication"
       - name: Exercise synchronous simulation without the browser or coordinator
-        run: python -m pytest -q tests/v2/test_m07_headless_application.py::test_headless_cli_validates_and_runs_without_http_or_browser
+        run: python -m pytest -q tests/application/test_headless_application.py::test_headless_cli_validates_and_runs_without_http_or_browser
   test:
     runs-on: ubuntu-latest
     steps:
@@ -44,12 +44,12 @@ jobs:
           npm --prefix frontend run build
       - name: Check Python source
         run: |
-          poetry run ruff check src/mobile_sensing tests/v2
-          poetry run black --check src/mobile_sensing tests/v2
+          poetry run ruff check src/mobile_sensing tests scripts/validation
+          poetry run black --check src/mobile_sensing tests scripts/validation
           poetry check --lock
       - name: Run test suites
         run: |
-          poetry run pytest -q tests/v2
+          poetry run pytest -q tests
           npm --prefix frontend test
       - name: Build distributions
         run: poetry build

@@ -108,10 +108,10 @@ For an executable example that builds a tiny environment and runs two replicatio
 ```powershell
 py -3.12 -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -e ".[optimization]" pytest
-.\.venv\Scripts\python.exe -m pytest -q tests/v2/test_m07_headless_application.py::test_headless_cli_validates_and_runs_without_http_or_browser
+.\.venv\Scripts\python.exe -m pytest -q tests/application/test_headless_application.py::test_headless_cli_validates_and_runs_without_http_or_browser
 ```
 
-Expected result: **1 passed**. The [example's source](../tests/v2/test_m07_headless_application.py) includes the full input construction, validation and simulation calls. It uses generated small inputs, temporary artifacts, and no browser or local Lausanne dataset. This is also the scoped native Windows CI check. It is a developer example, not one of the city tutorial notebooks.
+Expected result: **1 passed**. The [example's source](../tests/application/test_headless_application.py) includes the full input construction, validation and simulation calls. It uses generated small inputs, temporary artifacts, and no browser or local Lausanne dataset. This is also the scoped native Windows CI check. It is a developer example, not one of the city tutorial notebooks.
 
 ## Linux
 

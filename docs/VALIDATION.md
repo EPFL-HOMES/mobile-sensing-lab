@@ -6,7 +6,7 @@ This document records the checks executed against the current source tree. It di
 
 The release gate includes:
 
-- the complete Python suite in `tests/v2`;
+- the complete Python suite in `tests`;
 - frontend unit and interaction tests;
 - TypeScript checking and the production browser build;
 - Ruff, Black, dependency consistency, and Poetry lock validation;

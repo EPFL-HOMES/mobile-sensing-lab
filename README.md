@@ -46,6 +46,17 @@ source .venv/bin/activate
 mobile-sensing launch --artifact-root ./project --port 8820
 ```
 
+### macOS alternative: double-click the launcher
+
+If you downloaded or cloned the **source repository**, you can launch it from Finder:
+
+1. Install Python 3.12 and Node.js 22.12–22.x (including npm), and extract the repository if you downloaded a ZIP.
+2. Open the extracted project folder in Finder and double-click [Start Mobile Sensing.command](Start%20Mobile%20Sensing.command).
+3. Keep its Terminal window open. The first launch creates `.app-venv`, installs Python dependencies and builds the browser interface, then starts the App. This first setup needs internet access and can take several minutes.
+4. For later sessions, double-click the same file again. Stop the App with **Ctrl+C** in its Terminal window.
+
+This launcher belongs to the source repository; the installed-wheel route above does not need it. To see both city examples from a source checkout, install the four matching [example assets](#example-projects). If an extracted ZIP has lost executable permission, open Terminal in the project folder and run `chmod +x "Start Mobile Sensing.command"` before double-clicking again.
+
 ### Windows and Linux
 
 - **Windows, full App:** follow [Windows with WSL2](docs/INSTALLATION.md#windows-with-wsl2). It explicitly separates commands entered in PowerShell from commands entered in Ubuntu.
@@ -104,7 +115,7 @@ For AI-assisted development, ask your assistant to read [AGENTS.md](AGENTS.md) b
 
 ```bash
 poetry install --all-extras
-python -m pytest -q tests/v2
+python -m pytest -q tests
 npm --prefix frontend test
 npm --prefix frontend run build
 poetry build

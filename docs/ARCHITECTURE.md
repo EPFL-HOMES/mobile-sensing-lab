@@ -95,7 +95,7 @@ frontend/src/
   components/      forms, maps, tables, charts, status, layout
   api/             generated types, client, query keys
   state/           narrowly scoped UI-only state
-tests/v2/          contract, scientific, integration, job, and migration tests
+tests/          contract, scientific, integration, job, and migration tests
 ```
 
 `contracts` has no imports from domain implementations or web/storage adapters. Domain modules depend on contracts and their explicitly needed domain services: simulation may use environment routing; exposure may use prepared environment geometry; portfolio consumes exposure contracts and readers, never a simulation runner. Dataset preparation does not start a simulation. Application services orchestrate; CLI/API translate requests. Core functions receive data, RNG streams, progress callbacks, and cancellation interfaces explicitly; they do not read global project state or environment variables.

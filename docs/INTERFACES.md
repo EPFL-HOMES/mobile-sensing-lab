@@ -352,7 +352,7 @@ singular IDs remain populated with the first available example. Workspace
 initialization installs all available bundled cities independently and remains
 idempotent; the frontend monitors each pending import. The generated Python/API
 schema and TypeScript contract snapshot is stored with the test-owned release baselines under
-`tests/v2/fixtures/release_baselines/openapi.json`.
+`tests/fixtures/release_baselines/openapi.json`.
 
 ### MR32 source feature preview
 

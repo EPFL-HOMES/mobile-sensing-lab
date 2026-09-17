@@ -9,6 +9,7 @@ The current release implements the complete local workflow from data registratio
 3. Validate wheel installation without a Node runtime.
 4. Publish matching example manifests, archives, and checksums with each release.
 5. Keep the public documentation consistent with actual application controls and supported platforms.
+6. Maintain behavior-based names for templates, tests, fixtures and validation tools; update imports and documentation together when paths change.
 
 ## Reliability and performance
 
