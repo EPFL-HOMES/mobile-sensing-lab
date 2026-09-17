@@ -82,7 +82,9 @@ describe("M11 result workspaces", () => {
       throw new Error(`Unexpected request ${init?.method ?? "GET"} ${url}`);
     });
     renderApp("/results?view=sensing&resource=exposure-1&scope=vehicle&fleet=fleet&vehicle=inactive&replication=r1&time_bin=bin-1");
-    expect(await screen.findByText("Mean of 1 runs")).toBeInTheDocument();
+    // The first results route loads lazily and resolves several dependent queries.
+    // Allow cold CI workers to finish that work without relaxing the assertion.
+    expect(await screen.findByText("Mean of 1 runs", {}, { timeout: 4000 })).toBeInTheDocument();
     expect(screen.getByRole("tab", { name: "Fleet results" })).toBeInTheDocument();
     expect(screen.queryByRole("tab", { name: "Operations" })).not.toBeInTheDocument();
     expect(screen.queryByRole("tab", { name: "Sensing" })).not.toBeInTheDocument();
