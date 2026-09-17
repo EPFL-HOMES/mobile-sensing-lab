@@ -1,6 +1,6 @@
-# Mobile Sensing Simulator
+# Mobile Sensing Lab
 
-Mobile Sensing Simulator is a local research application for simulating vehicle fleets and comparing mobile-sensor portfolios by spatial coverage, expected utility, and lower-tail performance. It provides a browser interface, Python package, and command-line tools backed by the same deterministic scientific implementation.
+Mobile Sensing Lab is a local research application for simulating vehicle fleets and comparing mobile-sensor portfolios by spatial coverage, expected utility, and lower-tail performance. It provides a browser interface, Python package, and command-line tools backed by the same deterministic scientific implementation.
 
 The project is a working research release. Its calibrated scope is explicit: the bundled city examples use synthetic operating assumptions, inferred vehicle duties, assumed road speeds, and in-sample portfolio analysis. They demonstrate the workflow rather than estimate city-wide service performance.
 

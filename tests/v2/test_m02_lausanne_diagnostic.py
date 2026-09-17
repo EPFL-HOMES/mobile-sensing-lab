@@ -12,6 +12,10 @@ from mobile_sensing.environment.diagnostics import build_lausanne_diagnostic
 
 
 ROOT = Path(__file__).resolve().parents[2]
+pytestmark = pytest.mark.skipif(
+    not (ROOT / "data" / "Lausanne").is_dir(),
+    reason="local Lausanne source data are not distributed with the public repository",
+)
 
 
 def test_checked_in_lausanne_diagnostic_matches_immutable_inputs() -> None:

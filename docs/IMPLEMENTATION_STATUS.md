@@ -38,6 +38,8 @@ The complete wheel includes the built browser files and both example manifest/ar
 
 The application TypeScript configuration explicitly enables incremental checking alongside its build-info path. The frontend type check, all 42 tests, and production build passed again before publication. Both the workspace TypeScript compiler and the editor's bundled TypeScript compiler reported no source diagnostics.
 
+The two raw Lausanne diagnostic regressions explicitly skip when the local `data/Lausanne/` directory is absent, matching the public repository's documented data boundary. Their original assertions still run when the directory is present; incomplete or invalid local datasets continue to fail.
+
 The release files and complete checksum list are generated under `release/0.1.0/` by `scripts/prepare_release.sh`; that local staging directory is excluded from Git.
 
 ## Known limitations
