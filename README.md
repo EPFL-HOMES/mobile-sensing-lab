@@ -8,7 +8,7 @@ The project is a working research release. Its calibrated scope is explicit: the
 
 The supported runtime is Python 3.12. The validated desktop platform is macOS on Apple Silicon. Linux requires POSIX file locking and has less browser coverage; native Windows launching is not supported.
 
-For ordinary use, download the wheel and matching example assets from the same GitHub Release. A release wheel contains the built browser interface and does not require Node.js.
+For ordinary use, download the wheel from [GitHub Releases](https://github.com/EPFL-HOMES/mobile-sensing-lab/releases). A release wheel contains the built browser interface and both example projects; it does not require Node.js.
 
 ```bash
 python3.12 -m venv .venv
@@ -57,7 +57,7 @@ When both matching example archives are installed, the Project page imports two 
 
 Choose **Duplicate** before editing an example. The application creates its own `project/` workspace; the repository does not distribute a pre-created workspace.
 
-A source archive contains the small manifests but excludes the large ZIP files. Download these matching pairs from the same GitHub Release and place them together in `src/mobile_sensing/_examples/`, or set `MOBILE_SENSING_EXAMPLE_DIRECTORY` to their directory:
+A Git checkout or GitHub-generated source archive contains the small manifests but excludes the large ZIP files. Download these matching pairs from the [same GitHub Release](https://github.com/EPFL-HOMES/mobile-sensing-lab/releases/tag/v0.1.0) and place them together in `src/mobile_sensing/_examples/`, or set `MOBILE_SENSING_EXAMPLE_DIRECTORY` to their directory. The release wheel and packaged source distribution already include them:
 
 ```text
 lausanne.json

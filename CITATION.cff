@@ -2,6 +2,7 @@ cff-version: 1.2.0
 message: "If you use this software in research, please cite the software release."
 title: "Mobile Sensing Simulator"
 type: software
+repository-code: "https://github.com/EPFL-HOMES/mobile-sensing-lab"
 version: 0.1.0
 date-released: 2026-09-17
 license: GPL-3.0-only

@@ -34,14 +34,9 @@ The public-source candidate passed the complete release workflow on 2026-09-17:
 - A Node-free installed-wheel check loaded the packaged browser assets and both example manifests. An empty installed workspace imported both examples, and the Project API reported each with `status="results"`.
 - The documented Ctrl+C shutdown path exits successfully without a traceback and releases the coordinator lock.
 
-The complete wheel contains 163 members: 26 browser files and four example manifest/archive files. Release SHA-256 values:
+The complete wheel includes the built browser files and both example manifest/archive pairs. The authoritative checksums are published as `SHA256SUMS` alongside the release assets.
 
-```text
-30e7473b958a429dced024e79486fafcbe8e37f2251e24a08c98ec0b5be23776  mobile_sensing-0.1.0-py3-none-any.whl
-b46749c044aa0ac1f4fa13d3f10e564deb2741915415217667325158c4a1270d  mobile_sensing-0.1.0.tar.gz
-4522bc35a532d932fc0484f6a542123ccafc71f2f45bb0ac45345f3250385691  lausanne.zip
-0b2429e7938dbc6162e9e91d4876798109e2779c63a67452e9c84b1e70132725  san-francisco.zip
-```
+The application TypeScript configuration explicitly enables incremental checking alongside its build-info path. The frontend type check, all 42 tests, and production build passed again before publication. Both the workspace TypeScript compiler and the editor's bundled TypeScript compiler reported no source diagnostics.
 
 The release files and complete checksum list are generated under `release/0.1.0/` by `scripts/prepare_release.sh`; that local staging directory is excluded from Git.
 
