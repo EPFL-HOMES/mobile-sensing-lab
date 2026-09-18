@@ -163,7 +163,7 @@ def test_nonlinear_J_statistics_sparse_zeros_frontiers_and_complete_export(
     statistics = reader.read("portfolio_statistics").to_pylist()
     by_id = {item["portfolio_id"]: item for item in statistics}
     by_count = {json.loads(row["count_by_fleet_json"])["fleet"]: row for row in statistics}
-    saturated = -math.expm1(-2.0)
+    saturated = 0.9999
     one = by_count[1]
     assert (one["replications_R"], one["sampling_rounds_J"], one["sample_count"]) == (1, 8, 8)
     assert one["utility_mean"] == pytest.approx(saturated / 2.0)
@@ -173,7 +173,7 @@ def test_nonlinear_J_statistics_sparse_zeros_frontiers_and_complete_export(
     assert (one["utility_p05"], one["utility_p50"], one["utility_p95"]) == pytest.approx(
         (0.0, saturated / 2.0, saturated)
     )
-    assert one["utility_mean"] != pytest.approx(-math.expm1(-1.0))
+    assert one["utility_mean"] != pytest.approx(0.99)
 
     sensing = reader.read("portfolio_sensing_statistics").to_pylist()
     sensing_by_count = {
@@ -239,7 +239,7 @@ def test_nonlinear_J_statistics_sparse_zeros_frontiers_and_complete_export(
     cli = json.loads(capsys.readouterr().out)
     assert (cli["replications_R"], cli["sampling_rounds_J"]) == (1, 8)
     assert cli["sample_artifact"] == sample_reference.model_dump(mode="json")
-    assert json.loads(EVIDENCE.read_text(encoding="utf-8"))["analysis_artifact"] == (
+    assert json.loads(EVIDENCE.read_text(encoding="utf-8"))["analysis_artifact_v4"] == (
         result.reference.model_dump(mode="json")
     )
 

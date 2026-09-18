@@ -1,4 +1,3 @@
-import math
 import pytest
 
 from mobile_sensing.application.project_models import (
@@ -137,7 +136,7 @@ def test_composite_http_autosaves_and_finishes_in_worker(tmp_path):
     runs = client.get("/api/v1/workbench/runs", params={"project_id": project["project_id"]})
     assert runs.status_code == 200 and runs.json()[0]["name"] == "Full day"
     curve = client.post("/api/v1/workbench/utility-curve", json={"saturation_minutes": 15}).json()
-    assert curve["utility"][10] == pytest.approx(1 - math.exp(-1))
+    assert curve["utility"][10] == pytest.approx(0.99)
     copied = client.post(
         f"/api/v1/workbench/projects/{project['project_id']}/copy",
         json={"config": config.model_dump(mode="json")},

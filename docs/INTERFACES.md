@@ -1,5 +1,7 @@
 # Interfaces and Data Contracts
 
+`sample-utility@4` changes exponential `saturation_s` to the duration attaining 99% local utility: `u(d) = -expm1(-ln(100) * d / saturation_s)`. Authoring `saturation_minutes` and the curve use this definition for new analyses. Both scalar and indexed evaluators share it. New artifact identities and sample-cache keys include version 4; readers retain versions 1–3 with their original stored utilities. Historical analyses are not reinterpreted or rewritten. Capped-linear and binary semantics are unchanged.
+
 This document defines current serialized names and compatibility behavior. The introductory entries record additive contract evolution; scientific meaning is owned by the simulation, data-ingestion, and portfolio specifications.
 
 MR28: `ProjectResolutionResult.artifact` is optional. `validation_level` is `configuration` for the lightweight workbench Validate action and `resolved` for historical complete resolutions. Configuration checks never certify realized task counts, inferred vehicle counts, route feasibility or a solved plan; `reports.deferred_checks` names the remaining Run stages. The existing `studio_resolve` job kind remains readable, with operation version `configuration-check@1` preventing reuse of old complete-resolution jobs as configuration checks. Headless `resolve_project` and Run retain full validation and immutable publication.

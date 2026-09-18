@@ -302,14 +302,14 @@ def test_analytic_nonlinear_samples_include_inactive_vehicle_and_exact_draws(
         ("moving",),
         ("inactive",),
     ]
-    saturated = -math.expm1(-2.0)
+    saturated = 0.9999
     assert [row["utility"] for row in one_vehicle] == pytest.approx(
         [0.0, saturated, 0.0, 0.0, saturated, saturated, saturated, 0.0]
     )
     assert math.fsum(row["utility"] for row in one_vehicle) / len(one_vehicle) == pytest.approx(
         saturated / 2.0
     )
-    assert saturated / 2.0 != pytest.approx(-math.expm1(-1.0))
+    assert saturated / 2.0 != pytest.approx(0.99)
     assert any(not rows for rows in evaluated.matrix_rows.values())
     assert len(evaluated.sample_rows) == 3 * 8
     assert len(evaluated.matrix_metadata) == 4
@@ -326,7 +326,8 @@ def test_analytic_nonlinear_samples_include_inactive_vehicle_and_exact_draws(
     evidence = json.loads(EVIDENCE.read_text(encoding="utf-8"))
     assert evidence["replications_R"] == 1
     assert evidence["sampling_rounds_J"] == 8
-    assert evidence["analytic_one_vehicle_mean"] == pytest.approx(saturated / 2.0)
+    # Retained historical evidence uses the pre-v4 exponential time scale.
+    assert evidence["analytic_one_vehicle_mean"] == pytest.approx(-math.expm1(-2.0) / 2.0)
     assert evidence["utility_of_mean_exposure"] == pytest.approx(-math.expm1(-1.0))
     assert evidence["orderings"] == [
         item.model_dump(mode="json") for item in evaluated.design.orderings
@@ -334,7 +335,7 @@ def test_analytic_nonlinear_samples_include_inactive_vehicle_and_exact_draws(
     published = HeadlessApplication(tmp_path).evaluate_portfolio_samples(
         exposure, config, _uniform_weights()
     )
-    assert published.reference.model_dump(mode="json") == evidence["portfolio_artifact"]
+    assert published.reference.model_dump(mode="json") == evidence["portfolio_artifact_v4"]
 
 
 def test_sampling_is_joint_prefix_stable_and_independent_of_budget_and_grid(

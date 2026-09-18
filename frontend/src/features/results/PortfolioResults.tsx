@@ -43,12 +43,15 @@ function MatrixTable({ matrix }: { matrix: MatrixSliceValue | undefined }) {
   return <TableContainer sx={{ maxHeight: 330 }}><Table size="small" stickyHeader><TableHead><TableRow><TableCell>Cell</TableCell><TableCell align="right">Mean duration ({matrix?.unit ?? "s"})</TableCell></TableRow></TableHead><TableBody>{(matrix?.values ?? []).map(row => <TableRow key={`${row.cell_id}-${row.time_bin_id}`}><TableCell className="mono">{row.cell_id}</TableCell><TableCell align="right">{row.value.toFixed(5)}</TableCell></TableRow>)}</TableBody></Table></TableContainer>;
 }
 
-function PortfolioInspector({ point, unit }: { point: PortfolioFrontierPoint; unit: string }) {
+function PortfolioInspector({ point, unit, saturatedPercentage, meanCoverageFraction }: { point: PortfolioFrontierPoint; unit: string; saturatedPercentage: number | null; meanCoverageFraction: number | null }) {
   return <Stack gap={2.5}>
     <Box className="portfolio-metrics">
       <Box><Typography variant="caption" color="text.secondary">Mean utility</Typography><Typography className="metric-value">{formatUtility(point.utility_mean)}</Typography></Box>
       <Box><Typography variant="caption" color="text.secondary">Std utility</Typography><Typography className="metric-value">{formatUtility(point.utility_sample_std)}</Typography></Box>
+      <Box><Typography variant="caption" color="text.secondary">Mean spatial grid coverage</Typography><Typography className="metric-value">{meanCoverageFraction == null ? "—" : `${(100 * meanCoverageFraction).toFixed(2)}%`}</Typography></Box>
+      <Box><Typography variant="caption" color="text.secondary">Saturated space–time units</Typography><Typography className="metric-value">{saturatedPercentage == null ? "—" : `${saturatedPercentage.toFixed(2)}%`}</Typography></Box>
     </Box>
+    <Typography variant="caption" color="text.secondary">Mean fraction of grids visited at least once per sampling round within the selected reporting window. Includes zero-coverage grids in the saved exposure domain; the saturation map filter does not affect this metric.</Typography>
     <Box><Typography variant="overline" color="text.secondary">Utility quantiles</Typography><Box className="quantile-row">{[["P05", point.utility_p05], ["Median", point.utility_p50], ["P95", point.utility_p95]].map(([label, value]) => <Box key={String(label)}><Typography variant="caption" color="text.secondary">{label}</Typography><Typography className="numeric">{formatUtility(Number(value))}</Typography></Box>)}</Box></Box>
     <Box><Stack direction="row" justifyContent="space-between" alignItems="baseline" gap={1}><Typography variant="overline" color="text.secondary">Cost by fleet</Typography><Typography variant="caption" color="text.secondary">{unit}</Typography></Stack>
       <Stack gap={1.75} sx={{ mt: 1 }}>{Object.entries(point.cost_by_fleet).map(([fleet, cost], index) => <Box key={fleet}>
@@ -67,6 +70,7 @@ export function PortfolioResults({ jobs, revisionForJob, preferredView }: { jobs
   const available = sources.map(artifactFromJob).filter(Boolean);
   const preferred = new URLSearchParams(preferredView?.split("?")[1]);
   const resourceId = available.find(value => value?.artifact_id === (params.get("analysis_resource") ?? params.get("resource")))?.artifact_id ?? available.find(value => value?.artifact_id === preferred.get("resource"))?.artifact_id ?? available[0]?.artifact_id ?? "";
+  const sourceJob = sources.find(job => artifactFromJob(job)?.artifact_id === resourceId);
   const set = useCallback((key: string, value: string) => setParams(previous => { const next = new URLSearchParams(previous); value ? next.set(key, value) : next.delete(key); return next; }, { replace: true }), [setParams]);
   const selectPoint = useCallback((value: unknown) => { if (value != null) set("portfolio", String(value)); }, [set]);
   const analysis = useQuery({ queryKey: ["portfolio-analysis", resourceId], enabled: Boolean(resourceId), queryFn: () => requestJson<ArtifactManifestValue>(`/api/v1/portfolio-analyses/${resourceId}`) });
@@ -92,7 +96,17 @@ export function PortfolioResults({ jobs, revisionForJob, preferredView }: { jobs
   const timeBins = [...(bins.data?.items ?? [])].sort((a, b) => a.canonical_index - b.canonical_index);
   const timeBin = timeBins.some(row => row.time_bin_id === params.get("time_bin")) ? params.get("time_bin")! : "all";
   const summaryMatrix = useQuery({ queryKey: ["portfolio-summary-matrix", resourceId, portfolioId, "mean", timeBin], enabled: Boolean(resourceId && portfolioId), queryFn: () => matrixQuery({ resource_id: resourceId, kind: "portfolio_summary", portfolio_id: portfolioId, time_bin_ids: timeBin === "all" ? [] : [timeBin], temporal_aggregation: "sum", statistic: "mean" }) });
-  const mappedSummary = useMemo(() => attachValues(grid.data, summaryMatrix.data), [grid.data, summaryMatrix.data]);
+  const jobConfig = sourceJob?.result?.config as { saturation_minutes?: number } | undefined;
+  const resolvedConfig = analysis.data?.scientific_identity.resolved_config as { utility?: { saturation_s?: number } } | undefined;
+  const saturationSeconds = Number(jobConfig?.saturation_minutes ?? ((resolvedConfig?.utility?.saturation_s ?? 300) / 60)) * 60;
+  const saturatedOnly = params.get("saturated_only") === "1";
+  const saturatedCount = summaryMatrix.data?.values.filter(row => row.value >= saturationSeconds).length ?? 0;
+  const spaceTimeUnitCount = summaryMatrix.data?.expected_shape.reduce((product, size) => product * size, 1) ?? 0;
+  const saturatedPercentage = spaceTimeUnitCount > 0 ? 100 * saturatedCount / spaceTimeUnitCount : null;
+  const mappedSummary = useMemo(() => {
+    const mapped = attachValues(grid.data, summaryMatrix.data);
+    return mapped && saturatedOnly ? { ...mapped, features: mapped.features.filter(feature => Number(feature.properties.value ?? 0) > saturationSeconds) } : mapped;
+  }, [grid.data, summaryMatrix.data, saturatedOnly, saturationSeconds]);
   const exportOptions = [
     ["analysis", "portfolio_statistics", "Portfolio utility statistics"], ["analysis", "budget_frontiers", "Budget frontiers"], ["analysis", "portfolio_sensing_statistics", "Portfolio sensing statistics"], ["analysis", "budget_levels", "Budget settings"],
     ["samples", "portfolio_counts", "Sensor counts"], ["samples", "portfolio_samples", "Retained sample utilities"], ["samples", "sample_selection", "Retained vehicle selections"], ["samples", "sampling_rounds", "Sampling identities"], ["exposure", "exposure", "Physical vehicle exposure"],
@@ -104,7 +118,6 @@ export function PortfolioResults({ jobs, revisionForJob, preferredView }: { jobs
   useEffect(() => { if (resourceId && params.get("analysis_resource") !== resourceId) set("analysis_resource", resourceId); }, [resourceId, params, set]);
   useEffect(() => { if (portfolioId && params.get("portfolio") !== portfolioId) set("portfolio", portfolioId); }, [portfolioId, params, set]);
   if (sources.length === 0) return <Alert severity="info">Run portfolio analysis from a completed simulation to view results.</Alert>;
-  const sourceJob = sources.find(job => artifactFromJob(job)?.artifact_id === resourceId);
   const firstFrontier = frontiers.find(query => query.data)?.data;
   const p05Risk = firstFrontier?.risk_metric === "p05";
   const error = analysis.error ?? budgets.error ?? samplesManifest.error ?? exposure.error ?? grid.error ?? bins.error ?? frontiers.find(query => query.error)?.error ?? summaryMatrix.error;
@@ -127,12 +140,13 @@ export function PortfolioResults({ jobs, revisionForJob, preferredView }: { jobs
       </Paper>
       <Paper variant="outlined" className="analysis-panel"><Typography variant="h6" sx={{ mb: 1.5 }}>Selected portfolio</Typography>
         <TextField fullWidth select label="Equipped vehicles by fleet" value={selectedPoint ? portfolioId : ""} onChange={event => selectPoint(event.target.value)} sx={{ mb: 2.5 }} helperText="Select by counts, including portfolios whose frontier points overlap.">{uniquePoints.map(point => <MenuItem key={point.portfolio_id} value={point.portfolio_id}>{countLabel(point)}</MenuItem>)}</TextField>
-        {selectedPoint ? <PortfolioInspector point={selectedPoint} unit={unit} /> : <Typography color="text.secondary">Select a feasible point.</Typography>}
+        {selectedPoint ? <PortfolioInspector point={selectedPoint} unit={unit} saturatedPercentage={saturatedPercentage} meanCoverageFraction={summaryMatrix.data?.mean_coverage_fraction ?? null} /> : <Typography color="text.secondary">Select a feasible point.</Typography>}
       </Paper>
     </Box>
     <Paper variant="outlined" className="analysis-panel portfolio-mean-map"><Stack direction="row" justifyContent="space-between" alignItems="flex-start" gap={2} flexWrap="wrap" sx={{ mb: 2 }}><Box><Typography variant="h6">Portfolio mean sensing duration</Typography><Typography variant="body2" color="text.secondary">Mean coverage of the selected sensor-count portfolio across sampling runs.</Typography></Box>
-      <TextField select label="Reporting bin" value={timeBin} onChange={event => set("time_bin", event.target.value)} sx={{ minWidth: 230 }}><MenuItem value="all">Whole observation window</MenuItem>{timeBins.map(row => <MenuItem key={row.time_bin_id} value={row.time_bin_id}>{(row.start_s / 3600).toFixed(2)}–{(row.end_s / 3600).toFixed(2)} elapsed h</MenuItem>)}</TextField></Stack>
+      <Stack gap={1} alignItems="flex-end"><TextField select label="Reporting bin" value={timeBin} onChange={event => set("time_bin", event.target.value)} sx={{ minWidth: 230 }}><MenuItem value="all">Whole observation window</MenuItem>{timeBins.map(row => <MenuItem key={row.time_bin_id} value={row.time_bin_id}>{(row.start_s / 3600).toFixed(2)}–{(row.end_s / 3600).toFixed(2)} elapsed h</MenuItem>)}</TextField><FormControlLabel control={<Checkbox checked={saturatedOnly} onChange={event => set("saturated_only", event.target.checked ? "1" : "")} />} label={`Only cells above ${saturationSeconds / 60} min saturation`} /></Stack></Stack>
       <ScientificMap loading={summaryMatrix.isFetching || grid.isFetching} data={mappedSummary} mode="duration" unit={summaryMatrix.data?.unit} fallback={<MatrixTable matrix={summaryMatrix.data} />} />
+      <Typography variant="caption" color="text.secondary">{saturatedPercentage == null ? "Saturation coverage is unavailable." : `${saturatedCount} of ${spaceTimeUnitCount} displayed space–time units (${saturatedPercentage.toFixed(2)}%) have mean sensing duration at least ${saturationSeconds / 60} minutes.`}</Typography>
     </Paper>
     <Accordion><AccordionSummary>Export analysis data</AccordionSummary><AccordionDetails><Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>Full-precision results and retained sample provenance remain available for reproducibility.</Typography><Stack direction="row" alignItems="flex-start" gap={2} flexWrap="wrap"><TextField select label="Table to export" value={exportChoice} onChange={event => set("export_table", event.target.value)} sx={{ minWidth: 280 }}>{exportOptions.map(([source, table, label]) => <MenuItem key={`${source}:${table}`} value={`${source}:${table}`}>{label}</MenuItem>)}</TextField>{exportResourceId && sourceJob && <ExportActions resourceId={exportResourceId} table={exportTable} sourceRevisionId={revisionForJob(sourceJob.job_id)} />}</Stack></AccordionDetails></Accordion>
   </Stack>;

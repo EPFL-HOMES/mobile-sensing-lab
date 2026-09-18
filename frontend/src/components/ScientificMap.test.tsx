@@ -117,6 +117,7 @@ describe("ScientificMap lifecycle", () => {
     expect(mapHarness.instances[0].sources).toEqual(["context", "scientific-result", "basemap"]);
     expect(mapHarness.instances[0].layers).toEqual(["context-line", "duration-fill", "network-casing", "movement-line", "region-line", "feature-point", "basemap-tiles"]);
     expect(mapHarness.instances[0].fitOptions).toMatchObject({ padding: 36, maxZoom: 22, duration: 0 });
+    expect(screen.getByText(/0–0\.08333 min; square-root color scale/)).toBeInTheDocument();
 
     view.rerender(<ScientificMap data={{ ...grid, features: grid.features.map(feature => ({ ...feature, properties: { ...feature.properties, value: 8 } })) }} mode="duration" unit="s" fallback={<div>updated fallback</div>} />);
     expect(mapHarness.instances).toHaveLength(1);

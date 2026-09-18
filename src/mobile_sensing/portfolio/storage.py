@@ -242,11 +242,7 @@ def publish_portfolio_samples(
         algorithm_versions={
             "enumeration": PORTFOLIO_ENUMERATION_VERSION,
             "sampling": PORTFOLIO_SAMPLING_VERSION,
-            "sample_utility": (
-                PORTFOLIO_UTILITY_VERSION
-                if config.utility.temporal_interval_s is not None
-                else "sample-utility@2"
-            ),
+            "sample_utility": PORTFOLIO_UTILITY_VERSION,
             "storage": (
                 "portfolio-samples-reconstruct@2"
                 if config.sample_matrix_storage == "reconstruct"

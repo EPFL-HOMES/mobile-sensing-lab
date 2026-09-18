@@ -3,6 +3,7 @@
 from collections import OrderedDict, defaultdict
 
 import numpy as np
+from mobile_sensing.portfolio.utility import EXPONENTIAL_SATURATION_RATE
 
 
 class IndexedFleetPrefixes:
@@ -108,7 +109,7 @@ class IndexedFleetPrefixes:
         nonzero = int(np.count_nonzero(matrix))
         utility_matrix = np.bincount(self.groups, weights=matrix, minlength=len(self.weights))
         if kind == "exponential_saturation":
-            values = -np.expm1(-utility_matrix / saturation_s)
+            values = -np.expm1(-EXPONENTIAL_SATURATION_RATE * (utility_matrix / saturation_s))
         elif kind == "linear_capped":
             values = np.minimum(utility_matrix / saturation_s, 1.0)
         elif kind == "binary":

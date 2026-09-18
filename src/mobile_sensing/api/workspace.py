@@ -154,14 +154,14 @@ def create_workspace_app(root, *, serve_frontend=False):
         city = "Lausanne" if example_key == "lausanne" else "San Francisco"
         for record in workspace.records():
             if (
-                record.name.startswith("[Example]")
+                record.name == bundle.name
                 or city not in record.name
                 or not record.current_revision_id
             ):
                 continue
             store = workspace.store(record.project_id)
             value = store.get_revision(record.project_id, record.current_revision_id).payload
-            if value.get("read_only") and value.get("example_bundle_id"):
+            if value.get("read_only") and value.get("example_bundle_id") == bundle.bundle_id:
                 # Rename outside the reservation lock: workspace.rename owns its transaction.
                 try:
                     workspace.rename(

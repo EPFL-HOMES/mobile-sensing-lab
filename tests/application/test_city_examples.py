@@ -51,7 +51,7 @@ def test_two_city_references_use_independent_owned_stores(tmp_path, monkeypatch)
     again = client.post("/api/v1/workbench/workspace/initialize").json()
     assert again["example_project_ids"] == value["example_project_ids"]
     reference_id = value["example_project_ids"][0]
-    app.state.workspace.rename(reference_id, "Lausanne legacy reference", "")
+    app.state.workspace.rename(reference_id, "[Example] Lausanne legacy reference", "")
     renamed = client.get("/api/v1/examples/lausanne")
     assert renamed.status_code == 200
     assert (
@@ -79,6 +79,7 @@ def test_tutorial_defaults_match_five_fleet_example():
             "SupplyEditor",
             "DispatchEditor",
             "ShiftGroup",
+            "SpatialFeatureWeight",
             "TemporalInterval",
             "ProjectConfig",
         )
@@ -89,8 +90,12 @@ def test_tutorial_defaults_match_five_fleet_example():
     for index in (3, 5, 7):
         exec("".join(cells[index]["source"]), scope)
     assert scope["configuration"].fleets == fleets
-    assert [fleet.fleet_id for fleet in fleets[:3]] == ["bus_1", "bus_3", "bus_7"]
-    assert len({fleet.demand.route_ids for fleet in fleets[:3]}) == 3
+    assert [fleet.fleet_id for fleet in fleets] == ["bus", "postal", "taxi"]
+    assert fleets[0].demand.route_ids == (
+        "92-1-V-j26-1",
+        "92-3-S-j26-1",
+        "92-7-P-j26-1",
+    )
     assert all(not c.get("outputs") for c in cells)
 
 

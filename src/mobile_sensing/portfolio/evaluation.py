@@ -36,7 +36,7 @@ from mobile_sensing.portfolio.utility import pointwise_utility
 
 PORTFOLIO_ENUMERATION_VERSION = "fleet-count-enumeration@1"
 PORTFOLIO_SAMPLING_VERSION = "joint-replication-uniform-vehicle@1"
-PORTFOLIO_UTILITY_VERSION = "sample-utility@3"
+PORTFOLIO_UTILITY_VERSION = "sample-utility@4"
 ESTIMATED_EXPOSURE_ROW_BYTES = 128
 ESTIMATED_SAMPLE_ROW_BYTES = 96
 ESTIMATED_SAMPLE_METADATA_BYTES = 192

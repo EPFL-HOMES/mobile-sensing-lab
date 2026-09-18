@@ -1,4 +1,9 @@
 {
+  "analysis_artifact_v4": {
+    "artifact_id": "portfolio_b3fc895d7e244ee2a44c104d95d3c4d0",
+    "artifact_kind": "portfolio",
+    "content_hash": "1f3331a4959fe8a4e2bacbf3e9f59dec4bd0b4aba919a7e7c03f59dbf0d37ef7"
+  },
   "evidence_kind": "road_grid_domain_analytic_analysis",
   "analysis_artifact": {
     "artifact_id": "portfolio_1b5773d92a873a14405e3200192dcd3f",

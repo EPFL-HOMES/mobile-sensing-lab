@@ -86,6 +86,9 @@ export function ScientificMap({ data, mode, unit, contextData, fallback, loading
   const [tileError, setTileError] = useState<string | null>(null);
   const [retry, setRetry] = useState(0);
   const maxValue = useMemo(() => (data?.features ?? []).reduce((value, feature) => Math.max(value, Number(feature.properties.value ?? 0)), 0), [data]);
+  const durationInMinutes = mode === "duration" && unit === "s";
+  const displayedMaxValue = durationInMinutes ? maxValue / 60 : maxValue;
+  const displayedUnit = durationInMinutes ? "min" : unit;
   const bounds = useMemo(() => coordinateBounds({ ...(data ?? EMPTY), features: [...(data?.features ?? []), ...contexts.flatMap(context => context.features)] }), [data, contexts]);
   const boundsRef = useRef(bounds); boundsRef.current = bounds;
   const hasMapExtent = Boolean(bounds || fitted.current);
@@ -206,6 +209,6 @@ export function ScientificMap({ data, mode, unit, contextData, fallback, loading
     </Box>
     {failed && fallback}
     {status.kind === "ready" && !busy && data && <Typography variant="caption" color="text.secondary">Map ready: {status.renderedFeatureCount} rendered features from {data?.features.length ?? 0} source features.</Typography>}
-    {(mode === "duration" || mode === "feature" || mode === "movement" && Boolean(unit) && maxValue > 0) && <Stack direction="row" alignItems="center" gap={1}><Box className="duration-legend" /><Typography variant="caption">0–{maxValue.toPrecision(4)} {unit}; square-root color scale.{mode === "duration" ? " Zero cells are transparent and retained in statistics." : mode === "feature" ? " Original source values." : " Mean time per directed edge."}</Typography></Stack>}
+    {(mode === "duration" || mode === "feature" || mode === "movement" && Boolean(unit) && maxValue > 0) && <Stack direction="row" alignItems="center" gap={1}><Box className="duration-legend" /><Typography variant="caption">0–{displayedMaxValue.toPrecision(4)} {displayedUnit}; square-root color scale.{mode === "duration" ? " Zero cells are transparent and retained in statistics." : mode === "feature" ? " Original source values." : " Mean time per directed edge."}</Typography></Stack>}
   </Stack>;
 }

@@ -189,10 +189,24 @@ def install_example(
                 if destination.exists():
                     names = [name for name in inventory if Path(name).parts[:2] == parts]
                     for name in names:
+                        existing = root / name
+                        matches = (
+                            existing.is_file() and digest_file(existing) == inventory[name].sha256
+                        )
                         if (
-                            not (root / name).is_file()
-                            or digest_file(root / name) != inventory[name].sha256
+                            not matches
+                            and existing.is_file()
+                            and Path(name).name == "manifest.json"
                         ):
+                            # Creation time is provenance, excluded from scientific identity.
+                            # All other manifest fields and every payload byte must still match.
+                            old = json.loads(existing.read_bytes())
+                            new = json.loads((stage / name).read_bytes())
+                            if "scientific_identity" in old and "scientific_identity" in new:
+                                old.pop("created_at_utc", None)
+                                new.pop("created_at_utc", None)
+                                matches = old == new
+                        if not matches:
                             raise ValueError(
                                 f"Existing immutable resource conflicts with example: {name}"
                             )
@@ -240,13 +254,19 @@ def write_bundle(root, destination, *, example_key="lausanne", name=EXAMPLE_NAME
     from mobile_sensing.application.run_models import RunView, AnalysisView
 
     run = RunView.model_validate_json((root / "example-run.json").read_bytes())
-    analysis = AnalysisView.model_validate_json((root / "example-analysis.json").read_bytes())
+    analysis_paths = [root / "example-analysis.json"]
+    optional_analysis = root / "example-analysis-std.json"
+    if optional_analysis.is_file():
+        analysis_paths.append(optional_analysis)
+    analyses = tuple(AnalysisView.model_validate_json(path.read_bytes()) for path in analysis_paths)
+    analysis = analyses[0]
     read_named_record(root, run.run_id, "studio_run")
-    read_named_record(root, analysis.analysis_id, "studio_analysis")
+    for item in analyses:
+        read_named_record(root, item.analysis_id, "studio_analysis")
     if (
         run.replications != 10
-        or analysis.sampling_runs != 100
-        or analysis.count_portfolios != feasible_portfolio_count(analysis.config)
+        or any(item.sampling_runs != 100 for item in analyses)
+        or any(item.count_portfolios != feasible_portfolio_count(item.config) for item in analyses)
     ):
         raise ValueError("Example bundle has not completed the required R/J/count design")
     config = run.config.model_copy(
@@ -254,13 +274,13 @@ def write_bundle(root, destination, *, example_key="lausanne", name=EXAMPLE_NAME
             "schema_version": "3.4",
             "portfolio": analysis.config,
             "linked_run_ids": (run.run_id,),
-            "linked_analysis_ids": (analysis.analysis_id,),
+            "linked_analysis_ids": tuple(item.analysis_id for item in analyses),
         }
     )
     directories = set()
     pending = [
         run.artifact.artifact_id,
-        analysis.artifact.artifact_id,
+        *(item.artifact.artifact_id for item in analyses),
         config.prepared_environment.artifact.artifact_id,
         config.prepared_environment.features.artifact_id,
     ]
@@ -324,12 +344,15 @@ def write_bundle(root, destination, *, example_key="lausanne", name=EXAMPLE_NAME
     from mobile_sensing.application.project_package import reusable_cache_files
 
     cache_files = list(reusable_cache_files(root, included_ids))
-    evidence_names = (
+    evidence_names = [
         "input-provenance.json",
         "example-run.json",
         "example-analysis.json",
         "example-audit.json",
-    )
+    ]
+    if optional_analysis.is_file():
+        evidence_names.insert(3, "example-analysis-std.json")
+    evidence_names = tuple(evidence_names)
     for name in evidence_names:
         if not (root / name).is_file():
             raise ValueError(f"Required example evidence missing: {name}")
@@ -374,6 +397,10 @@ def write_bundle(root, destination, *, example_key="lausanne", name=EXAMPLE_NAME
         "Fleet results": f"/results?view=fleet&fleet_run={run.run_id}",
         "Portfolio": f"/results?view=portfolio&resource={analysis.frontier.artifact_id}&budgets={budget_ids}&portfolio={default_point['portfolio_id']}",
     }
+    for item in analyses[1:]:
+        views["Portfolio — standard deviation"] = (
+            f"/results?view=portfolio&resource={item.frontier.artifact_id}"
+        )
     identity = stable_id(
         "example",
         {
@@ -393,7 +420,7 @@ def write_bundle(root, destination, *, example_key="lausanne", name=EXAMPLE_NAME
         files=files,
         saved_views=views,
         description=description
-        or f"Full Lausanne region · 14 January 2026 · 00:00–24:00 · {config.simulation.temporal_resolution_minutes:g}-minute reporting · {(config.portfolio.utility_temporal_resolution_minutes or config.simulation.temporal_resolution_minutes):g}-minute utility interval · Bus, Postal and Ride-hailing · 10 joint replications · 100 fleet sampling runs. Demand, duties, depot, speeds and costs carry explicit demonstration assumptions.",
+        or f"Full Lausanne region · 14 January 2026 · 00:00–24:00 · {config.simulation.temporal_resolution_minutes:g}-minute reporting · {(config.portfolio.utility_temporal_resolution_minutes or config.simulation.temporal_resolution_minutes):g}-minute utility interval · Bus, Postal and Taxi · 10 joint replications · 100 fleet sampling runs. Demand, duties, depot, speeds and costs carry explicit demonstration assumptions.",
     )
     destination.mkdir(parents=True, exist_ok=True)
     with zipfile.ZipFile(

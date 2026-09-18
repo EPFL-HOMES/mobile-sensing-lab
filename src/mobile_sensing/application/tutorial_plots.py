@@ -8,6 +8,7 @@ FLEET_LABELS = {
     "bus_7": "Bus 7",
     "bus": "Bus",
     "postal": "Postal",
+    "taxi": "Taxi",
     "ride_hailing": "Ride-hailing",
 }
 COLORS = {
@@ -16,6 +17,7 @@ COLORS = {
     "bus_7": "#b6456c",
     "bus": "#2b6d9a",
     "postal": "#c88635",
+    "taxi": "#158a83",
     "ride_hailing": "#158a83",
 }
 

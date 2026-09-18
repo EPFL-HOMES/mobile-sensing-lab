@@ -1,15 +1,15 @@
 {
   "version": "city-example@1",
   "example_key": "san-francisco",
-  "bundle_id": "example_8e583945bb8cf9259eff5d0ca6b43f3c",
-  "name": "[Example] San Francisco — Delivery Vans and Taxis",
+  "bundle_id": "example_21b2a279bfb233fd7f2092d8d7998f1f",
+  "name": "[Example] San Francisco — Taxi Weekday",
   "config": {
     "schema_version": "3.4",
     "environment": {
-      "boundary_input": "input_a4e5e1b0abb1860566d9d1990aa89424",
+      "boundary_input": "input_32b4f1e4a66a0605c4e6950405e0dbc6",
       "region_query": "",
       "drawn_boundary": null,
-      "network_input": "input_425608b84632d8c36f14f9cbd64262a0",
+      "network_input": "input_48d4e9a92f5fdd5df75047268d34df05",
       "grid_input": null,
       "speed_input": null,
       "working_crs": "EPSG:32610",
@@ -23,7 +23,7 @@
       "road_columns": {},
       "features": [
         {
-          "input_id": "input_5e18eb4ecccc93550c322de7ff1aedf2",
+          "input_id": "input_a0dc59232c3079ebd9560b2547fcfa23",
           "name": "residential_area",
           "value_column": "value",
           "unit": "m2",
@@ -34,7 +34,7 @@
           "coordinate_anchor": "point"
         },
         {
-          "input_id": "input_7230947eb0fd4a559729c3786c77bcb3",
+          "input_id": "input_a853e37b2e30baf0fce23e07b23c2925",
           "name": "commercial_locations",
           "value_column": "value",
           "unit": "count",
@@ -45,23 +45,30 @@
           "coordinate_anchor": "point"
         }
       ],
-      "osm_features": [],
+      "osm_features": [
+        "transportation",
+        "public_services",
+        "leisure"
+      ],
       "topology_policy": "quarantine_invalid@1"
     },
     "prepared_environment": {
       "artifact": {
-        "artifact_id": "environment_d9892b4cef2acde119bb685f1367267c",
+        "artifact_id": "environment_46716f61c3e1f4ea1d11977d7c653a90",
         "artifact_kind": "environment",
-        "content_hash": "1a42ef98b6c5639e18665d1b4d1b1f974f9d673a40d99933c3ca09ac8c25e39c"
+        "content_hash": "ad2d97eff58d7b169dbdaf918628d50a12112289547411bc1453d727f25b6ef8"
       },
       "features": {
-        "artifact_id": "dataset_dc3a2f804b7abd6917e03479418ebb4e",
+        "artifact_id": "dataset_7f0a7e13f2986aad7d526c224389e3b4",
         "artifact_kind": "dataset",
-        "content_hash": "e50c628895c28e73f9e1fdc477b5ccbffeec1350dbe788206f1d42d06c5a9a96"
+        "content_hash": "2b8d193b8f15bfd3004c1f11997c9669644ba60b33443259a4327b29dac6a8fb"
       },
       "feature_names": [
         "commercial_locations",
+        "leisure",
+        "public_services",
         "residential_area",
+        "transportation",
         "uniform"
       ],
       "working_crs": "EPSG:32610",
@@ -69,111 +76,15 @@
       "assumptions": [
         "Uncalibrated uniform road speed: 20.0 km/h",
         "OSM urban study window excludes offshore islands; SFO airport is outside this study region.",
-        "OSM residential/commercial features are spatial activity proxies, not measured population or orders.",
-        "Synthetic operator subfleets, depot, demand profiles and service times; no claim of citywide market calibration.",
+        "OSM residential, commercial, transportation, public-service and leisure features are spatial activity proxies, not measured population or requests.",
+        "Synthetic taxi fleet, demand profile and service times; no claim of citywide market calibration.",
         "Uniform 20 km/h is an uncalibrated urban operating-speed assumption, not measured traffic."
       ]
     },
     "fleets": [
       {
-        "fleet_id": "delivery_van",
-        "name": "Delivery vans · synthetic operator",
-        "demand": {
-          "source": "generator",
-          "task_type": "location",
-          "input_id": null,
-          "template": "table",
-          "content": "instances",
-          "count_semantics": null,
-          "columns": {},
-          "coordinate_kind": "cell_id",
-          "time_unit": "clock",
-          "rate_unit": "per_hour",
-          "generation_timing": "offline",
-          "volume_mode": "expected",
-          "task_volume": 1600.0,
-          "start_time": "08:00",
-          "end_time": "18:00",
-          "release_mode": "at_start",
-          "temporal_mode": "window",
-          "time_profile": [],
-          "time_profile_input": null,
-          "spatial_feature": "residential_area",
-          "spatial_weights": [
-            {
-              "feature": "residential_area",
-              "weight": 0.6
-            },
-            {
-              "feature": "commercial_locations",
-              "weight": 0.4
-            }
-          ],
-          "destination_feature": "uniform",
-          "destination_spatial_weights": [],
-          "location_condition": "depot_roundtrip",
-          "od_distribution_input": null,
-          "service_seconds": 120.0,
-          "pickup_seconds": 0.0,
-          "quantity": 1.0,
-          "route_ids": [],
-          "imported_assignment": "execute"
-        },
-        "supply": {
-          "source": "generated",
-          "input_id": null,
-          "columns": {},
-          "fleet_size": 20,
-          "timetable_catalog_complete": false,
-          "operating_start": "08:00",
-          "operating_end": "18:00",
-          "activation": "uniform_bounded",
-          "latest_start": "09:00",
-          "work_hours": 8.0,
-          "initial_location": "depot",
-          "spatial_feature": "commercial_locations",
-          "spatial_weights": [],
-          "post_service": "return_after_plan",
-          "capacity_mode": "consumable",
-          "capacity": 100.0,
-          "capacity_unit": "units",
-          "depot_cell_id": null,
-          "depot_longitude": null,
-          "depot_latitude": null,
-          "synthetic_depot": true,
-          "service_area_mode": "auto",
-          "service_area_input": null,
-          "area_assignment_input": null,
-          "auto_service_area_count": 4,
-          "turnaround_seconds": 0.0,
-          "depot_min_stay_minutes": 15.0,
-          "timetable_idle_break_minutes": 60.0,
-          "shift_groups": []
-        },
-        "dispatch": {
-          "mode": "one_shot",
-          "assignment_input": null,
-          "max_pickup_minutes": 15.0,
-          "batch_minutes": 2.0,
-          "solution_limit": 100,
-          "planning_timeout_seconds": 600.0,
-          "max_cost_pairs": 5000000,
-          "allow_replenishment": true,
-          "max_replenishments_per_vehicle": 4
-        },
-        "routing_profile": "default",
-        "sensing_mode": "operating_duration",
-        "sensing_movements": [
-          "service_pickup",
-          "service_inter_step",
-          "cruise",
-          "depot_return",
-          "reposition"
-        ]
-      },
-      {
         "fleet_id": "taxi",
-        "name": "Taxis · synthetic operator",
+        "name": "Taxi",
         "demand": {
           "source": "generator",
           "task_type": "od",
@@ -187,7 +98,7 @@
           "rate_unit": "per_hour",
           "generation_timing": "online",
           "volume_mode": "expected",
-          "task_volume": 900.0,
+          "task_volume": 2000.0,
           "start_time": "00:00",
           "end_time": "24:00",
           "release_mode": "uniform",
@@ -234,22 +145,46 @@
           "spatial_weights": [
             {
               "feature": "residential_area",
-              "weight": 0.6
+              "weight": 0.35
             },
             {
               "feature": "commercial_locations",
-              "weight": 0.4
+              "weight": 0.25
+            },
+            {
+              "feature": "transportation",
+              "weight": 0.2
+            },
+            {
+              "feature": "public_services",
+              "weight": 0.1
+            },
+            {
+              "feature": "leisure",
+              "weight": 0.1
             }
           ],
           "destination_feature": "residential_area",
           "destination_spatial_weights": [
             {
               "feature": "residential_area",
-              "weight": 0.6
+              "weight": 0.3
             },
             {
               "feature": "commercial_locations",
-              "weight": 0.4
+              "weight": 0.3
+            },
+            {
+              "feature": "transportation",
+              "weight": 0.2
+            },
+            {
+              "feature": "public_services",
+              "weight": 0.1
+            },
+            {
+              "feature": "leisure",
+              "weight": 0.1
             }
           ],
           "location_condition": "all_resolved",
@@ -264,7 +199,7 @@
           "source": "generated",
           "input_id": null,
           "columns": {},
-          "fleet_size": 60,
+          "fleet_size": 100,
           "timetable_catalog_complete": false,
           "operating_start": "00:00",
           "operating_end": "24:00",
@@ -283,7 +218,7 @@
               "weight": 0.4
             }
           ],
-          "post_service": "stationary",
+          "post_service": "random_cruise",
           "capacity_mode": "occupancy",
           "capacity": 1.0,
           "capacity_unit": "units",
@@ -301,7 +236,7 @@
           "shift_groups": [
             {
               "name": "Night",
-              "count": 6,
+              "count": 10,
               "start_time": "00:00",
               "latest_start": "00:00",
               "day_offset": 0,
@@ -309,7 +244,7 @@
             },
             {
               "name": "Morning",
-              "count": 18,
+              "count": 30,
               "start_time": "05:00",
               "latest_start": "06:00",
               "day_offset": 0,
@@ -317,7 +252,7 @@
             },
             {
               "name": "Daytime",
-              "count": 18,
+              "count": 30,
               "start_time": "09:00",
               "latest_start": "11:00",
               "day_offset": 0,
@@ -325,7 +260,7 @@
             },
             {
               "name": "Afternoon",
-              "count": 18,
+              "count": 30,
               "start_time": "15:00",
               "latest_start": "16:00",
               "day_offset": 0,
@@ -370,34 +305,24 @@
       "seed": 20260114
     },
     "portfolio": {
-      "source_run_id": "dataset_5fc2a197bfa15d37b367d2d940e882ca",
+      "source_run_id": "dataset_a6ae954e8bdf1d1a1ac83861fbbda810",
       "sampling_runs": 100,
       "seed": 20260115,
-      "cost_unit": "abstract cost units",
+      "cost_unit": "sensor",
       "budgets": [
         10.0,
         20.0,
         30.0,
-        40.0
+        40.0,
+        50.0,
+        60.0,
+        70.0,
+        80.0,
+        90.0,
+        100.0
       ],
       "budget_range": null,
       "fleets": [
-        {
-          "fleet_id": "delivery_van",
-          "unit_cost": 1.0,
-          "counts": [
-            0,
-            5,
-            10,
-            15,
-            20
-          ],
-          "count_range": {
-            "minimum": 0.0,
-            "maximum": 20.0,
-            "step": 5.0
-          }
-        },
         {
           "fleet_id": "taxi",
           "unit_cost": 1.0,
@@ -414,11 +339,19 @@
             45,
             50,
             55,
-            60
+            60,
+            65,
+            70,
+            75,
+            80,
+            85,
+            90,
+            95,
+            100
           ],
           "count_range": {
             "minimum": 0.0,
-            "maximum": 60.0,
+            "maximum": 100.0,
             "step": 5.0
           }
         }
@@ -431,10 +364,11 @@
     },
     "source_revision": null,
     "linked_run_ids": [
-      "dataset_5fc2a197bfa15d37b367d2d940e882ca"
+      "dataset_a6ae954e8bdf1d1a1ac83861fbbda810"
     ],
     "linked_analysis_ids": [
-      "dataset_d380d2726ce71d1029334bf8903af2ed"
+      "dataset_0a672315512bcd0baac07cda5ef0ef8c",
+      "dataset_b81b38789601461f8726871dad33f2cb"
     ],
     "example_bundle_id": null,
     "read_only": false,
@@ -442,779 +376,825 @@
   },
   "files": [
     {
-      "path": "analysis_cache/frontier-eb3afe8f3fab27fac9e7466db365a35502565df9f3c820ee12ffe880ec8abb32.json",
-      "sha256": "6c8b2d9c23c1832055edac586f2430696ebe4197b09942b2fa51429ed8cec06f",
-      "size_bytes": 536
+      "path": "analysis_cache/frontier-b3d581fcdef932c4ad11d8df049fbccda6abb76ef53befe2e31b8887cf4a7439.json",
+      "sha256": "e4ff098940bd7e72379a22510177327c8b4f80af49fae353a8e8bec6c21602a8",
+      "size_bytes": 538
     },
     {
-      "path": "analysis_cache/samples-2c5ea66ac7d8404dec1dd55832f997d6da2b893f1264a4b21026cb0c5f9b689f.json",
-      "sha256": "bd1652239f2f15facb900b333e8e835e8e30a829cfe735a089e6d30529656218",
-      "size_bytes": 951
+      "path": "analysis_cache/frontier-c0dd2363d90850f8fde02da2fce2aa586e40f92378e62bb10fcb3c3a0d08e73b.json",
+      "sha256": "ed1d46f026f712a753dcf9db50664c9891a51ab8c5691e83754e65cd8f051734",
+      "size_bytes": 538
     },
     {
-      "path": "datasets/dataset_3bac319f35af5636e2b3ddf9607086e8/_SUCCESS",
+      "path": "analysis_cache/samples-2a9eb15255867df7baa3c83ca04029f0144afe8b485aa12e87055a4e02fab331.json",
+      "sha256": "24059d507c21ef0ce4cb00db6124ba45676e5e40d25316240ac5963fb037dde1",
+      "size_bytes": 961
+    },
+    {
+      "path": "datasets/dataset_0a672315512bcd0baac07cda5ef0ef8c/_SUCCESS",
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "size_bytes": 0
     },
     {
-      "path": "datasets/dataset_3bac319f35af5636e2b3ddf9607086e8/manifest.json",
-      "sha256": "6802aef0d3dab0eb2f3ee1b708fb8f0a0ce8c01b5e023a6dfae41f8db04d65af",
-      "size_bytes": 1970258
+      "path": "datasets/dataset_0a672315512bcd0baac07cda5ef0ef8c/manifest.json",
+      "sha256": "ab14ebcb82e6063ec6ca55266c0c640e0ce5584365746d9010db7396217048b6",
+      "size_bytes": 3061
     },
     {
-      "path": "datasets/dataset_3bac319f35af5636e2b3ddf9607086e8/tables/availability/part-000000.parquet",
-      "sha256": "b9a62c80f5a47b907597988bdd0c4c97baa69a7abf9c68f4b6e8b0f0ef32ece0",
-      "size_bytes": 23033
-    },
-    {
-      "path": "datasets/dataset_3bac319f35af5636e2b3ddf9607086e8/tables/od_rejections/part-000000.parquet",
-      "sha256": "4c80f0986cf76c5f2135a8175eb3d00ff59108b418ad87190b0740e9cd08835f",
-      "size_bytes": 5536
-    },
-    {
-      "path": "datasets/dataset_3bac319f35af5636e2b3ddf9607086e8/tables/physical_catalog/part-000000.parquet",
-      "sha256": "fcbc44e27337aa98cfd992dc69ab4e81b539a6b6f39d1a3ef2e811ca9bb34235",
-      "size_bytes": 5804
-    },
-    {
-      "path": "datasets/dataset_3bac319f35af5636e2b3ddf9607086e8/tables/planning_metrics/part-000000.parquet",
-      "sha256": "024e7bee9baa209466af290008fa9ce9ffd33ef20ca4d8087ca8c9561cbb8697",
-      "size_bytes": 2828
-    },
-    {
-      "path": "datasets/dataset_3bac319f35af5636e2b3ddf9607086e8/tables/realized_tasks/part-000000.parquet",
-      "sha256": "f61c2280354587cbba6ff68d2d0e87a7e3e21a3693cf5cb7f02edcf5203f933b",
-      "size_bytes": 1574132
-    },
-    {
-      "path": "datasets/dataset_3bac319f35af5636e2b3ddf9607086e8/tables/replication_plans/part-000000.parquet",
-      "sha256": "2795bfe80e272618071d580a08a8ce1960fde3b4fde599d6a6c5f47e70575808",
-      "size_bytes": 314595
-    },
-    {
-      "path": "datasets/dataset_3bac319f35af5636e2b3ddf9607086e8/tables/resolved_locations/part-000000.parquet",
-      "sha256": "bec4b4da68cb6fee4918cedb3151f101de89130c6a5d4d83323ef26eec44ce2f",
-      "size_bytes": 1003775
-    },
-    {
-      "path": "datasets/dataset_3bac319f35af5636e2b3ddf9607086e8/tables/spatial_support/part-000000.parquet",
-      "sha256": "fb9307850da7b5d02e35f23c6f5bc25239ff516b24ed4a7642ca4aa1fd27313e",
-      "size_bytes": 672640
-    },
-    {
-      "path": "datasets/dataset_5fc2a197bfa15d37b367d2d940e882ca/_SUCCESS",
-      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "size_bytes": 0
-    },
-    {
-      "path": "datasets/dataset_5fc2a197bfa15d37b367d2d940e882ca/manifest.json",
-      "sha256": "443c40e86d55c398809055061959783cd441f1a11d17ed2bfae632fc1b1db87d",
-      "size_bytes": 11590
-    },
-    {
-      "path": "datasets/dataset_5fc2a197bfa15d37b367d2d940e882ca/tables/stage_metrics/part-000000.parquet",
-      "sha256": "74647b7aecffc5abd246c07c47b06d88823fdfd328f0d6cf23e09a541e24efca",
-      "size_bytes": 1744
-    },
-    {
-      "path": "datasets/dataset_d380d2726ce71d1029334bf8903af2ed/_SUCCESS",
-      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "size_bytes": 0
-    },
-    {
-      "path": "datasets/dataset_d380d2726ce71d1029334bf8903af2ed/manifest.json",
-      "sha256": "6ca5ccf42d385aa6e7d7ed3227903c611a2b1535d1ea18931b84035d58afba77",
-      "size_bytes": 3158
-    },
-    {
-      "path": "datasets/dataset_d380d2726ce71d1029334bf8903af2ed/tables/stage_metrics/part-000000.parquet",
-      "sha256": "68e60edc2297ff2dac2a8b038d2f5a13ba62ae0d10d13341883a1f1f63c21225",
+      "path": "datasets/dataset_0a672315512bcd0baac07cda5ef0ef8c/tables/stage_metrics/part-000000.parquet",
+      "sha256": "27b16f1c08c4afb7498ef4b6f10490f74630f7566770350ea93e8539e61a776a",
       "size_bytes": 1730
     },
     {
-      "path": "datasets/dataset_dc3a2f804b7abd6917e03479418ebb4e/_SUCCESS",
+      "path": "datasets/dataset_6aa0d56f3829eb17b1e8d87211c5dc17/_SUCCESS",
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "size_bytes": 0
     },
     {
-      "path": "datasets/dataset_dc3a2f804b7abd6917e03479418ebb4e/manifest.json",
-      "sha256": "c3a2254620395db494ee8530de2d70f71540a9c59ca757a60e90515e03dbd0c3",
-      "size_bytes": 5226
+      "path": "datasets/dataset_6aa0d56f3829eb17b1e8d87211c5dc17/manifest.json",
+      "sha256": "2d0c56ba5634ac43c9cda3e8170122de4dba509ba9f8e5865a99387d1e7bfeb6",
+      "size_bytes": 11773
     },
     {
-      "path": "datasets/dataset_dc3a2f804b7abd6917e03479418ebb4e/tables/grid_features/part-000000.parquet",
-      "sha256": "72457f22f256f3865a03e8549d3d4cc61c7bbf6b4011e5bc2e2155406e87e6e0",
-      "size_bytes": 172907
+      "path": "datasets/dataset_6aa0d56f3829eb17b1e8d87211c5dc17/tables/availability/part-000000.parquet",
+      "sha256": "4d4bb1182d3c0b3598650a8be7347d832f9e61b40d78eccd7e814da2d0221c6b",
+      "size_bytes": 27128
     },
     {
-      "path": "environments/environment_d9892b4cef2acde119bb685f1367267c/_SUCCESS",
+      "path": "datasets/dataset_6aa0d56f3829eb17b1e8d87211c5dc17/tables/od_rejections/part-000000.parquet",
+      "sha256": "6657ecc7272b43f4201fdc85801b7e513ff8b11d05c0057cc24588b85a4248c7",
+      "size_bytes": 7722
+    },
+    {
+      "path": "datasets/dataset_6aa0d56f3829eb17b1e8d87211c5dc17/tables/physical_catalog/part-000000.parquet",
+      "sha256": "8a600c4ba3c1864ee0ba7922bb45c4a1a55e838469a048328944602466d9f051",
+      "size_bytes": 6147
+    },
+    {
+      "path": "datasets/dataset_6aa0d56f3829eb17b1e8d87211c5dc17/tables/realized_tasks/part-000000.parquet",
+      "sha256": "9005ede2f53eee403b7b4aafcdd6707c86e7a9b563b0f41d38cb47c02986de3b",
+      "size_bytes": 1612485
+    },
+    {
+      "path": "datasets/dataset_6aa0d56f3829eb17b1e8d87211c5dc17/tables/resolved_locations/part-000000.parquet",
+      "sha256": "95b4eb34307d193bf46be2a5bbcce52986a4186e69250ffda04149c791c1b155",
+      "size_bytes": 1003427
+    },
+    {
+      "path": "datasets/dataset_6aa0d56f3829eb17b1e8d87211c5dc17/tables/spatial_support/part-000000.parquet",
+      "sha256": "9e650b8f8186256f3ab2ea4689d5cd45075ab022c6fcd6364a9b3398216b7148",
+      "size_bytes": 672554
+    },
+    {
+      "path": "datasets/dataset_7f0a7e13f2986aad7d526c224389e3b4/_SUCCESS",
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "size_bytes": 0
     },
     {
-      "path": "environments/environment_d9892b4cef2acde119bb685f1367267c/boundary.parquet",
+      "path": "datasets/dataset_7f0a7e13f2986aad7d526c224389e3b4/manifest.json",
+      "sha256": "73b2aa62c6cee1cd75570ffe9e52dea0c40b8da7c6eae18bc0e90cb3cdecf79e",
+      "size_bytes": 37743
+    },
+    {
+      "path": "datasets/dataset_7f0a7e13f2986aad7d526c224389e3b4/tables/grid_features/part-000000.parquet",
+      "sha256": "db16c1048e2a84d4a10e5018586ff645184879e158f96001c7dce130336ba0e1",
+      "size_bytes": 237591
+    },
+    {
+      "path": "datasets/dataset_a6ae954e8bdf1d1a1ac83861fbbda810/_SUCCESS",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "datasets/dataset_a6ae954e8bdf1d1a1ac83861fbbda810/manifest.json",
+      "sha256": "0ee3b17745eba0262ec5fa97c22cba8c3a76c018dd56b7616c5c1ea60180c4de",
+      "size_bytes": 9361
+    },
+    {
+      "path": "datasets/dataset_a6ae954e8bdf1d1a1ac83861fbbda810/tables/stage_metrics/part-000000.parquet",
+      "sha256": "6fe543f912cd2ff06bae399869c69d57b037178b0f1343ffc0d654d0bfc2df19",
+      "size_bytes": 1753
+    },
+    {
+      "path": "datasets/dataset_b81b38789601461f8726871dad33f2cb/_SUCCESS",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "datasets/dataset_b81b38789601461f8726871dad33f2cb/manifest.json",
+      "sha256": "7d14e273ef11365d8a270ee1b9ffe380270090088f564fb5b836f08ad83a1358",
+      "size_bytes": 3069
+    },
+    {
+      "path": "datasets/dataset_b81b38789601461f8726871dad33f2cb/tables/stage_metrics/part-000000.parquet",
+      "sha256": "bac94f475e0cac414b8d02b766154774243f5b05437f46ebe63d71dc56ab466e",
+      "size_bytes": 1730
+    },
+    {
+      "path": "environments/environment_46716f61c3e1f4ea1d11977d7c653a90/_SUCCESS",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "environments/environment_46716f61c3e1f4ea1d11977d7c653a90/boundary.parquet",
       "sha256": "8bce892b64251acfb9f812a63cf9718cf0b5d4c3c6dd901853cf9270e99306fa",
       "size_bytes": 26725
     },
     {
-      "path": "environments/environment_d9892b4cef2acde119bb685f1367267c/edge_lineage.parquet",
-      "sha256": "fb0fc058ba980a3ea3738e5457d3007eec1d883a412c7eeb466a551e25a5a97a",
-      "size_bytes": 2866183
+      "path": "environments/environment_46716f61c3e1f4ea1d11977d7c653a90/edge_lineage.parquet",
+      "sha256": "a2bf2941e26b21f3ed6a9a3321fb6d6b6b9e9f904ff57acf8af23a6f3dba92dd",
+      "size_bytes": 2864133
     },
     {
-      "path": "environments/environment_d9892b4cef2acde119bb685f1367267c/environment.json",
-      "sha256": "484dca9200db3006bcfd208a84cab25d8d4d2c91dd972110a37aef1a14730970",
+      "path": "environments/environment_46716f61c3e1f4ea1d11977d7c653a90/environment.json",
+      "sha256": "5c9d7532a6d505d031b4ab2b60e28cd42f3acfd910bc61ff8fffcb071b689418",
       "size_bytes": 1478
     },
     {
-      "path": "environments/environment_d9892b4cef2acde119bb685f1367267c/grid_cells.parquet",
+      "path": "environments/environment_46716f61c3e1f4ea1d11977d7c653a90/grid_cells.parquet",
       "sha256": "1b2257be06ce4a6398976f5799663c3082a1007437c84a2d1897e134a4be9405",
       "size_bytes": 1195078
     },
     {
-      "path": "environments/environment_d9892b4cef2acde119bb685f1367267c/manifest.json",
-      "sha256": "0d807566b2f294e53ebdffff8484536435128995cfb48218bf1e9db0cc98d328",
+      "path": "environments/environment_46716f61c3e1f4ea1d11977d7c653a90/manifest.json",
+      "sha256": "39aafb7abcb2244f295b806fee5813d449be4f39c6dbd563f6557d200da02683",
       "size_bytes": 7497
     },
     {
-      "path": "environments/environment_d9892b4cef2acde119bb685f1367267c/node_lineage.parquet",
-      "sha256": "7ffbcd13fcb7b9c87c7996deb26902aac41a45dbbc7ff0af81dab527423efe34",
-      "size_bytes": 743479
+      "path": "environments/environment_46716f61c3e1f4ea1d11977d7c653a90/node_lineage.parquet",
+      "sha256": "a65a23458ceb0e948433b1fbbc33a2140ae8e408aef2cb0687d7e03dd2a00444",
+      "size_bytes": 742763
     },
     {
-      "path": "environments/environment_d9892b4cef2acde119bb685f1367267c/nodes.parquet",
-      "sha256": "4543dd876189a30be793c261e9c93d31f3a49ddae5089457b3350cb8a59daa58",
-      "size_bytes": 976793
+      "path": "environments/environment_46716f61c3e1f4ea1d11977d7c653a90/nodes.parquet",
+      "sha256": "07b18506c24d8d341edb13a2333071432109ac7e960d45ce3d43fd426591a5d0",
+      "size_bytes": 976123
     },
     {
-      "path": "environments/environment_d9892b4cef2acde119bb685f1367267c/population_features.parquet",
+      "path": "environments/environment_46716f61c3e1f4ea1d11977d7c653a90/population_features.parquet",
       "sha256": "46b3d9253ab208bde83f83ce847988c637f4eebf20c1dc52e8761ae69ed3d244",
       "size_bytes": 2325
     },
     {
-      "path": "environments/environment_d9892b4cef2acde119bb685f1367267c/quarantined_edges.parquet",
+      "path": "environments/environment_46716f61c3e1f4ea1d11977d7c653a90/quarantined_edges.parquet",
       "sha256": "9956577d65d03d083b47a9d865d2d520c932b7bf8fa84adb0d6cb89f38b0b5d3",
       "size_bytes": 13366
     },
     {
-      "path": "environments/environment_d9892b4cef2acde119bb685f1367267c/repair_actions.parquet",
-      "sha256": "3d3f512829d25db43d24d7e8e2faab231a000fe71488a70c5ead8c8df9a81e56",
-      "size_bytes": 1070626
+      "path": "environments/environment_46716f61c3e1f4ea1d11977d7c653a90/repair_actions.parquet",
+      "sha256": "b6a4114e97230117007437ccc305453da442453fad8d1e1c21f61cd741d5d690",
+      "size_bytes": 1068837
     },
     {
-      "path": "environments/environment_d9892b4cef2acde119bb685f1367267c/repair_issues.parquet",
+      "path": "environments/environment_46716f61c3e1f4ea1d11977d7c653a90/repair_issues.parquet",
       "sha256": "326ae68b2e77b04141393ad8f110d0a7d8ed2f96d05720af2a02e2a7e8dbf640",
       "size_bytes": 2783
     },
     {
-      "path": "environments/environment_d9892b4cef2acde119bb685f1367267c/repair_summary.parquet",
-      "sha256": "044c659ed93331a1f4237d6304c8c21d028f5385d11285db490a64655bf1c373",
+      "path": "environments/environment_46716f61c3e1f4ea1d11977d7c653a90/repair_summary.parquet",
+      "sha256": "a601e1e280b7f6cc6dc1804df5b16de3ab02db0cecea6efeb5e463e03b8c4f61",
       "size_bytes": 9228
     },
     {
-      "path": "environments/environment_d9892b4cef2acde119bb685f1367267c/repaired_roads.parquet",
-      "sha256": "db6e9b3e3f837643cdc7c3f6baccf2fd9edbcee5c031c74a435c32ccc4b8ef98",
-      "size_bytes": 6324863
+      "path": "environments/environment_46716f61c3e1f4ea1d11977d7c653a90/repaired_roads.parquet",
+      "sha256": "cc5ca3cac28e4abff7b85f31bcb810658c9a74875b0f0a68dc67ae06dc369113",
+      "size_bytes": 6255771
     },
     {
-      "path": "environments/environment_d9892b4cef2acde119bb685f1367267c/road_edges.parquet",
-      "sha256": "e3f959727e51ab2dc020dafff8bef5c451142d5cddf9a7dc4e4ee9a334cbb756",
-      "size_bytes": 6920261
+      "path": "environments/environment_46716f61c3e1f4ea1d11977d7c653a90/road_edges.parquet",
+      "sha256": "b52db8e72eadd3b5cc5aaf1777223804210215ff0c155c2b40b88dc372c795c2",
+      "size_bytes": 6878190
     },
     {
-      "path": "environments/environment_d9892b4cef2acde119bb685f1367267c/routing_weights.parquet",
-      "sha256": "4e8bdac6e104451cfddabd078b8ab4207ff4e26ab80e20e5234798128ccbee3b",
-      "size_bytes": 1859675
+      "path": "environments/environment_46716f61c3e1f4ea1d11977d7c653a90/routing_weights.parquet",
+      "sha256": "f1084b33d2443f9cb264f1cc3085b4ba1f5e74f3928246b3232a13c057979631",
+      "size_bytes": 1858278
     },
     {
-      "path": "example_evidence/evidence_d7aacea6dd0c9ea971cf6e592d75f24f/example-analysis.json",
-      "sha256": "b42d4f3fefa9bb45d481c40453d6725f5a6e5206b727ece3c866435460ef6baf",
-      "size_bytes": 1529
+      "path": "example_evidence/evidence_7cbd4b00d5c7bad22745cc055ea9d483/example-analysis-std.json",
+      "sha256": "9d350a0f8df857caf700c34e4088cd4f1154f5edbeefb6d021339ec3eedd209e",
+      "size_bytes": 2067
     },
     {
-      "path": "example_evidence/evidence_d7aacea6dd0c9ea971cf6e592d75f24f/example-audit.json",
-      "sha256": "5194805d2f4db57b06d30cfcb449db64fb8e03323a7f151b3f4165f74bed4351",
-      "size_bytes": 23856
+      "path": "example_evidence/evidence_7cbd4b00d5c7bad22745cc055ea9d483/example-analysis.json",
+      "sha256": "3cf0dc681d152b174c133450d797c1cb6fd1819e3109c274d9adc8a6960321d1",
+      "size_bytes": 2060
     },
     {
-      "path": "example_evidence/evidence_d7aacea6dd0c9ea971cf6e592d75f24f/example-run.json",
-      "sha256": "0defba712638bd95730dccca2b8c70a16181a3e9e2d4c0b27235357a2e9a43c2",
-      "size_bytes": 9957
+      "path": "example_evidence/evidence_7cbd4b00d5c7bad22745cc055ea9d483/example-audit.json",
+      "sha256": "36eb98ca16ed5967dddc7a5fe7205b10bafccd007a4215fa8518ccbfe8e0a888",
+      "size_bytes": 16491
     },
     {
-      "path": "example_evidence/evidence_d7aacea6dd0c9ea971cf6e592d75f24f/input-provenance.json",
-      "sha256": "1dcaa0891109b15d39773f1b102f4220e67b3b3bfbadbf60b263a058d121a326",
-      "size_bytes": 247121
+      "path": "example_evidence/evidence_7cbd4b00d5c7bad22745cc055ea9d483/example-run.json",
+      "sha256": "c45271a46f23d76dbbb53b663cb8860863f51bf06c4ada98a2592c7cf23b502f",
+      "size_bytes": 11821
     },
     {
-      "path": "exposures/exposure_70254bd660ae96539a601b799ba66ce0/_SUCCESS",
+      "path": "example_evidence/evidence_7cbd4b00d5c7bad22745cc055ea9d483/input-provenance.json",
+      "sha256": "637c83e5f46e98104fb68dde1f77836c675a005b45eeaa09774a76957d841892",
+      "size_bytes": 259781
+    },
+    {
+      "path": "exposures/exposure_a388ba12a8afc7e2bd868f71cbecc8d6/_SUCCESS",
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "size_bytes": 0
     },
     {
-      "path": "exposures/exposure_70254bd660ae96539a601b799ba66ce0/manifest.json",
-      "sha256": "a9c292ca786464406c13f39ebed34ae3fc206db7549bc709e6c408b69a4c27f6",
-      "size_bytes": 10175
+      "path": "exposures/exposure_a388ba12a8afc7e2bd868f71cbecc8d6/manifest.json",
+      "sha256": "e028330a94b65d1629fb0896a1942127580b9f945758d1b4094a7d2b406dfff0",
+      "size_bytes": 10081
     },
     {
-      "path": "exposures/exposure_70254bd660ae96539a601b799ba66ce0/tables/edge_grid_pieces/part-000000.parquet",
-      "sha256": "bfcd0ce2ee17665ea5cb4860f78de91e7b5dddb9ddecd07092af21457eee0801",
-      "size_bytes": 1458385
+      "path": "exposures/exposure_a388ba12a8afc7e2bd868f71cbecc8d6/tables/edge_grid_pieces/part-000000.parquet",
+      "sha256": "bd927b71ef443c094d5df0d12eaa9276ebe1dd6cc5e3ef4f686d755955842e73",
+      "size_bytes": 1706006
     },
     {
-      "path": "exposures/exposure_70254bd660ae96539a601b799ba66ce0/tables/exposure/part-000000.parquet",
-      "sha256": "cac59244f5ac160a8c75f1bbcf393901f3981853bf878bc8a2fa1b82b49c5491",
-      "size_bytes": 630759
+      "path": "exposures/exposure_a388ba12a8afc7e2bd868f71cbecc8d6/tables/exposure/part-000000.parquet",
+      "sha256": "a3302787bd94044d9ffbb5d367435369e1679d3df6d9ba99f7a9b72ed8b91951",
+      "size_bytes": 996226
     },
     {
-      "path": "exposures/exposure_70254bd660ae96539a601b799ba66ce0/tables/exposure/part-000001.parquet",
-      "sha256": "336bbb22f08a121859fa28adeca2981999fe9d7cdb10d76eb53c815a1418e958",
-      "size_bytes": 620916
+      "path": "exposures/exposure_a388ba12a8afc7e2bd868f71cbecc8d6/tables/exposure/part-000001.parquet",
+      "sha256": "29896e0b0e2fc7d8ca8bca6d1b7a8660a738f3e2a654b1ed7cf7c43013b8069b",
+      "size_bytes": 989854
     },
     {
-      "path": "exposures/exposure_70254bd660ae96539a601b799ba66ce0/tables/exposure/part-000002.parquet",
-      "sha256": "2b99eac93d11d033e87e66febf30168d0a48082889d36c59516003feacb6d2d9",
-      "size_bytes": 648793
+      "path": "exposures/exposure_a388ba12a8afc7e2bd868f71cbecc8d6/tables/exposure/part-000002.parquet",
+      "sha256": "5fc114d937618954b9f20ede6e7fc70413c92b64becfdab96dcbf294681e317f",
+      "size_bytes": 1036215
     },
     {
-      "path": "exposures/exposure_70254bd660ae96539a601b799ba66ce0/tables/exposure/part-000003.parquet",
-      "sha256": "ed0e466e20825589f6a7d9ad602f6571908baef8afd3d221b714480847d644c6",
-      "size_bytes": 612038
+      "path": "exposures/exposure_a388ba12a8afc7e2bd868f71cbecc8d6/tables/exposure/part-000003.parquet",
+      "sha256": "3f10b8612e296eb1ea41929fe96c9883f3ed8d2577bcbb4e8010ecce22501b65",
+      "size_bytes": 1003110
     },
     {
-      "path": "exposures/exposure_70254bd660ae96539a601b799ba66ce0/tables/exposure/part-000004.parquet",
-      "sha256": "6879c7f06ba5f7fcdd36e980c6597b2e77a7d354daac7d709c8981262683717e",
-      "size_bytes": 611292
+      "path": "exposures/exposure_a388ba12a8afc7e2bd868f71cbecc8d6/tables/exposure/part-000004.parquet",
+      "sha256": "02ddfa4c6ab0182ee2a7058ed55507a98a9b13b4da4fed8ec38cf3e4a3330909",
+      "size_bytes": 986421
     },
     {
-      "path": "exposures/exposure_70254bd660ae96539a601b799ba66ce0/tables/exposure/part-000005.parquet",
-      "sha256": "14cfbf67d851c863f88dc279caa69b2c4725aeb115b3a6cfa4bf4cd5a30ebcd3",
-      "size_bytes": 618881
+      "path": "exposures/exposure_a388ba12a8afc7e2bd868f71cbecc8d6/tables/exposure/part-000005.parquet",
+      "sha256": "fa7d0629aaed0ca1f5356becd4189793137c494fc41c113e779f813e1d93f08d",
+      "size_bytes": 976078
     },
     {
-      "path": "exposures/exposure_70254bd660ae96539a601b799ba66ce0/tables/exposure/part-000006.parquet",
-      "sha256": "c77025140314f77914e9f93cfda8ae94ac84fd68f005d521ecccc169f0434ce6",
-      "size_bytes": 613304
+      "path": "exposures/exposure_a388ba12a8afc7e2bd868f71cbecc8d6/tables/exposure/part-000006.parquet",
+      "sha256": "705e5e44bd43082bb7af9efc7004d8b344ab5f65647daecdab7ada6503718742",
+      "size_bytes": 988302
     },
     {
-      "path": "exposures/exposure_70254bd660ae96539a601b799ba66ce0/tables/exposure/part-000007.parquet",
-      "sha256": "3cc07aebab7b155cc7987b458e0599f6886758140715ac1d054d3639216d89d6",
-      "size_bytes": 600105
+      "path": "exposures/exposure_a388ba12a8afc7e2bd868f71cbecc8d6/tables/exposure/part-000007.parquet",
+      "sha256": "000d26bf0d22455392fc3be6b7e06285b2e0166cbbb5340b8220070322cba2dc",
+      "size_bytes": 1016590
     },
     {
-      "path": "exposures/exposure_70254bd660ae96539a601b799ba66ce0/tables/exposure/part-000008.parquet",
-      "sha256": "d4a296bf37eb6a06d0d5ef082dc7da4b5974952f2a7baee9bad2e6944a2da111",
-      "size_bytes": 608702
+      "path": "exposures/exposure_a388ba12a8afc7e2bd868f71cbecc8d6/tables/exposure/part-000008.parquet",
+      "sha256": "ed5ef73c71b07e07277cba5efb386b9f3be3dd3d4779428d4e6cd29b26874b82",
+      "size_bytes": 1006944
     },
     {
-      "path": "exposures/exposure_70254bd660ae96539a601b799ba66ce0/tables/exposure/part-000009.parquet",
-      "sha256": "9900b606cf1839befb37354a5b60d15c1e1f57260e7a874ebdae3328766f1fe2",
-      "size_bytes": 632594
+      "path": "exposures/exposure_a388ba12a8afc7e2bd868f71cbecc8d6/tables/exposure/part-000009.parquet",
+      "sha256": "6c3afc1f361e3cd51857014063d5e40b43db9e64cad80d4244d0a243eb8765d8",
+      "size_bytes": 995184
     },
     {
-      "path": "exposures/exposure_70254bd660ae96539a601b799ba66ce0/tables/grid_axis/part-000000.parquet",
-      "sha256": "b4a85013f1fa16ef5910d82ba5863c4fa85105d09c9bbfd595c44b458c9bee38",
-      "size_bytes": 59267
+      "path": "exposures/exposure_a388ba12a8afc7e2bd868f71cbecc8d6/tables/grid_axis/part-000000.parquet",
+      "sha256": "e1e29ee768bf0437bffe2ac50a704abb35a994d9df761de0874bb3dc62be331a",
+      "size_bytes": 59072
     },
     {
-      "path": "exposures/exposure_70254bd660ae96539a601b799ba66ce0/tables/replication_status/part-000000.parquet",
-      "sha256": "7a2a398ab252e14c8135b098cedcac2eea3c6407e0e2bc166a421d76ff8e4d66",
-      "size_bytes": 4440
+      "path": "exposures/exposure_a388ba12a8afc7e2bd868f71cbecc8d6/tables/replication_status/part-000000.parquet",
+      "sha256": "c1667d99c36800572f7de457633ff22a9994716cae88742b1f8e0c3b2f1d7b1a",
+      "size_bytes": 4439
     },
     {
-      "path": "exposures/exposure_70254bd660ae96539a601b799ba66ce0/tables/replication_status/part-000001.parquet",
-      "sha256": "cb0867f580260b3110ec76a8b45eeeb5796ac8a7ac00acea367438de4b4d3b99",
-      "size_bytes": 4440
+      "path": "exposures/exposure_a388ba12a8afc7e2bd868f71cbecc8d6/tables/replication_status/part-000001.parquet",
+      "sha256": "fddab1524e4120c1ce3aa871603ebb7cd76459b090edd51eeac24346011faf27",
+      "size_bytes": 4439
     },
     {
-      "path": "exposures/exposure_70254bd660ae96539a601b799ba66ce0/tables/replication_status/part-000002.parquet",
-      "sha256": "2748265b39f9fd275d4406badc33c6158ea1fbe31426c7f905bca086a1df6b19",
-      "size_bytes": 4440
+      "path": "exposures/exposure_a388ba12a8afc7e2bd868f71cbecc8d6/tables/replication_status/part-000002.parquet",
+      "sha256": "617ebc57deea7dfd30e8134cd7eb3d88616ebffbb3e08dedd24c9c88f0dd1d12",
+      "size_bytes": 4439
     },
     {
-      "path": "exposures/exposure_70254bd660ae96539a601b799ba66ce0/tables/replication_status/part-000003.parquet",
-      "sha256": "617b9d7e67359fde298213f5db1549877ff4fad080d75ccd371578efe1c7ca17",
-      "size_bytes": 4440
+      "path": "exposures/exposure_a388ba12a8afc7e2bd868f71cbecc8d6/tables/replication_status/part-000003.parquet",
+      "sha256": "dc80b377fdfb1fd6d4b544acc8e3a0d1deeaedba338c271b0af23403976c8436",
+      "size_bytes": 4439
     },
     {
-      "path": "exposures/exposure_70254bd660ae96539a601b799ba66ce0/tables/replication_status/part-000004.parquet",
-      "sha256": "65335ccca7f7063fae3e0d923c36b605bf64f6aed42b8116106d54d0e8bddc82",
-      "size_bytes": 4440
+      "path": "exposures/exposure_a388ba12a8afc7e2bd868f71cbecc8d6/tables/replication_status/part-000004.parquet",
+      "sha256": "4c5cab63ba8dda09cb266801fe20f9730c0fb81467d59576d6768e0356a6b8bc",
+      "size_bytes": 4439
     },
     {
-      "path": "exposures/exposure_70254bd660ae96539a601b799ba66ce0/tables/replication_status/part-000005.parquet",
-      "sha256": "11a21f2736c229ebe49f33865352f5f72da40d6c9ed053302227330d062c2388",
-      "size_bytes": 4440
+      "path": "exposures/exposure_a388ba12a8afc7e2bd868f71cbecc8d6/tables/replication_status/part-000005.parquet",
+      "sha256": "99904d02f10bfa6e06b7db8a95098883fadb513a289d05b97758e584cb4b26f2",
+      "size_bytes": 4439
     },
     {
-      "path": "exposures/exposure_70254bd660ae96539a601b799ba66ce0/tables/replication_status/part-000006.parquet",
-      "sha256": "2be9ba5230a5d8601e8b0c9512232b1229774d2c1a87a69c8d4eb8bec31b4881",
-      "size_bytes": 4440
+      "path": "exposures/exposure_a388ba12a8afc7e2bd868f71cbecc8d6/tables/replication_status/part-000006.parquet",
+      "sha256": "0609a1287a55fc5567352f8b4703fd8eaef1e21e15e63cf918ce074ed91e9ed5",
+      "size_bytes": 4439
     },
     {
-      "path": "exposures/exposure_70254bd660ae96539a601b799ba66ce0/tables/replication_status/part-000007.parquet",
-      "sha256": "e2c0994a9e1c25051a91879a98586a421fa3d2ccd413b5336b385b3bb5e490b7",
-      "size_bytes": 4440
+      "path": "exposures/exposure_a388ba12a8afc7e2bd868f71cbecc8d6/tables/replication_status/part-000007.parquet",
+      "sha256": "1296b2289cb71681ea3a3d5a3f6db59fb8ccf1c934b44b3dc82e298a31f0d700",
+      "size_bytes": 4439
     },
     {
-      "path": "exposures/exposure_70254bd660ae96539a601b799ba66ce0/tables/replication_status/part-000008.parquet",
-      "sha256": "8550d33357c8c46bfc501d2386ff977353578e88c68d8a8b52b13e81146cd0e2",
-      "size_bytes": 4440
+      "path": "exposures/exposure_a388ba12a8afc7e2bd868f71cbecc8d6/tables/replication_status/part-000008.parquet",
+      "sha256": "21a86819502e710358223b78f316bbdca809daa3b0eb0e2aac63a89c59916a54",
+      "size_bytes": 4439
     },
     {
-      "path": "exposures/exposure_70254bd660ae96539a601b799ba66ce0/tables/replication_status/part-000009.parquet",
-      "sha256": "a8fed1f88539ea5e83a19ecf7f19b45b06c52ab1122e425e53063a5aad1cc0ee",
-      "size_bytes": 4440
+      "path": "exposures/exposure_a388ba12a8afc7e2bd868f71cbecc8d6/tables/replication_status/part-000009.parquet",
+      "sha256": "796fcb0fb6c71dcb18bc0b438531d7739dd32d36a805c313d0f3714b880bdd2c",
+      "size_bytes": 4439
     },
     {
-      "path": "exposures/exposure_70254bd660ae96539a601b799ba66ce0/tables/time_bins/part-000000.parquet",
+      "path": "exposures/exposure_a388ba12a8afc7e2bd868f71cbecc8d6/tables/time_bins/part-000000.parquet",
       "sha256": "1b30d36f41c01151d26201ddb4894c377fc7d72307fb0f472b08ab1414046535",
       "size_bytes": 3280
     },
     {
-      "path": "exposures/exposure_70254bd660ae96539a601b799ba66ce0/tables/vehicle_catalog/part-000000.parquet",
-      "sha256": "50786243391cfbd1eaf3376f18350c9534b82bbcc741b4c672eeae307804f470",
-      "size_bytes": 1992
+      "path": "exposures/exposure_a388ba12a8afc7e2bd868f71cbecc8d6/tables/vehicle_catalog/part-000000.parquet",
+      "sha256": "b73df9842f8c6802913cb49fc404618383a86c3545a29d926152601b7adfbc1e",
+      "size_bytes": 2014
     },
     {
-      "path": "inputs/input_425608b84632d8c36f14f9cbd64262a0/input.json",
-      "sha256": "a8ed7b7fea6dd26dfe836245cd6446d93331ee6733be33d39cec8381a9a0c957",
-      "size_bytes": 651
-    },
-    {
-      "path": "inputs/input_425608b84632d8c36f14f9cbd64262a0/source.parquet",
-      "sha256": "f6ea8f96ffa128a8ce4d289912be6ef4836abae2146745e970990027c57d59cb",
-      "size_bytes": 4317649
-    },
-    {
-      "path": "inputs/input_5e18eb4ecccc93550c322de7ff1aedf2/input.json",
-      "sha256": "1a7eeb2418ee9a1b51476a2c06abc294c841c1392cbe655b6b0d7f19c54d4f09",
-      "size_bytes": 548
-    },
-    {
-      "path": "inputs/input_5e18eb4ecccc93550c322de7ff1aedf2/source.parquet",
-      "sha256": "03beb165ab997647019cad5dce8a117efd97b5a25095b9f0af95a69d0437c861",
-      "size_bytes": 110305
-    },
-    {
-      "path": "inputs/input_7230947eb0fd4a559729c3786c77bcb3/input.json",
-      "sha256": "bad9a682f0a2b83e66fc8eb66f5a1d504d7ab73dc66cf1948e61b6f75c9bcfd1",
-      "size_bytes": 551
-    },
-    {
-      "path": "inputs/input_7230947eb0fd4a559729c3786c77bcb3/source.parquet",
-      "sha256": "dde581d52ce6bc5735417a8673e3db1b5e7a1d7b32f8bf8a27eff0f0e68e678c",
-      "size_bytes": 100407
-    },
-    {
-      "path": "inputs/input_a4e5e1b0abb1860566d9d1990aa89424/input.json",
-      "sha256": "a17a657ec2178b57cba4d25a955641c93f69a12b3e948c064a57aa44a21f2911",
+      "path": "inputs/input_32b4f1e4a66a0605c4e6950405e0dbc6/input.json",
+      "sha256": "6c7b7978449f8cef87e8b648a361c0c0d20a00aca7d355f4aa2d9fe9541b7d00",
       "size_bytes": 550
     },
     {
-      "path": "inputs/input_a4e5e1b0abb1860566d9d1990aa89424/source.parquet",
-      "sha256": "56702f7256d44e38ab731313c0a5fedd730b3152f5342aa4caafd9ac84c49baf",
-      "size_bytes": 20617
+      "path": "inputs/input_32b4f1e4a66a0605c4e6950405e0dbc6/source.parquet",
+      "sha256": "a0a25bf61c7001939989e1dff1b9a411c93fa25e6885660109706de4da56a225",
+      "size_bytes": 20357
     },
     {
-      "path": "portfolios/portfolio_6a728fd1fbf4f52bef3c2c545f8896a8/_SUCCESS",
+      "path": "inputs/input_48d4e9a92f5fdd5df75047268d34df05/input.json",
+      "sha256": "2551d7a8fe5e49eeb8db519fb48ffea47d6d0bf70a2baa7880596a9db8de6d41",
+      "size_bytes": 651
+    },
+    {
+      "path": "inputs/input_48d4e9a92f5fdd5df75047268d34df05/source.parquet",
+      "sha256": "0e86c4bd97ea768b40d23334c35b6f8814d74b87c80eeec370a235f5e8a3cce1",
+      "size_bytes": 4169754
+    },
+    {
+      "path": "inputs/input_a0dc59232c3079ebd9560b2547fcfa23/input.json",
+      "sha256": "b0e204941204e0ca2df40cb8e7008805167265c39c83f332855aa00f873c3d8a",
+      "size_bytes": 548
+    },
+    {
+      "path": "inputs/input_a0dc59232c3079ebd9560b2547fcfa23/source.parquet",
+      "sha256": "9c0a1c6a7b7276301a8a67546c4e84ce297d11c9070ee81b803d3808707dbd9f",
+      "size_bytes": 108223
+    },
+    {
+      "path": "inputs/input_a853e37b2e30baf0fce23e07b23c2925/input.json",
+      "sha256": "f5838bbda0837ff8f9c75c9bed8adc1db8e0db980dced9614837605ed8233289",
+      "size_bytes": 550
+    },
+    {
+      "path": "inputs/input_a853e37b2e30baf0fce23e07b23c2925/source.parquet",
+      "sha256": "d7b5e3626ceaf5b2d766e33fccc4be1b99b7925ed2642c74a4189fcc34e16ce7",
+      "size_bytes": 99999
+    },
+    {
+      "path": "portfolios/portfolio_0b514090317caa593c39a6ff64abe229/_SUCCESS",
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "size_bytes": 0
     },
     {
-      "path": "portfolios/portfolio_6a728fd1fbf4f52bef3c2c545f8896a8/manifest.json",
-      "sha256": "6079a42027f01fd3299f729cc4f607828c4e994dd11c6ab34f5f3019c1fdd063",
-      "size_bytes": 6265
+      "path": "portfolios/portfolio_0b514090317caa593c39a6ff64abe229/manifest.json",
+      "sha256": "7a90fd4b86074cde862d3200c0c0733360a46620abd4860532fdbfdf8dd28995",
+      "size_bytes": 6261
     },
     {
-      "path": "portfolios/portfolio_6a728fd1fbf4f52bef3c2c545f8896a8/tables/portfolio_counts/part-000000.parquet",
-      "sha256": "fa49c5f461a9592b18c7344e687134d8d11ba8c9e4ce5e8837ec93cefab4bcea",
-      "size_bytes": 2810
+      "path": "portfolios/portfolio_0b514090317caa593c39a6ff64abe229/tables/portfolio_counts/part-000000.parquet",
+      "sha256": "f60701f78fed6ed5c174968907fdd256a42820350e93cd5fb0b2e17ef2c1b896",
+      "size_bytes": 2422
     },
     {
-      "path": "portfolios/portfolio_6a728fd1fbf4f52bef3c2c545f8896a8/tables/portfolio_metadata/part-000000.parquet",
-      "sha256": "ca51a78d87de6fde45721986946d94055700d0e455be39052dc9391a2437f47c",
+      "path": "portfolios/portfolio_0b514090317caa593c39a6ff64abe229/tables/portfolio_metadata/part-000000.parquet",
+      "sha256": "fdb7c0075f0fe843336a1ee041574f1e59b1cb488d7ab72267be98719658fe8c",
       "size_bytes": 3023
     },
     {
-      "path": "portfolios/portfolio_6a728fd1fbf4f52bef3c2c545f8896a8/tables/portfolio_samples/part-000000.parquet",
-      "sha256": "5f7b4088222fe71c8340f910477e02f5667909935cd94c79a0693a1173d7ce3d",
-      "size_bytes": 189025
+      "path": "portfolios/portfolio_0b514090317caa593c39a6ff64abe229/tables/portfolio_samples/part-000000.parquet",
+      "sha256": "9ca73b6ade9a4459768e981fe920cc64a8a80dc15b2e7c3ebdb32c87b78b4d26",
+      "size_bytes": 110268
     },
     {
-      "path": "portfolios/portfolio_6a728fd1fbf4f52bef3c2c545f8896a8/tables/sample_matrices/part-000000.parquet",
-      "sha256": "72b132efe5a664970d753819257338950da8de0a2e03c972105a3b2358f7a3d8",
-      "size_bytes": 251804
+      "path": "portfolios/portfolio_0b514090317caa593c39a6ff64abe229/tables/sample_matrices/part-000000.parquet",
+      "sha256": "4cb6e69cff7ce24ab0c00f12e9100ed90c60876e11b700720b66bcd6eca2e45c",
+      "size_bytes": 146545
     },
     {
-      "path": "portfolios/portfolio_6a728fd1fbf4f52bef3c2c545f8896a8/tables/sample_selection/part-000000.parquet",
-      "sha256": "be4c3766259835a4ee54291161f1b114ae28732e340f04d8c64d3b49cbc19559",
-      "size_bytes": 116392
+      "path": "portfolios/portfolio_0b514090317caa593c39a6ff64abe229/tables/sample_selection/part-000000.parquet",
+      "sha256": "628570a5316bb5ef469a4e32d19b7a5f741ffb161418978a7e09f398cb0d814b",
+      "size_bytes": 101239
     },
     {
-      "path": "portfolios/portfolio_6a728fd1fbf4f52bef3c2c545f8896a8/tables/sampling_orderings/part-000000.parquet",
-      "sha256": "91afe558794e31ab95b78ba46472d97bec73c73627fb2f0dda0ee05a3da42cf4",
-      "size_bytes": 8073
+      "path": "portfolios/portfolio_0b514090317caa593c39a6ff64abe229/tables/sampling_orderings/part-000000.parquet",
+      "sha256": "915cbb99c64bfcc47a44045df501b8e88282b3fbb271e4fa0ad3e705d13aef03",
+      "size_bytes": 11043
     },
     {
-      "path": "portfolios/portfolio_6a728fd1fbf4f52bef3c2c545f8896a8/tables/sampling_rounds/part-000000.parquet",
-      "sha256": "c5462ca14ada46309abe863b31adcac85b58aa7ea0e13fc5106f93699ea68345",
-      "size_bytes": 10788
+      "path": "portfolios/portfolio_0b514090317caa593c39a6ff64abe229/tables/sampling_rounds/part-000000.parquet",
+      "sha256": "8aad7d135bf665738c8099f438a6e3ffa10c55e82d9d99fa657ba8405adf1545",
+      "size_bytes": 10843
     },
     {
-      "path": "portfolios/portfolio_c0ec819fcc9cfe6cae8c88b8a52aaaa5/_SUCCESS",
+      "path": "portfolios/portfolio_5b276b844cac892eeb9052827cf28f8c/_SUCCESS",
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "size_bytes": 0
     },
     {
-      "path": "portfolios/portfolio_c0ec819fcc9cfe6cae8c88b8a52aaaa5/manifest.json",
-      "sha256": "0260ff452eba526dc0dfcfb798c788b77911a46bfe21fb76b41d0ba8b95379ba",
-      "size_bytes": 4908
+      "path": "portfolios/portfolio_5b276b844cac892eeb9052827cf28f8c/manifest.json",
+      "sha256": "fd70624c52d9c9a13e56f2ea8950e56e649878e76d03ef3ad1a60ce06e6a723f",
+      "size_bytes": 4909
     },
     {
-      "path": "portfolios/portfolio_c0ec819fcc9cfe6cae8c88b8a52aaaa5/tables/budget_frontiers/part-000000.parquet",
-      "sha256": "af088d45015c7605648019459a7017b78f9eb1600df3f8d9883ead92e089630c",
-      "size_bytes": 7040
+      "path": "portfolios/portfolio_5b276b844cac892eeb9052827cf28f8c/tables/budget_frontiers/part-000000.parquet",
+      "sha256": "f2d0bca2974defe9620ac9cd2272646c8aa4dde91b4a96b7015ed4d11262f4ea",
+      "size_bytes": 6611
     },
     {
-      "path": "portfolios/portfolio_c0ec819fcc9cfe6cae8c88b8a52aaaa5/tables/budget_levels/part-000000.parquet",
-      "sha256": "8ee8401891b2c5b6bd073334f0527354525e4f7cbc325f6777cb9b01da9b6ed3",
-      "size_bytes": 3465
+      "path": "portfolios/portfolio_5b276b844cac892eeb9052827cf28f8c/tables/budget_levels/part-000000.parquet",
+      "sha256": "15a03b65d030af13354854f977476a7eb36e6b80794e7d308d94e68142dbaedc",
+      "size_bytes": 3584
     },
     {
-      "path": "portfolios/portfolio_c0ec819fcc9cfe6cae8c88b8a52aaaa5/tables/portfolio_analysis_metadata/part-000000.parquet",
-      "sha256": "e6bdcdc49fe501e87804cba4a502a9fc3c51a9840d4708af324899e8ad8a83c9",
+      "path": "portfolios/portfolio_5b276b844cac892eeb9052827cf28f8c/tables/portfolio_analysis_metadata/part-000000.parquet",
+      "sha256": "7f8ed678f8d528404ba3a7476006870c3ed245ef4f8f8309e1ab836be2691236",
       "size_bytes": 5669
     },
     {
-      "path": "portfolios/portfolio_c0ec819fcc9cfe6cae8c88b8a52aaaa5/tables/portfolio_statistics/part-000000.parquet",
-      "sha256": "ab790e52a9dcdf4007d2007ca87a9bd3cf9a6197ced41d6c304d6f5a60625566",
-      "size_bytes": 9867
+      "path": "portfolios/portfolio_5b276b844cac892eeb9052827cf28f8c/tables/portfolio_statistics/part-000000.parquet",
+      "sha256": "18bd16db6619dd5754f289cb9d7a5a766390ca29cb9b69f6955812b0386cbbc1",
+      "size_bytes": 8107
     },
     {
-      "path": "run_cache/bcca2b13b822571c5c4bcd902b9d9e7734f084609c08b3eff080df53c9320fbc.json",
-      "sha256": "7e09c2c8b98443ab57ccdb5a6c3aa159b30c1da7964595b4293f40ba65140bef",
-      "size_bytes": 1539
-    },
-    {
-      "path": "simulations/simulation_23d12a40107c8e1d85dbfc3b024fd987/_SUCCESS",
+      "path": "portfolios/portfolio_65289d0e572c058ecb640a0a0f2c9610/_SUCCESS",
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "size_bytes": 0
     },
     {
-      "path": "simulations/simulation_23d12a40107c8e1d85dbfc3b024fd987/manifest.json",
-      "sha256": "c6fed456017d85193f7024de1c5fb502043f22b752d307d57d984a94c622ef8b",
-      "size_bytes": 23495
+      "path": "portfolios/portfolio_65289d0e572c058ecb640a0a0f2c9610/manifest.json",
+      "sha256": "b109d3189e70e30c2c7e208fbedbba9f3010483f19fec97e6770a8cf37d08db0",
+      "size_bytes": 4909
     },
     {
-      "path": "simulations/simulation_23d12a40107c8e1d85dbfc3b024fd987/tables/activity_intervals/part-000000.parquet",
-      "sha256": "0dfac3893435178d7729849c154dc00aeda79c30dcfbf79cf2e09b0dcc1bc678",
-      "size_bytes": 3482407
+      "path": "portfolios/portfolio_65289d0e572c058ecb640a0a0f2c9610/tables/budget_frontiers/part-000000.parquet",
+      "sha256": "61fedc08cf0c9e3fb28a323d3d7006e8ccf6fc423e7d01b9d5542704034596cd",
+      "size_bytes": 6629
     },
     {
-      "path": "simulations/simulation_23d12a40107c8e1d85dbfc3b024fd987/tables/activity_intervals/part-000001.parquet",
-      "sha256": "02aab34cf9432d3f64397391e61e3c58b2da38f336cd75eb5c4c8dee1ea9c5b4",
-      "size_bytes": 3340734
+      "path": "portfolios/portfolio_65289d0e572c058ecb640a0a0f2c9610/tables/budget_levels/part-000000.parquet",
+      "sha256": "4e69393af4403eb64bd7bb567e4600516a2b41b2b9f7ceaf6a4c7355535deae9",
+      "size_bytes": 3575
     },
     {
-      "path": "simulations/simulation_23d12a40107c8e1d85dbfc3b024fd987/tables/activity_intervals/part-000002.parquet",
-      "sha256": "fd2ed867b94a082f598c8d5d56bb76164186b01d0ce40c6c972c51c5d38c8833",
-      "size_bytes": 3399859
+      "path": "portfolios/portfolio_65289d0e572c058ecb640a0a0f2c9610/tables/portfolio_analysis_metadata/part-000000.parquet",
+      "sha256": "6fdc4104445d71602a66daf82e83e00e319dede307a68e3bb8b373ed1180b6d3",
+      "size_bytes": 5669
     },
     {
-      "path": "simulations/simulation_23d12a40107c8e1d85dbfc3b024fd987/tables/activity_intervals/part-000003.parquet",
-      "sha256": "efc8063883636caf6a1a895c15042ab5d619d47054ed9bbdd1058b6c4cb795b9",
-      "size_bytes": 3291111
+      "path": "portfolios/portfolio_65289d0e572c058ecb640a0a0f2c9610/tables/portfolio_statistics/part-000000.parquet",
+      "sha256": "18bd16db6619dd5754f289cb9d7a5a766390ca29cb9b69f6955812b0386cbbc1",
+      "size_bytes": 8107
     },
     {
-      "path": "simulations/simulation_23d12a40107c8e1d85dbfc3b024fd987/tables/activity_intervals/part-000004.parquet",
-      "sha256": "83fe7e11128c7c819ef7ac5173d58470b183e20aa7386b6ee47c6187f236c062",
-      "size_bytes": 3414738
+      "path": "run_cache/58c878cdeca7182d4b41abc3b7ecb16938744a595f566d574285b8ae5763d51e.json",
+      "sha256": "5f38c38ff6548c664c929536826dc05c0d7dea632717d0d0f9d3e55baa5771f3",
+      "size_bytes": 994
     },
     {
-      "path": "simulations/simulation_23d12a40107c8e1d85dbfc3b024fd987/tables/activity_intervals/part-000005.parquet",
-      "sha256": "c3efc3f065bf0d71681fc84579102154077059e46b43b840f7e57172f6b724a5",
-      "size_bytes": 3369231
+      "path": "simulations/simulation_0c14758a479ce92006e8c56f6713a9a3/_SUCCESS",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
     },
     {
-      "path": "simulations/simulation_23d12a40107c8e1d85dbfc3b024fd987/tables/activity_intervals/part-000006.parquet",
-      "sha256": "f9c0262b632147181b331f5df4df82f46e91e9a3191bc764d2105141265708fe",
-      "size_bytes": 3354781
+      "path": "simulations/simulation_0c14758a479ce92006e8c56f6713a9a3/manifest.json",
+      "sha256": "ef154b430a5bcad7bf5bdd84e77f8a797ff965569a413ad7d3d6381e5ab62a22",
+      "size_bytes": 22148
     },
     {
-      "path": "simulations/simulation_23d12a40107c8e1d85dbfc3b024fd987/tables/activity_intervals/part-000007.parquet",
-      "sha256": "bd22567a5a8504096f08dc663a4dccd8ce4db562b5ea1ef5162c020216f63758",
-      "size_bytes": 3252169
+      "path": "simulations/simulation_0c14758a479ce92006e8c56f6713a9a3/tables/activity_intervals/part-000000.parquet",
+      "sha256": "b9bbc7e6e76d5b13c8383912ff9916cd661ccb4a9bded623c07ffb67dfbdec41",
+      "size_bytes": 6711409
     },
     {
-      "path": "simulations/simulation_23d12a40107c8e1d85dbfc3b024fd987/tables/activity_intervals/part-000008.parquet",
-      "sha256": "482095e7dc5c320f35ef1ae8cd62e6f928430524e86784eaf979a765cae2c59e",
-      "size_bytes": 3395577
+      "path": "simulations/simulation_0c14758a479ce92006e8c56f6713a9a3/tables/activity_intervals/part-000001.parquet",
+      "sha256": "c0703809a6e40b822e31e9105d28dd2b8a969aafd24eb0e355996d748c63a019",
+      "size_bytes": 6523783
     },
     {
-      "path": "simulations/simulation_23d12a40107c8e1d85dbfc3b024fd987/tables/activity_intervals/part-000009.parquet",
-      "sha256": "8c97a7ed6d6f3745b0b345c21a4bb6538975794a67612c61c7e664502bb2975b",
-      "size_bytes": 3526376
+      "path": "simulations/simulation_0c14758a479ce92006e8c56f6713a9a3/tables/activity_intervals/part-000002.parquet",
+      "sha256": "d6d78568dcb4b6ed4abab7df3905d04c33114af39ecd1b7ad62d7ff6ac5cb7e3",
+      "size_bytes": 6761230
     },
     {
-      "path": "simulations/simulation_23d12a40107c8e1d85dbfc3b024fd987/tables/movements/part-000000.parquet",
-      "sha256": "7ba9d9917374ed34f4429585048603abf2821ea06e826d5603155fab06b5b064",
-      "size_bytes": 3309067
+      "path": "simulations/simulation_0c14758a479ce92006e8c56f6713a9a3/tables/activity_intervals/part-000003.parquet",
+      "sha256": "26f6843526e72cdb450111eba47473c8578d10aeb7cc22111f9817f07b13c16c",
+      "size_bytes": 6729368
     },
     {
-      "path": "simulations/simulation_23d12a40107c8e1d85dbfc3b024fd987/tables/movements/part-000001.parquet",
-      "sha256": "f0d6e3faebe0dd425ce9f07aa06a064f28d11df23bee96a6c543fe103106920e",
-      "size_bytes": 3180162
+      "path": "simulations/simulation_0c14758a479ce92006e8c56f6713a9a3/tables/activity_intervals/part-000004.parquet",
+      "sha256": "6d91742cd8dcba2364ec91799adfe36987cfeef90342351a8e9ee835946486d6",
+      "size_bytes": 6478708
     },
     {
-      "path": "simulations/simulation_23d12a40107c8e1d85dbfc3b024fd987/tables/movements/part-000002.parquet",
-      "sha256": "83733a1fe7c9f6c51a4bce18ee7fc726c2015e1e8f7bd02f1bdadb129198fca7",
-      "size_bytes": 3216615
+      "path": "simulations/simulation_0c14758a479ce92006e8c56f6713a9a3/tables/activity_intervals/part-000005.parquet",
+      "sha256": "01819e2a6568591e8164ed4739f7d2594bd0e91c6336a89f0eec1a6497481226",
+      "size_bytes": 6466936
     },
     {
-      "path": "simulations/simulation_23d12a40107c8e1d85dbfc3b024fd987/tables/movements/part-000003.parquet",
-      "sha256": "f93d57775a82b1fd3209178086c395b3a42004573bae390133e9c768a7b241f1",
-      "size_bytes": 3141584
+      "path": "simulations/simulation_0c14758a479ce92006e8c56f6713a9a3/tables/activity_intervals/part-000006.parquet",
+      "sha256": "5f72a83b9537d2b0e7aa62ac33420c17061fd7f49f2f74ba572e4d669ff1db0e",
+      "size_bytes": 6399675
     },
     {
-      "path": "simulations/simulation_23d12a40107c8e1d85dbfc3b024fd987/tables/movements/part-000004.parquet",
-      "sha256": "4b1f84b547fa5932623a3b581571a965f10d7d006d8a930deb119f7789c6a151",
-      "size_bytes": 3236354
+      "path": "simulations/simulation_0c14758a479ce92006e8c56f6713a9a3/tables/activity_intervals/part-000007.parquet",
+      "sha256": "3ef7d9f48573005944404eda0186934bf3b2e1a39b0719dfb5b28e71707036e1",
+      "size_bytes": 6769427
     },
     {
-      "path": "simulations/simulation_23d12a40107c8e1d85dbfc3b024fd987/tables/movements/part-000005.parquet",
-      "sha256": "f1c7eaa61f938ae8e65a910b759ee4a3b9c062bdde5e637d080980c4cd248350",
-      "size_bytes": 3201629
+      "path": "simulations/simulation_0c14758a479ce92006e8c56f6713a9a3/tables/activity_intervals/part-000008.parquet",
+      "sha256": "27be38a5d848fa0204199c72738d341e1ffd6ec108a64b68e2eb9f25f5f7f2a0",
+      "size_bytes": 6593739
     },
     {
-      "path": "simulations/simulation_23d12a40107c8e1d85dbfc3b024fd987/tables/movements/part-000006.parquet",
-      "sha256": "c166e4487bea320ceebb5faf072e0eaa3ee8b56b88977ab1bee5bbc5cbbd3117",
-      "size_bytes": 3200680
+      "path": "simulations/simulation_0c14758a479ce92006e8c56f6713a9a3/tables/activity_intervals/part-000009.parquet",
+      "sha256": "b3d5ebce1ec2da571168c37f977e77a96dffa3e4d93c65153f251ae241364bf3",
+      "size_bytes": 6662352
     },
     {
-      "path": "simulations/simulation_23d12a40107c8e1d85dbfc3b024fd987/tables/movements/part-000007.parquet",
-      "sha256": "ee4f3005b676b1ec79e88d03d035bb9b308d46bc6ca0f6e0f9de12d50850eb93",
-      "size_bytes": 3096707
+      "path": "simulations/simulation_0c14758a479ce92006e8c56f6713a9a3/tables/movements/part-000000.parquet",
+      "sha256": "530585229ae2bbd58778fc07c764787512d84f456be830886af6a89161983219",
+      "size_bytes": 6544426
     },
     {
-      "path": "simulations/simulation_23d12a40107c8e1d85dbfc3b024fd987/tables/movements/part-000008.parquet",
-      "sha256": "9749aa3927e5f8af7e4d815b1b1af2a59b273216335e829e088d74ab8c169e3a",
-      "size_bytes": 3222025
+      "path": "simulations/simulation_0c14758a479ce92006e8c56f6713a9a3/tables/movements/part-000001.parquet",
+      "sha256": "f7392badbce64610520a8ab9634c5acfd9da2af37ba67013ed0e023ce9037cbe",
+      "size_bytes": 6358950
     },
     {
-      "path": "simulations/simulation_23d12a40107c8e1d85dbfc3b024fd987/tables/movements/part-000009.parquet",
-      "sha256": "92721f5c050571ee0f663f04035068c9d80e3be2ff2589306da0cdb47b79164e",
-      "size_bytes": 3358305
+      "path": "simulations/simulation_0c14758a479ce92006e8c56f6713a9a3/tables/movements/part-000002.parquet",
+      "sha256": "9e153ffb57382e0d4fe82f7a635dcc58f1ef98b34b30a894e2f927fcb5938583",
+      "size_bytes": 6601993
     },
     {
-      "path": "simulations/simulation_23d12a40107c8e1d85dbfc3b024fd987/tables/operational_events/part-000000.parquet",
-      "sha256": "6b881acdb5e16c9a7ae80e1aa790b01123194d7bddbbe6045acd5db4b2e24ce5",
-      "size_bytes": 219035
+      "path": "simulations/simulation_0c14758a479ce92006e8c56f6713a9a3/tables/movements/part-000003.parquet",
+      "sha256": "b850e6994b747edc5a7c8ad612eb0750015685ba2ca76628f5bc59c038093ae0",
+      "size_bytes": 6558784
     },
     {
-      "path": "simulations/simulation_23d12a40107c8e1d85dbfc3b024fd987/tables/operational_events/part-000001.parquet",
-      "sha256": "96307dd77a754ff169128cb3199a0ea94ddd8e0e8aa2e4792adf9ab501757411",
-      "size_bytes": 216663
+      "path": "simulations/simulation_0c14758a479ce92006e8c56f6713a9a3/tables/movements/part-000004.parquet",
+      "sha256": "4cb88986758c69ba7304d028706a77ea2a35e4cff9a14594b6febeb92006bb3d",
+      "size_bytes": 6306614
     },
     {
-      "path": "simulations/simulation_23d12a40107c8e1d85dbfc3b024fd987/tables/operational_events/part-000002.parquet",
-      "sha256": "1157cf8b35c04b9c36116873524aa3fe97e7ee369f1ea3a42fd9464d3dc1c4d0",
-      "size_bytes": 220740
+      "path": "simulations/simulation_0c14758a479ce92006e8c56f6713a9a3/tables/movements/part-000005.parquet",
+      "sha256": "3e3f42820107b888ca41d3badcd537aefb111e3f7feff964d24134914ba6f5b3",
+      "size_bytes": 6307491
     },
     {
-      "path": "simulations/simulation_23d12a40107c8e1d85dbfc3b024fd987/tables/operational_events/part-000003.parquet",
-      "sha256": "2194d9ffe1860ccadfffee41cfb5ee4e6309068751dc15362a85e7bf19647342",
-      "size_bytes": 223669
+      "path": "simulations/simulation_0c14758a479ce92006e8c56f6713a9a3/tables/movements/part-000006.parquet",
+      "sha256": "ee8c11fd0fbd3190c272c1707a033dc158fe2dd94d39e4eb2da0e9db3fef1113",
+      "size_bytes": 6234598
     },
     {
-      "path": "simulations/simulation_23d12a40107c8e1d85dbfc3b024fd987/tables/operational_events/part-000004.parquet",
-      "sha256": "5ec154ad057a2072dfb1b2920bda0ebe99551ac14e9dc624d2e5518f636e0759",
-      "size_bytes": 214545
+      "path": "simulations/simulation_0c14758a479ce92006e8c56f6713a9a3/tables/movements/part-000007.parquet",
+      "sha256": "450f08e0c40bc2701fbb5a949d4fc0971e4883b3dd7c4747f8b1912babccd572",
+      "size_bytes": 6614808
     },
     {
-      "path": "simulations/simulation_23d12a40107c8e1d85dbfc3b024fd987/tables/operational_events/part-000005.parquet",
-      "sha256": "9739af2f175453f78677253feeac1e18f3d822429cb9a808a5b86bb1e7d43161",
-      "size_bytes": 222169
+      "path": "simulations/simulation_0c14758a479ce92006e8c56f6713a9a3/tables/movements/part-000008.parquet",
+      "sha256": "dfd4253ec7ab7052bee04b8b8d196ccce524c1e9fcea44d93ac521aef5a952fe",
+      "size_bytes": 6430993
     },
     {
-      "path": "simulations/simulation_23d12a40107c8e1d85dbfc3b024fd987/tables/operational_events/part-000006.parquet",
-      "sha256": "07c75d465db7cfa69838117ae9a5b7607f3131401aa3a956d8a494fe3ade6f12",
-      "size_bytes": 217577
+      "path": "simulations/simulation_0c14758a479ce92006e8c56f6713a9a3/tables/movements/part-000009.parquet",
+      "sha256": "0defa2d62be990964e1329f32ec8887fc389af377dd1a450b5dc4c65380f2a7f",
+      "size_bytes": 6499685
     },
     {
-      "path": "simulations/simulation_23d12a40107c8e1d85dbfc3b024fd987/tables/operational_events/part-000007.parquet",
-      "sha256": "fa7fbfd3070e5606a7bb098c47d4b25fcc84cf3cd0837bfa04eb753b8a1fb6c9",
-      "size_bytes": 218670
+      "path": "simulations/simulation_0c14758a479ce92006e8c56f6713a9a3/tables/operational_events/part-000000.parquet",
+      "sha256": "b456d5ebdddc6c125a689915d11f9390874027f6f1d43e73ce562769a1c92dc6",
+      "size_bytes": 203433
     },
     {
-      "path": "simulations/simulation_23d12a40107c8e1d85dbfc3b024fd987/tables/operational_events/part-000008.parquet",
-      "sha256": "d5016a87d48046f0603e63fc05bc78e410f2617326ae599139344867a928553d",
-      "size_bytes": 219206
+      "path": "simulations/simulation_0c14758a479ce92006e8c56f6713a9a3/tables/operational_events/part-000001.parquet",
+      "sha256": "29cce6bb0a0e0764804e9b87c47d04a00938f3e4c945fa7951e0a9deb3be8c78",
+      "size_bytes": 199663
     },
     {
-      "path": "simulations/simulation_23d12a40107c8e1d85dbfc3b024fd987/tables/operational_events/part-000009.parquet",
-      "sha256": "9e0b5326304b114822b0f017c23d397385e57a05eca46bb02435d3d394d5db92",
-      "size_bytes": 225374
+      "path": "simulations/simulation_0c14758a479ce92006e8c56f6713a9a3/tables/operational_events/part-000002.parquet",
+      "sha256": "6c06d5e8ea988b6b6f02cf7dc2c61ab0236995d6e4803cc7a14fcc8510350860",
+      "size_bytes": 208451
     },
     {
-      "path": "simulations/simulation_23d12a40107c8e1d85dbfc3b024fd987/tables/replication_status/part-000000.parquet",
-      "sha256": "8b07dd8a1ffa1906a730fa317cf24140f20c0a616f34f7bf9f3656870ec612e5",
-      "size_bytes": 10509
+      "path": "simulations/simulation_0c14758a479ce92006e8c56f6713a9a3/tables/operational_events/part-000003.parquet",
+      "sha256": "f3557dcc6dccad6bfae42a9fbdffd3b714dd1dc38b0eb2a67f4853770b64fb2c",
+      "size_bytes": 201825
     },
     {
-      "path": "simulations/simulation_23d12a40107c8e1d85dbfc3b024fd987/tables/replication_status/part-000001.parquet",
-      "sha256": "197801bef743030ce0032936a8eea0c1f24fcb035cbc786ecfa9c8fda0f4c7c8",
-      "size_bytes": 10506
+      "path": "simulations/simulation_0c14758a479ce92006e8c56f6713a9a3/tables/operational_events/part-000004.parquet",
+      "sha256": "0739ce949adfd71f6a4154491d7b7904e2b2a98f8f7351e47c2048bc6e42b1a1",
+      "size_bytes": 200195
     },
     {
-      "path": "simulations/simulation_23d12a40107c8e1d85dbfc3b024fd987/tables/replication_status/part-000002.parquet",
-      "sha256": "23cbbbf86d9bb0977c80d5ec94e1ee3ee4a5474e50bf1972f51319ff40f6157f",
-      "size_bytes": 10492
+      "path": "simulations/simulation_0c14758a479ce92006e8c56f6713a9a3/tables/operational_events/part-000005.parquet",
+      "sha256": "9f77984fde3ec016c2ec0009637454f622bffe61895f696f8f26df84c6a41f84",
+      "size_bytes": 199846
     },
     {
-      "path": "simulations/simulation_23d12a40107c8e1d85dbfc3b024fd987/tables/replication_status/part-000003.parquet",
-      "sha256": "54b381b14fea692d6fee27a277fe6ea89f9ed0ed6e62a05e23b2dab8b83b6d71",
-      "size_bytes": 10508
+      "path": "simulations/simulation_0c14758a479ce92006e8c56f6713a9a3/tables/operational_events/part-000006.parquet",
+      "sha256": "fd43dd046e1b3889452711eaee205e7dde057a1113dcab6b76e5ab00582ae208",
+      "size_bytes": 202152
     },
     {
-      "path": "simulations/simulation_23d12a40107c8e1d85dbfc3b024fd987/tables/replication_status/part-000004.parquet",
-      "sha256": "b74bb0ffbbbd729064b565f0748ab3c1bfb9664f0967dd5bd8ecd7fee8651c09",
-      "size_bytes": 10495
+      "path": "simulations/simulation_0c14758a479ce92006e8c56f6713a9a3/tables/operational_events/part-000007.parquet",
+      "sha256": "f60cbfcbaba48416998436bfd23deaaaeb995a2cff2d62b0152f6c4352bf2cd8",
+      "size_bytes": 200596
     },
     {
-      "path": "simulations/simulation_23d12a40107c8e1d85dbfc3b024fd987/tables/replication_status/part-000005.parquet",
-      "sha256": "8a4b10feabf3042ad5b7ea3cf0d80a006a1c034babee76558572852c47d65a9d",
-      "size_bytes": 10495
+      "path": "simulations/simulation_0c14758a479ce92006e8c56f6713a9a3/tables/operational_events/part-000008.parquet",
+      "sha256": "80ad65771fdeb76fa6843a4dce92c4887fa717bbca1341354dd7eebd3152464b",
+      "size_bytes": 199281
     },
     {
-      "path": "simulations/simulation_23d12a40107c8e1d85dbfc3b024fd987/tables/replication_status/part-000006.parquet",
-      "sha256": "00b2d312843f05346d315c303e232a26f50f84202297278d88853cf5ab03faa6",
-      "size_bytes": 10498
+      "path": "simulations/simulation_0c14758a479ce92006e8c56f6713a9a3/tables/operational_events/part-000009.parquet",
+      "sha256": "e1942c0900cbde039dc59989f2142ec7e4f3f9a547f8fbb0bd62d56bc48906fb",
+      "size_bytes": 200535
     },
     {
-      "path": "simulations/simulation_23d12a40107c8e1d85dbfc3b024fd987/tables/replication_status/part-000007.parquet",
-      "sha256": "bdbbbb4d2ef18ad579450d6198695a5d79cd1a780ab0477ef37010aa9f5c3850",
-      "size_bytes": 10506
+      "path": "simulations/simulation_0c14758a479ce92006e8c56f6713a9a3/tables/replication_status/part-000000.parquet",
+      "sha256": "2c3050b054a8c8f2363cb7bdc0fc2a5c9678ed554332591ac817baded929ee50",
+      "size_bytes": 227784
     },
     {
-      "path": "simulations/simulation_23d12a40107c8e1d85dbfc3b024fd987/tables/replication_status/part-000008.parquet",
-      "sha256": "27710e1ff428fc63b6d131cbbbf36aa4a017835b6ff6338049d863919f5c8d4f",
-      "size_bytes": 10505
+      "path": "simulations/simulation_0c14758a479ce92006e8c56f6713a9a3/tables/replication_status/part-000001.parquet",
+      "sha256": "bdd32522bd3d9c8b590ced336da8e84bb1e6993e7a0edd481885f8e59c59dd53",
+      "size_bytes": 184748
     },
     {
-      "path": "simulations/simulation_23d12a40107c8e1d85dbfc3b024fd987/tables/replication_status/part-000009.parquet",
-      "sha256": "bab776733b9e7d7da5dfa4d300dc2c900787279e9cb95a1ca7af2efc340fc3d6",
-      "size_bytes": 10492
+      "path": "simulations/simulation_0c14758a479ce92006e8c56f6713a9a3/tables/replication_status/part-000002.parquet",
+      "sha256": "e7b5b7af0cbf49c1f43f7f18f67ae973bf1d4a4f8bc365b1edcca3028087f2d6",
+      "size_bytes": 150604
     },
     {
-      "path": "simulations/simulation_23d12a40107c8e1d85dbfc3b024fd987/tables/stationary_locations/part-000000.parquet",
-      "sha256": "5f24d6219f971d0417bfdb1f9ef7bb5ce83e599c8cfa1019e84a00b930212754",
-      "size_bytes": 184035
+      "path": "simulations/simulation_0c14758a479ce92006e8c56f6713a9a3/tables/replication_status/part-000003.parquet",
+      "sha256": "9a3d59486a0871b491c480340e93dc525da555722d91c21fab4e4414e41037cf",
+      "size_bytes": 257888
     },
     {
-      "path": "simulations/simulation_23d12a40107c8e1d85dbfc3b024fd987/tables/stationary_locations/part-000001.parquet",
-      "sha256": "26cfdfe5d4133229807c337ac3107cbbfbcc5db7315cd2f175ddf99841768115",
-      "size_bytes": 183899
+      "path": "simulations/simulation_0c14758a479ce92006e8c56f6713a9a3/tables/replication_status/part-000004.parquet",
+      "sha256": "2dca26b40d399d4adedb084274d9d7a7545edfd695ee953d83d1c6dc468ba9b7",
+      "size_bytes": 178982
     },
     {
-      "path": "simulations/simulation_23d12a40107c8e1d85dbfc3b024fd987/tables/stationary_locations/part-000002.parquet",
-      "sha256": "8ca8c645270d29ee8531d106bff0574187e8624b2f0697476c47354952dddb5e",
-      "size_bytes": 181020
+      "path": "simulations/simulation_0c14758a479ce92006e8c56f6713a9a3/tables/replication_status/part-000005.parquet",
+      "sha256": "19e0eefb704bcd16ed412b40c2969faf305a911c04959e22e452db0a253109c4",
+      "size_bytes": 182718
     },
     {
-      "path": "simulations/simulation_23d12a40107c8e1d85dbfc3b024fd987/tables/stationary_locations/part-000003.parquet",
-      "sha256": "8de25dec8156a8ad594ac75608ae560ed23b7a388fd19e0c247f725f6eb08806",
-      "size_bytes": 183892
+      "path": "simulations/simulation_0c14758a479ce92006e8c56f6713a9a3/tables/replication_status/part-000006.parquet",
+      "sha256": "0500361935be9404ceeab77746e0bc8e2c9b4809f85b6ed41e28e0770842b758",
+      "size_bytes": 123490
     },
     {
-      "path": "simulations/simulation_23d12a40107c8e1d85dbfc3b024fd987/tables/stationary_locations/part-000004.parquet",
-      "sha256": "312ab0c829c9188477fc8c8c50e7580236008bc6fdf60c35cdda388880fc96f8",
-      "size_bytes": 179014
+      "path": "simulations/simulation_0c14758a479ce92006e8c56f6713a9a3/tables/replication_status/part-000007.parquet",
+      "sha256": "d6387ac30516ddcd667a5555a78ceb8f70e8694dadd7a827db04333e94048d6f",
+      "size_bytes": 265047
     },
     {
-      "path": "simulations/simulation_23d12a40107c8e1d85dbfc3b024fd987/tables/stationary_locations/part-000005.parquet",
-      "sha256": "36f43fccf527c51360bbbfa6e27e4e2cf5c0f4f65f963613c7bfb91f0ab3989f",
-      "size_bytes": 181252
+      "path": "simulations/simulation_0c14758a479ce92006e8c56f6713a9a3/tables/replication_status/part-000008.parquet",
+      "sha256": "62c6a56d3c9116900f85d7d3f2fa984f7175ad48e191c7b883771df08730c123",
+      "size_bytes": 177507
     },
     {
-      "path": "simulations/simulation_23d12a40107c8e1d85dbfc3b024fd987/tables/stationary_locations/part-000006.parquet",
-      "sha256": "a56eb58699fbe71716d46597b5feb2f647595fe7e9e0fe1b41bc72879f84257c",
-      "size_bytes": 182850
+      "path": "simulations/simulation_0c14758a479ce92006e8c56f6713a9a3/tables/replication_status/part-000009.parquet",
+      "sha256": "dbaebd08589b3e2c0e426f4e03335c9479acac574ef9b1302e83866dd9139609",
+      "size_bytes": 208669
     },
     {
-      "path": "simulations/simulation_23d12a40107c8e1d85dbfc3b024fd987/tables/stationary_locations/part-000007.parquet",
-      "sha256": "0a7ef0a9d3da398270e37bbbec813cb37f95ec771df94fb963d64bdb97bd5716",
-      "size_bytes": 183167
+      "path": "simulations/simulation_0c14758a479ce92006e8c56f6713a9a3/tables/stationary_locations/part-000000.parquet",
+      "sha256": "361ebda37b0e471224d67374420c89717e63e682a22eeca744495cd386d9881d",
+      "size_bytes": 197847
     },
     {
-      "path": "simulations/simulation_23d12a40107c8e1d85dbfc3b024fd987/tables/stationary_locations/part-000008.parquet",
-      "sha256": "259b86e63c51091ea6fb5eb5feb68e6894a93f6fb9ba80b39cf379489931e1fa",
-      "size_bytes": 183996
+      "path": "simulations/simulation_0c14758a479ce92006e8c56f6713a9a3/tables/stationary_locations/part-000001.parquet",
+      "sha256": "bcae08df435e46c661d58914aec9dcaaa267da598288c7344d6161ab0a12b485",
+      "size_bytes": 197557
     },
     {
-      "path": "simulations/simulation_23d12a40107c8e1d85dbfc3b024fd987/tables/stationary_locations/part-000009.parquet",
-      "sha256": "bc362960545dfbc913032b836bcb952a6ac4b6ccc5a398adf9b402d713cbec05",
+      "path": "simulations/simulation_0c14758a479ce92006e8c56f6713a9a3/tables/stationary_locations/part-000002.parquet",
+      "sha256": "75b32488090200b8ed8028266d1ed70525396a3e04f51ca1455610d6758b0a34",
+      "size_bytes": 202046
+    },
+    {
+      "path": "simulations/simulation_0c14758a479ce92006e8c56f6713a9a3/tables/stationary_locations/part-000003.parquet",
+      "sha256": "1492ccb4996770b1fb784b7bfc4cc139f9c74b1a4254ed32cc5eda366ab57673",
+      "size_bytes": 199405
+    },
+    {
+      "path": "simulations/simulation_0c14758a479ce92006e8c56f6713a9a3/tables/stationary_locations/part-000004.parquet",
+      "sha256": "b7ebaa1a85165baa825b1d33b86b0072866aec7db0294934407a0701e084fd81",
+      "size_bytes": 202262
+    },
+    {
+      "path": "simulations/simulation_0c14758a479ce92006e8c56f6713a9a3/tables/stationary_locations/part-000005.parquet",
+      "sha256": "0d4d061b40add36a821b02e9ded53b44e27ad9887e5b22d0243c966cf7f5a625",
+      "size_bytes": 200123
+    },
+    {
+      "path": "simulations/simulation_0c14758a479ce92006e8c56f6713a9a3/tables/stationary_locations/part-000006.parquet",
+      "sha256": "a148f0ea4af2c73cf954f13d262ff47f6405aeb419b4dcd22fc9b2cba3bf5f1e",
+      "size_bytes": 202640
+    },
+    {
+      "path": "simulations/simulation_0c14758a479ce92006e8c56f6713a9a3/tables/stationary_locations/part-000007.parquet",
+      "sha256": "464cc2f5483cc66e945e9d7e206cf623615b4ce2da7e502115b3b6eab62058f5",
+      "size_bytes": 200031
+    },
+    {
+      "path": "simulations/simulation_0c14758a479ce92006e8c56f6713a9a3/tables/stationary_locations/part-000008.parquet",
+      "sha256": "51cae9ae53abf75a995e35e02cf45a2c0ba3e9f20b8d20341ca1a1ce2c2cd9cc",
+      "size_bytes": 199427
+    },
+    {
+      "path": "simulations/simulation_0c14758a479ce92006e8c56f6713a9a3/tables/stationary_locations/part-000009.parquet",
+      "sha256": "b4c0bb74ebf0176d9df34c55dba5d40bcd3a3833bd39faa203bb9610ce1c6fea",
+      "size_bytes": 199265
+    },
+    {
+      "path": "simulations/simulation_0c14758a479ce92006e8c56f6713a9a3/tables/task_outcomes/part-000000.parquet",
+      "sha256": "c7bb81c6d40ab133e498a474f25e909e9cf10dd7d370e8138848999e8e5db3cb",
+      "size_bytes": 190603
+    },
+    {
+      "path": "simulations/simulation_0c14758a479ce92006e8c56f6713a9a3/tables/task_outcomes/part-000001.parquet",
+      "sha256": "647acc107ed398bfed2b670fb35869f630c056610bf2abfed8efb29d4623ae7a",
+      "size_bytes": 189550
+    },
+    {
+      "path": "simulations/simulation_0c14758a479ce92006e8c56f6713a9a3/tables/task_outcomes/part-000002.parquet",
+      "sha256": "0731725efabfbebf8628f958a220439fc290a33c084f33a121dc025e730307ef",
+      "size_bytes": 195917
+    },
+    {
+      "path": "simulations/simulation_0c14758a479ce92006e8c56f6713a9a3/tables/task_outcomes/part-000003.parquet",
+      "sha256": "8a5296878551dfcaa77aa429a9ce8e2b1fb7d8014f87c1adf23781c453d5ecbb",
       "size_bytes": 188776
     },
     {
-      "path": "simulations/simulation_23d12a40107c8e1d85dbfc3b024fd987/tables/task_outcomes/part-000000.parquet",
-      "sha256": "3ddebc70e3f4c8866b701bfd2cc33db5e9c0ec25c583e72ff045fa69dc45fee1",
-      "size_bytes": 236219
+      "path": "simulations/simulation_0c14758a479ce92006e8c56f6713a9a3/tables/task_outcomes/part-000004.parquet",
+      "sha256": "c62addbcf9d833989b0604175d19f3d3594b66ede0152192e43f6ecef48326d8",
+      "size_bytes": 190201
     },
     {
-      "path": "simulations/simulation_23d12a40107c8e1d85dbfc3b024fd987/tables/task_outcomes/part-000001.parquet",
-      "sha256": "e41c0ff113f9a375edb2a08b4871fcb681df9e7053060fede6f562e51cde8b41",
-      "size_bytes": 234907
+      "path": "simulations/simulation_0c14758a479ce92006e8c56f6713a9a3/tables/task_outcomes/part-000005.parquet",
+      "sha256": "7025fe3aa60a60a39e7bd0237e60152fd4d76e1c81f1b71f2703acad25e54bc3",
+      "size_bytes": 188795
     },
     {
-      "path": "simulations/simulation_23d12a40107c8e1d85dbfc3b024fd987/tables/task_outcomes/part-000002.parquet",
-      "sha256": "c48715e91ec1ecfb0061771cbdbb6ebde25f746aa1d1e1feb94d62314b67dbca",
-      "size_bytes": 239130
+      "path": "simulations/simulation_0c14758a479ce92006e8c56f6713a9a3/tables/task_outcomes/part-000006.parquet",
+      "sha256": "c052beddd4876d29fe92cc010a04884b0859e304570f4a6ddda05ba96e27bc38",
+      "size_bytes": 192390
     },
     {
-      "path": "simulations/simulation_23d12a40107c8e1d85dbfc3b024fd987/tables/task_outcomes/part-000003.parquet",
-      "sha256": "576501ee962ea75d14af46e73587c25d22893767be0814b951e1aec7726b4cd8",
-      "size_bytes": 242416
+      "path": "simulations/simulation_0c14758a479ce92006e8c56f6713a9a3/tables/task_outcomes/part-000007.parquet",
+      "sha256": "c674d5648fe3a77edb99df11c79ca9476d55f71257c5463176b1057b4694450c",
+      "size_bytes": 186858
     },
     {
-      "path": "simulations/simulation_23d12a40107c8e1d85dbfc3b024fd987/tables/task_outcomes/part-000004.parquet",
-      "sha256": "1b3a8ac40edd1887325dd51a09aa48b198747774534c863a8b2722750ca08802",
-      "size_bytes": 233147
+      "path": "simulations/simulation_0c14758a479ce92006e8c56f6713a9a3/tables/task_outcomes/part-000008.parquet",
+      "sha256": "dacff7e7432524d75e2478b0370cf9d51f485b7d9ed5ce05897d79a83e19d7dc",
+      "size_bytes": 188683
     },
     {
-      "path": "simulations/simulation_23d12a40107c8e1d85dbfc3b024fd987/tables/task_outcomes/part-000005.parquet",
-      "sha256": "b60d9553731b2eee51ec952fb512339c4fd6b071b9a388734d8195335fd7007d",
-      "size_bytes": 241194
+      "path": "simulations/simulation_0c14758a479ce92006e8c56f6713a9a3/tables/task_outcomes/part-000009.parquet",
+      "sha256": "1d3dd32bf0dfb88cc62c3b79aa92777cca7c985c235f2b462edd833203c17d84",
+      "size_bytes": 189264
     },
     {
-      "path": "simulations/simulation_23d12a40107c8e1d85dbfc3b024fd987/tables/task_outcomes/part-000006.parquet",
-      "sha256": "8e3303ef6582219ae0a915d0b89826b0c607ab35516f7b29a9aac2c1c1012ef2",
-      "size_bytes": 236722
-    },
-    {
-      "path": "simulations/simulation_23d12a40107c8e1d85dbfc3b024fd987/tables/task_outcomes/part-000007.parquet",
-      "sha256": "5da3b5be71f2a9fd29907258d21b99397e9989cb01adc9e47a4d4b083c09a095",
-      "size_bytes": 239241
-    },
-    {
-      "path": "simulations/simulation_23d12a40107c8e1d85dbfc3b024fd987/tables/task_outcomes/part-000008.parquet",
-      "sha256": "9773c2d2aea8143b29a0dfc4dba3dd68aef69ac21aa2f4c38e77baaa96d1f38c",
-      "size_bytes": 237020
-    },
-    {
-      "path": "simulations/simulation_23d12a40107c8e1d85dbfc3b024fd987/tables/task_outcomes/part-000009.parquet",
-      "sha256": "81e4342706542c962f25b189dfe7abddfd638017f2bd43b9d32c018645f58164",
-      "size_bytes": 247181
-    },
-    {
-      "path": "simulations/simulation_23d12a40107c8e1d85dbfc3b024fd987/tables/vehicle_catalog/part-000000.parquet",
-      "sha256": "eaffdaec7a5b327dd4ccfa282c5c79a2ad6a9266f6742e8b0417940b77ff627f",
-      "size_bytes": 2982
+      "path": "simulations/simulation_0c14758a479ce92006e8c56f6713a9a3/tables/vehicle_catalog/part-000000.parquet",
+      "sha256": "07225e79319b6f52e77fd91be37ccbe859374665c44953214e81ec0f6c370273",
+      "size_bytes": 3003
     }
   ],
   "saved_views": {
-    "Fleet results": "/results?view=fleet&fleet_run=dataset_5fc2a197bfa15d37b367d2d940e882ca",
-    "Portfolio": "/results?view=portfolio&resource=portfolio_c0ec819fcc9cfe6cae8c88b8a52aaaa5&budgets=budget_14dbf569a35a59695a80e9da7538e35f,budget_75b73ddee40d3366725ac97eb11ef0d4,budget_85a04382162b9f2aab83f90097ca54b0,budget_4c34a36b995270636b349afcde42c791&portfolio=portfolio_2d4000a39a4421d85326ff2c48650b19"
+    "Fleet results": "/results?view=fleet&fleet_run=dataset_a6ae954e8bdf1d1a1ac83861fbbda810",
+    "Portfolio": "/results?view=portfolio&resource=portfolio_65289d0e572c058ecb640a0a0f2c9610&budgets=budget_790ff9fbe2fd8a0a5939d14aeefe03a3,budget_3c9def6339a99a94df17c25d4821883d,budget_873e74832e2cf4369ecb8ca20e0d89f1,budget_dd1b8f37aa44e51d6aa8cc618fa7a8b0,budget_4d9632892962e370b10ba9c31f40c5cc,budget_a4c15e1f8054f7d52892caf5c347f02e,budget_3cbef3fac50acce7ff6e104c98178074,budget_0e3590f6527f101a792848c37d88d6aa,budget_24be0c77427067834b4606926a1a6d33,budget_ef22ca13dc23c43e788d9951e10de98d&portfolio=portfolio_11e70068bde6cc8c4799a5a2ae2def2d",
+    "Portfolio — standard deviation": "/results?view=portfolio&resource=portfolio_5b276b844cac892eeb9052827cf28f8c"
   },
-  "description": "OSM-derived San Francisco urban environment · 60-minute reporting · 24-hour utility interval · synthetic delivery-van and taxi operator scenarios."
+  "description": "[Example] San Francisco — Taxi Weekday · 10 joint replications · 100 allocation rounds · uniform utility weights · P05 and standard deviation · 99% local utility at five cumulative minutes."
 }

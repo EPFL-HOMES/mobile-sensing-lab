@@ -53,7 +53,7 @@ def test_utility_interval_sums_reporting_bins_before_nonlinear_utility():
     hourly = 0.5 * sum(
         pointwise_utility(value, "exponential_saturation", 5.0) for value in (2.0, 3.0)
     )
-    assert daily == pytest.approx(1 - np.exp(-1))
+    assert daily == pytest.approx(0.99)
     assert daily != pytest.approx(hourly)
 
 
@@ -79,8 +79,8 @@ def test_portfolio_utility_interval_is_independent_of_reporting_bins(tmp_path):
         weights=_uniform_weights(),
     )
     daily_value = daily_samples.sample_rows[0]["utility"]
-    assert hourly_value == pytest.approx(1 - np.exp(-1))
-    assert daily_value == pytest.approx(1 - np.exp(-2))
+    assert hourly_value == pytest.approx(0.99)
+    assert daily_value == pytest.approx(0.9999)
     assert daily_value > hourly_value
     assert daily_samples.matrix_metadata[0]["nonzero_rows"] == 2
 

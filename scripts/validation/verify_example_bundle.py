@@ -6,6 +6,8 @@ import time
 from pathlib import Path
 from fastapi.testclient import TestClient
 from mobile_sensing.api import create_app
+from mobile_sensing.application.example_build import feasible_portfolio_count
+from mobile_sensing.application.project_models import PortfolioEditor
 from mobile_sensing.jobs import JobStore, LocalCoordinator
 
 
@@ -40,12 +42,14 @@ def verify(root):
     assert config["read_only"] and len(client.get("/api/v1/inputs").json()) == 5
     assert config["simulation"]["temporal_resolution_minutes"] == 60.0
     runs = client.get("/api/v1/workbench/runs", params={"project_id": project["project_id"]}).json()
-    assert len(runs) == 2 and all(run["replications"] == 10 for run in runs)
-    source = next(run for run in runs if run["realization_source_run_id"] is None)
+    assert len(runs) == 1 and runs[0]["replications"] == 10
+    source = runs[0]
     analyses = client.get(
         "/api/v1/workbench/analyses", params={"project_id": project["project_id"]}
     ).json()
-    assert len(analyses) == 1 and analyses[0]["count_portfolios"] == 27
+    assert len(analyses) == 2
+    assert {analysis["config"]["risk_metric"] for analysis in analyses} == {"p05", "std"}
+    assert all(analysis["count_portfolios"] == 600 for analysis in analyses)
     started = time.perf_counter()
     reopened = client.post("/api/v1/examples/lausanne/open", json={"editable": False}).json()
     timings["reopen_metadata"] = time.perf_counter() - started
@@ -91,12 +95,14 @@ def verify(root):
         analyzed.result["source_run_id"] == source["run_id"]
         and analyzed.result["sampling_runs"] == 3
     )
-    assert analyzed.result["count_portfolios"] == 8
+    assert analyzed.result["count_portfolios"] == feasible_portfolio_count(
+        PortfolioEditor.model_validate_json(json.dumps(editor))
+    )
     assert client.delete(f"/api/v1/projects/{project['project_id']}").status_code == 204
     retained = client.get(
         "/api/v1/workbench/runs", params={"project_id": copied["project_id"]}
     ).json()
-    assert len(retained) == 3 and any(run["run_id"] == source["run_id"] for run in retained)
+    assert len(retained) == 2 and any(run["run_id"] == source["run_id"] for run in retained)
     report = {
         "passed": True,
         "workspace": str(root),

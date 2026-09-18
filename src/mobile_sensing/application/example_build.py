@@ -25,6 +25,7 @@ from mobile_sensing.application.project_models import (
     PortfolioFleetEditor,
     TemporalInterval,
     ShiftGroup,
+    SpatialFeatureWeight,
     NumericRange,
 )
 from mobile_sensing.application.studio_models import EnvironmentEditor, FeatureSelection
@@ -35,7 +36,7 @@ from mobile_sensing.datasets.inputs import snapshot_input, InputRegistration
 from mobile_sensing.contracts import canonical_json_text, ArtifactRef
 
 
-EXAMPLE_NAME = "[Example] Lausanne — Five-Fleet Weekday"
+EXAMPLE_NAME = "[Example] Lausanne — Bus, Postal and Taxi Weekday"
 ROUTE_IDS = ("92-1-V-j26-1", "92-3-S-j26-1", "92-7-P-j26-1")
 STATION_LONGITUDE = 6.6290923032
 STATION_LATITUDE = 46.5167918355
@@ -180,6 +181,7 @@ def prepare_example(root, data, *, cancellation, progress):
                 input_id=population_id, name="population", year=2024, unit="residents"
             ),
         ),
+        osm_features=("commercial", "public_services"),
     )
     prepared = build_environment(
         root,
@@ -218,37 +220,38 @@ def prepare_example(root, data, *, cancellation, progress):
 def demonstration_fleets(gtfs_id):
     """One shared editable definition for source builds and the Lausanne tutorial."""
     return (
-        *(
-            FleetEditor(
-                fleet_id=f"bus_{line}",
-                name=f"Bus · line {line}",
-                demand=DemandEditor(
-                    source="import",
-                    task_type="ordered",
-                    template="gtfs",
-                    input_id=gtfs_id,
-                    route_ids=(route_id,),
-                ),
-                supply=SupplyEditor(
-                    source="timetable",
-                    fleet_size=None,
-                    operating_start=None,
-                    operating_end=None,
-                    initial_location="input",
-                ),
-                dispatch=DispatchEditor(mode="scheduled"),
-            )
-            for line, route_id in zip((1, 3, 7), ROUTE_IDS, strict=True)
+        FleetEditor(
+            fleet_id="bus",
+            name="Bus · lines 1, 3 and 7",
+            demand=DemandEditor(
+                source="import",
+                task_type="ordered",
+                template="gtfs",
+                input_id=gtfs_id,
+                route_ids=ROUTE_IDS,
+            ),
+            supply=SupplyEditor(
+                source="timetable",
+                fleet_size=None,
+                operating_start=None,
+                operating_end=None,
+                initial_location="input",
+            ),
+            dispatch=DispatchEditor(mode="scheduled"),
         ),
         FleetEditor(
             fleet_id="postal",
-            name="Postal · synthetic deliveries",
+            name="Postal",
             demand=DemandEditor(
                 task_volume=2000.0,
-                volume_mode="expected",
-                start_time="07:00",
-                end_time="18:00",
+                volume_mode="fixed",
+                start_time="06:00",
+                end_time="21:00",
                 spatial_feature="population",
+                spatial_weights=(
+                    SpatialFeatureWeight(feature="population", weight=0.8),
+                    SpatialFeatureWeight(feature="public_services", weight=0.2),
+                ),
                 location_condition="depot_roundtrip",
                 release_mode="at_start",
                 service_seconds=120.0,
@@ -256,10 +259,10 @@ def demonstration_fleets(gtfs_id):
             ),
             supply=SupplyEditor(
                 fleet_size=20,
-                operating_start="07:00",
-                operating_end="18:00",
+                operating_start="06:00",
+                operating_end="21:00",
                 activation="uniform_bounded",
-                latest_start="08:00",
+                latest_start="12:00",
                 work_hours=8.0,
                 initial_location="depot",
                 synthetic_depot=True,
@@ -278,12 +281,12 @@ def demonstration_fleets(gtfs_id):
             ),
         ),
         FleetEditor(
-            fleet_id="ride_hailing",
-            name="Ride-hailing · synthetic requests",
+            fleet_id="taxi",
+            name="Taxi",
             demand=DemandEditor(
                 task_type="od",
                 volume_mode="expected",
-                task_volume=600.0,
+                task_volume=800.0,
                 generation_timing="online",
                 temporal_mode="shares",
                 time_profile=tuple(
@@ -301,26 +304,37 @@ def demonstration_fleets(gtfs_id):
                 start_time="00:00",
                 end_time="24:00",
                 spatial_feature="population",
+                spatial_weights=(
+                    SpatialFeatureWeight(feature="population", weight=0.5),
+                    SpatialFeatureWeight(feature="commercial", weight=0.3),
+                    SpatialFeatureWeight(feature="public_services", weight=0.2),
+                ),
                 destination_feature="population",
+                destination_spatial_weights=(
+                    SpatialFeatureWeight(feature="population", weight=0.5),
+                    SpatialFeatureWeight(feature="commercial", weight=0.3),
+                    SpatialFeatureWeight(feature="public_services", weight=0.2),
+                ),
                 pickup_seconds=60.0,
                 service_seconds=30.0,
             ),
             supply=SupplyEditor(
-                fleet_size=40,
+                fleet_size=80,
                 operating_start="00:00",
                 operating_end="24:00",
                 activation="uniform_bounded",
                 latest_start="16:00",
                 work_hours=8.0,
                 spatial_feature="population",
+                post_service="random_cruise",
                 capacity_mode="occupancy",
                 capacity=1.0,
                 shift_groups=(
-                    ShiftGroup(name="Night", count=4, start_time="00:00", latest_start="00:00"),
-                    ShiftGroup(name="Morning", count=12, start_time="05:00", latest_start="06:00"),
-                    ShiftGroup(name="Daytime", count=12, start_time="09:00", latest_start="11:00"),
+                    ShiftGroup(name="Night", count=8, start_time="00:00", latest_start="00:00"),
+                    ShiftGroup(name="Morning", count=24, start_time="05:00", latest_start="06:00"),
+                    ShiftGroup(name="Daytime", count=24, start_time="09:00", latest_start="11:00"),
                     ShiftGroup(
-                        name="Afternoon", count=12, start_time="15:00", latest_start="16:00"
+                        name="Afternoon", count=24, start_time="15:00", latest_start="16:00"
                     ),
                 ),
             ),
@@ -348,29 +362,46 @@ def compute_example(root, config, *, cancellation, progress):
         ),
     )
     _write_json(Path(root) / "example-run.json", run)
-    editor = demonstration_portfolio(run)
-    analysis = run_analysis(
+    worst_case = run_analysis(
         root,
-        editor,
-        name="Uniform utility · 5-minute saturation",
+        demonstration_portfolio(run, risk_metric="p05", spatial_weight="population"),
+        name="Worst-case utility · 5-minute saturation",
         source_revision_id=None,
         options=options,
         cancellation=cancellation,
         progress=progress,
     )
-    _write_json(Path(root) / "example-analysis.json", analysis)
-    return run, analysis
+    standard_deviation = run_analysis(
+        root,
+        demonstration_portfolio(run, risk_metric="std", spatial_weight="population"),
+        name="Standard-deviation utility · 5-minute saturation",
+        source_revision_id=None,
+        options=options,
+        cancellation=cancellation,
+        progress=progress,
+    )
+    _write_json(Path(root) / "example-analysis.json", worst_case)
+    _write_json(Path(root) / "example-analysis-std.json", standard_deviation)
+    return run, worst_case, standard_deviation
 
 
-def demonstration_portfolio(run):
+def demonstration_portfolio(
+    run,
+    *,
+    risk_metric="p05",
+    budgets=(0.0, 20.0, 40.0, 60.0, 80.0, 100.0),
+    saturation_minutes=5.0,
+    spatial_weight="uniform",
+):
     return PortfolioEditor(
         source_run_id=run.run_id,
-        spatial_weight="uniform",
+        spatial_weight=spatial_weight,
         sampling_runs=100,
-        budgets=(10.0, 20.0, 30.0, 40.0),
-        saturation_minutes=5.0,
+        cost_unit="sensor",
+        budgets=budgets,
+        saturation_minutes=saturation_minutes,
         utility_temporal_resolution_minutes=1440.0,
-        risk_metric="p05",
+        risk_metric=risk_metric,
         fleets=tuple(
             PortfolioFleetEditor(
                 fleet_id=fleet,
@@ -404,7 +435,7 @@ def compute_batch(root, config, run, *, cancellation, progress, options):
                             )
                         }
                     )
-                    if fleet.fleet_id == "ride_hailing"
+                    if fleet.fleet_id == "taxi"
                     else fleet
                 )
                 for fleet in config.fleets

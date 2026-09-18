@@ -31,11 +31,11 @@ def audit_demonstration_simulation(root, run):
     fleets = {fleet.fleet_id: fleet for fleet in run.config.fleets}
     postal = fleets["postal"]
     require(
-        set(run.vehicle_counts) == {"bus", "postal", "ride_hailing"}
-        and run.vehicle_counts["bus"] > 0
+        set(run.vehicle_counts) == {"bus", "postal", "taxi"}
+        and run.vehicle_counts["bus"] == 34
         and run.vehicle_counts["postal"] == 20
-        and run.vehicle_counts["ride_hailing"] == 40,
-        "inferred Bus catalog and fixed synthetic catalogs",
+        and run.vehicle_counts["taxi"] == 80,
+        "fixed Bus, Postal and Taxi catalogs",
     )
     catalog_rows = table(run.resolution, "physical_catalog")
     require(
@@ -44,12 +44,14 @@ def audit_demonstration_simulation(root, run):
     )
     require(
         postal.demand.task_volume == 2000
-        and postal.demand.quantity == 2
+        and postal.demand.volume_mode == "fixed"
+        and postal.demand.generation_timing == "at_start"
+        and postal.demand.quantity == 1
         and postal.demand.service_seconds == 120
         and postal.supply.capacity == 100
         and postal.supply.work_hours == 8
         and postal.supply.operating_start == "06:00"
-        and postal.supply.operating_end == "20:00",
+        and postal.supply.operating_end == "21:00",
         "requested Postal configuration",
     )
     availability = table(run.resolution, "availability")
@@ -59,7 +61,7 @@ def audit_demonstration_simulation(root, run):
         start, end = value["availability_start_s"], value["availability_end_s"]
         windows[row.replication_id, row.fleet_id, row.vehicle_id] = start, end
         if row.fleet_id == "postal":
-            require(21600 <= start <= 43200 and end <= 72000, "Postal operating bounds")
+            require(21600 <= start <= 43200 and end <= 75600, "Postal operating bounds")
             require(abs(end - start - 28800) < 1e-8, "eight-hour Postal shifts")
     outcomes = table(run.simulation, "task_outcomes")
     deliveries = outcomes[(outcomes.fleet_id == "postal") & (outcomes.kind == "service")]
@@ -71,7 +73,7 @@ def audit_demonstration_simulation(root, run):
     )
     returns = outcomes[(outcomes.fleet_id == "postal") & (outcomes.kind == "depot_return")]
     require(
-        len(returns) > 20 * run.replications and returns.status.eq("completed").all(),
+        len(returns) >= 20 * run.replications and returns.status.eq("completed").all(),
         "all depot returns",
     )
     reloads = returns[returns.source_policy.eq("dispatch.one_shot.reload@1")]
@@ -88,8 +90,8 @@ def audit_demonstration_simulation(root, run):
         .sum()
     )
     require(
-        len(refill_duration) == len(reloads) and refill_duration.ge(600 - 1e-6).all(),
-        "minimum ten-minute depot replenishment",
+        len(refill_duration) == len(reloads) and refill_duration.ge(900 - 1e-6).all(),
+        "minimum fifteen-minute depot replenishment",
     )
     events = table(run.simulation, "operational_events")
     capacity_events = events[
@@ -100,7 +102,7 @@ def audit_demonstration_simulation(root, run):
         stock = 100.0
         for event in group.sort_values(["time_s", "event_index"]).itertuples():
             if event.capacity_reset:
-                require(stock < 2, "reload only when another delivery cannot fit")
+                require(stock < 1, "reload only when another delivery cannot fit")
                 require(
                     event.task_id in set(reloads.task_id),
                     "capacity reset belongs to a planned replenishment",
@@ -122,7 +124,7 @@ def audit_demonstration_simulation(root, run):
     for value in map(json.loads, service.task_json):
         if value["kind"] == "service":
             require(
-                value["required_capacity"] == 2 and value["steps"][0]["service_duration_s"] == 120,
+                value["required_capacity"] == 1 and value["steps"][0]["service_duration_s"] == 120,
                 "realized quantity and service",
             )
     physical = table(run.resolution, "physical_catalog")
@@ -135,29 +137,27 @@ def audit_demonstration_simulation(root, run):
         depot["original_x"] == STATION_LONGITUDE and depot["original_y"] == STATION_LATITUDE,
         "station depot coordinate provenance",
     )
-    ride = fleets["ride_hailing"]
+    ride = fleets["taxi"]
     require(
-        ride.demand.generation_timing == "online" and ride.demand.task_volume == 1000,
-        "online expected demand of 1,000",
+        ride.demand.generation_timing == "online" and ride.demand.task_volume == 800,
+        "online expected demand of 800",
     )
-    require([g.count for g in ride.supply.shift_groups] == [4, 36], "exact 10/90 activation groups")
-    for _, group in availability[availability.fleet_id.eq("ride_hailing")].groupby(
-        "replication_id"
-    ):
+    require([g.count for g in ride.supply.shift_groups] == [8, 24, 24, 24], "exact shift shares")
+    for _, group in availability[availability.fleet_id.eq("taxi")].groupby("replication_id"):
         periods = [json.loads(v) for v in group.availability_json]
         starts = [v["availability_start_s"] for v in periods]
         require(
-            len(starts) == 40
-            and sum(v < 21600 for v in starts) == 4
+            len(starts) == 80
+            and sum(v < 21600 for v in starts) == 8
             and all(0 <= v <= 57600 for v in starts),
-            "40 vehicles: four starts before 06:00, 36 by 16:00",
+            "80 vehicles: eight starts before 06:00, all by 16:00",
         )
         require(
             all(
                 abs(v["availability_end_s"] - v["availability_start_s"] - 28800) < 1e-6
                 for v in periods
             ),
-            "eight-hour Ride-hailing shifts",
+            "eight-hour Taxi shifts",
         )
     require(
         all(f.sensing_mode == "operating_duration" for f in fleets.values()),
@@ -182,7 +182,9 @@ def audit_demonstration_simulation(root, run):
         "deliveries_completed": len(deliveries),
         "depot_returns_completed": len(returns),
         "reloads_completed": len(reloads),
-        "depot_minimum_stay_seconds": float(refill_duration.min()),
+        "depot_minimum_stay_seconds": (
+            None if refill_duration.empty else float(refill_duration.min())
+        ),
         "deliveries_per_vehicle_range": [
             int(v)
             for v in deliveries.groupby(["replication_id", "vehicle_id"]).size().agg(["min", "max"])

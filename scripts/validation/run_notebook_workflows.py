@@ -25,10 +25,11 @@ def small_joint_configuration(namespace):
         else:
             fleet["demand"]["task_volume"] = 8.0
             fleet["supply"]["fleet_size"] = 2 if fleet["fleet_id"] == "postal" else 4
-            for index, group in enumerate(fleet["supply"]["shift_groups"]):
-                group["count"] = 1 if index == 0 else 3
+            for group in fleet["supply"]["shift_groups"]:
+                group["count"] = 1
             if fleet["fleet_id"] == "postal":
                 fleet["supply"]["capacity"] = 4.0
+                fleet["supply"]["auto_service_area_count"] = 2
     namespace["configuration"] = ProjectConfig.model_validate_json(json.dumps(settings))
 
 
@@ -98,10 +99,10 @@ def main():
                     ].model_copy(update={"sampling_runs": 5})
         namespace = shell.user_ns
         run, analysis = namespace["run"], namespace["analysis"]
-        assert set(run.vehicle_counts) == {"bus", "postal", "ride_hailing"}
+        assert set(run.vehicle_counts) == {"bus", "postal", "taxi"}
         assert analysis.source_run_id == run.run_id
-        assert analysis.config.risk_metric == "p05" and analysis.config.saturation_minutes == 10
-        assert analysis.config.spatial_weight == "uniform"
+        assert analysis.config.risk_metric == "p05" and analysis.config.saturation_minutes == 5
+        assert analysis.config.spatial_weight == "population"
         assert not namespace["workspace"].exists()
         assert images == 4
         for fleet, (_, grid, daily, _) in namespace["fleet_views"].items():

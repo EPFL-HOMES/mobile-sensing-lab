@@ -4,6 +4,14 @@ The current release implements the complete local workflow from data registratio
 
 ## Release maintenance
 
+Maintain the versioned 99%-duration convention across the utility curve, both evaluators, caches, and city-example regeneration; keep historical results readable without relabeling their utility semantics.
+
+Completed: expose per-round mean any-visit grid coverage in Selected portfolio using the existing backend statistic and zero-inclusive exposure domain.
+
+Example upgrade acceptance must include an existing workspace with independently created equivalent resources, not only empty-workspace imports.
+
+Completed bounded change: regenerated both immutable city-example bundles after validating fleet, spatial-feature and portfolio definitions. Both cities retain P05 and standard-deviation analyses with five-minute saturation. Strict saturation-map filtering, at-least-saturation reporting and minute heatmap legends are covered by frontend regressions.
+
 1. Keep Python 3.12 and Node 22 dependency locks reproducible.
 2. Maintain byte-checked Python/OpenAPI/TypeScript contracts.
 3. Validate wheel installation without a Node runtime.

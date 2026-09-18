@@ -1,48 +1,30 @@
 # San Francisco example
 
-**[Example] San Francisco — Delivery Vans and Taxis** is an OSM-only geographic example with synthetic operator subfleets. It opens retained results without online acquisition. No San Francisco notebook is included.
+Spatial utility weights remain uniform. New exponential utility reaches 99% at five cumulative sensing minutes within each full-day utility interval (`sample-utility@4`); both P05 and standard-deviation analyses use this definition.
 
-## Geography and spatial proxy
+**[Example] San Francisco — Taxi Weekday** is an OSM-derived geographic example with one synthetic taxi fleet. It opens retained results without online acquisition.
 
-The OSM San Francisco administrative polygon is intersected with longitude/latitude bounds `[-122.53, 37.70, -122.35, 37.84]` to define a bounded urban study area. Offshore Farallon Islands and SFO airport are excluded. The directed driving network is fetched for a 1 km buffered routing extent; it is not clipped to the reporting boundary. OSM shape nodes are contracted after preserving all nearest-grid-node ties, intersections, road-attribute changes and isolated rings. Full intermediate line vertices and directed connectivity remain represented; merged source-node pairs are retained. This is graph preprocessing, not cartographic line simplification. The 100 m grid uses EPSG:32610; map exchange uses EPSG:4326.
+The study polygon is the San Francisco OSM boundary intersected with `[-122.53, 37.70, -122.35, 37.84]`; offshore islands and SFO airport are excluded. A one-kilometre routing buffer is retained. The 100 m grid uses EPSG:32610 and the assumed operating speed is 20 km/h.
 
-The spatial activity proxy is an explicit mixture:
+Prepared features are residential area, commercial locations, transportation objects, public-service objects and leisure activity. They are spatial proxies, not population or observed trip counts. Each feature is normalized independently over the complete prepared grid before mixture coefficients are applied.
 
-`0.6 × normalized OSM residential area + 0.4 × normalized OSM commercial-location count`.
+Taxi origins use
 
-Residential polygons contribute intersected area; commercial features contribute one representative point each. Zero-feature cells remain in the full reporting grid. This proxy is neither population nor measured order density. Uniform assumed road speed is 20 km/h, not observed congestion or OSM speed-limit data. The depot is a synthetic routed node near the commercial-feature weighted center. Raw OSM query responses and receipts are cached in the build workspace; registered input snapshots and query provenance are bundled. OpenStreetMap contributors, ODbL.
+\[
+0.35\,q_{\mathrm{residential}}+0.25\,q_{\mathrm{commercial}}+
+0.20\,q_{\mathrm{transportation}}+0.10\,q_{\mathrm{public}}+0.10\,q_{\mathrm{leisure}},
+\]
 
-## Operating assumptions
+and destinations use coefficients `(0.30, 0.30, 0.20, 0.10, 0.10)` in the same order. Demand is an online Poisson process with expected daily total 2,000 and shares 6%, 16%, 13%, 21%, 23%, 12% and 9% over intervals 00–06, 06–09, 09–12, 12–16, 16–19, 19–21 and 21–24. Pickup and drop-off services last 60 and 30 seconds.
 
-| Parameter | Delivery vans | Taxis |
-|---|---|---|
-| Physical catalog | 20 | 60 |
-| Expected daily tasks | 1,600 consignments | 900 within-region requests |
-| Generation | Offline at 08:00; activity-weighted | Online OD; activity-weighted origin/destination |
-| Activation | Uniform 08:00–09:00 | 6 at midnight; 18 each during 05–06, 09–11, 15–16 |
-| Shift | 8 hours, within 08:00–18:00 | 8 hours, within 00:00–24:00 |
-| Service | 120 seconds per consignment | Pickup 60 seconds; drop-off 30 seconds |
-| Capacity | 100 unit consignments; minimum 15 min reload | One active request per vehicle |
-| Dispatch | Single-depot One-shot, final return | Sequential nearest matching; maximum pickup 15 min |
+The fixed catalog has 100 taxis. Shift-group shares are 10% at midnight and 30% each during 05–06, 09–11 and 15–16; every shift lasts eight hours. Sequential nearest matching uses a 15-minute maximum pickup time. Idle taxis use reproducible random cruising.
 
-Taxi demand shares: 6% during 00–06, 16% during 06–09, 13% during 09–12, 21% during 12–16, 23% during 16–19, 12% during 19–21 and 9% during 21–24. No previous-day taxi shifts or airport flows are generated. Totals are Poisson; locations and activation times vary across replications. Stationary depot stays are excluded from sensing.
+The observation is 14 January 2026, 00:00–24:00 America/Los_Angeles; ten joint replications and hourly reporting. Portfolio analysis uses 100 allocation rounds, unit cost one `sensor`, budgets 10 through 100 in increments of 10, five-vehicle count steps, a full-day utility interval, and five-minute exponential saturation. Separate empirical-P05 worst-case and standard-deviation frontiers share the same physical run and allocation samples.
 
-The workload corresponds to 80 consignments per delivery vehicle-day (160 minutes of service before travel/reloads) and 15 requests per taxi shift (1.875 releases per vehicle-hour on average). These ratios define a transparent, editable workload scenario; they do not establish observed completion rates.
+All demand volumes, feature coefficients, staffing, shifts, services and speeds are scenario assumptions rather than calibrated city-wide estimates. OSM provenance and raw acquisition receipts remain retained with the example.
 
-## Evidence and limits
-
-[SFMTA's 2024 Q2 pilot report](https://www.sfmta.com/notices/taxi-upfront-fare-pilot-2024-q2-report) reports 86,306 pilot trips accounting for 11.5% of taxi trips in that quarter. Dividing by that share and the 91 calendar days suggests approximately 8,250 total taxi trips/day for that reporting scope, not a current weekday or within-boundary estimate. The 900-request example is an illustrative operator subset, not a reproduction of that market. Pilot-driver participation is not used as a physical fleet count. The [final pilot report notice](https://www.sfmta.com/notices/taxi-upfront-fare-pilot-2024-q3-q4-report) also records data-quality challenges.
-
-[SFCTA's 2025 delivery study summary](https://www.sfcta.org/blogs/transportation-board-approves-eco-friendly-downtown-delivery-study-final-report) describes varied goods movement and fragmented data, recommending additional collection. It does not identify a calibrated 20-van operator or 1,600 daily orders. Demand volume, staffing, time profiles, depot, consumption units and service times here are explicitly synthetic. OSM alone cannot supply those operational observations.
-
-Both examples use 14 January 2026, a full local day, ten joint replications, hourly reporting, uniform utility, 5-minute exponential saturation, five-sensor count steps, budgets 10/20/30/40 and 100 sampling rounds. Their utility values are conditioned on different geographic domains and should not be compared as a city ranking.
-
-## Rebuild the reference
-
-Maintainers can regenerate inputs and results through the formal backend:
+Maintainers rebuild the reference through the public application services:
 
 ```bash
 python -m mobile_sensing.application.san_francisco_example --root ./results/sf-build --stage compute
 ```
-
-The first preparation requests OSM; subsequent preparation reuses the recorded input/configuration snapshots. Recomputing an editable copy inside the app uses its existing prepared inputs and does not need OSM downloads. Packaging requires a completed simulation, analysis and passing example audit.

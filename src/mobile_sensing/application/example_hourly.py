@@ -33,8 +33,10 @@ def build_hourly(root, destination):
         for identifier in bundle.config.linked_run_ids
     ]
     original = next(run for run in runs if run.realization_source_run_id is None)
-    old_batch = next(run for run in runs if run.realization_source_run_id is not None)
-    old_analysis = read_named_record(root, bundle.config.linked_analysis_ids[0], "studio_analysis")
+    old_analyses = [
+        read_named_record(root, identifier, "studio_analysis")
+        for identifier in bundle.config.linked_analysis_ids
+    ]
     cancellation, progress = Cancellation(), Progress()
     kwargs = dict(
         options=RunOptions(memory_limit_bytes=8 * 1024**3),
@@ -57,33 +59,22 @@ def build_hourly(root, destination):
             }
         )
         run = run_project(root, config, name="Lausanne · full day · 1-hour reporting", **kwargs)
-        batch_config = old_batch.config.model_copy(
-            update={
-                "simulation": old_batch.config.simulation.model_copy(
-                    update={"temporal_resolution_minutes": 60.0}
-                )
-            }
-        )
-        batch = run_project(
-            root,
-            batch_config,
-            name="Lausanne · same requests · 2-minute Batch · 1-hour reporting",
-            replay_from=original,
-            **kwargs,
-        )
     finally:
         HeadlessApplication.run_simulation = execute
     assert run.mobility_reused and run.simulation == original.simulation
-    assert batch.mobility_reused and batch.simulation == old_batch.simulation
-    editor = old_analysis.config.model_copy(update={"source_run_id": run.run_id})
-    analysis = run_analysis(
-        root, editor, name="Lausanne · hourly exposure · population utility", **kwargs
-    )
-    for name, value in (
-        ("example-run.json", run),
-        ("example-batch-run.json", batch),
-        ("example-analysis.json", analysis),
-    ):
+    analyses = [
+        run_analysis(
+            root,
+            old.config.model_copy(update={"source_run_id": run.run_id}),
+            name=old.name,
+            **kwargs,
+        )
+        for old in old_analyses
+    ]
+    records = [("example-run.json", run), ("example-analysis.json", analyses[0])]
+    if len(analyses) > 1:
+        records.append(("example-analysis-std.json", analyses[1]))
+    for name, value in records:
         (root / name).write_text(value.model_dump_json(indent=2))
     for name in ("input-provenance.json",):
         if not (root / name).exists():
@@ -97,7 +88,7 @@ def build_hourly(root, destination):
             (root / name).write_bytes((root / candidates[0]).read_bytes())
     audit = audit_example(root)
     (root / "example-audit.json").write_text(json.dumps(audit, indent=2))
-    for value, kind in ((run, "studio_run"), (batch, "studio_run"), (analysis, "studio_analysis")):
+    for value, kind in [(run, "studio_run"), *[(item, "studio_analysis") for item in analyses]]:
         build_report(root, value.artifact.artifact_id, kind, cancellation)
     output = write_bundle(root, Path(destination))
     print(
@@ -105,7 +96,7 @@ def build_hourly(root, destination):
             {
                 "bundle_id": output.bundle_id,
                 "run_id": run.run_id,
-                "analysis_id": analysis.analysis_id,
+                "analysis_ids": [item.analysis_id for item in analyses],
                 "files": len(output.files),
                 "hourly": True,
                 "mobility_reused": True,

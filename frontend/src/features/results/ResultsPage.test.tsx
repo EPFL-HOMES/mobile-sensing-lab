@@ -113,7 +113,7 @@ describe("M11 result workspaces", () => {
         const body = JSON.parse(String(init.body)) as { kind: string; statistic: string };
         expect(body.kind).toBe("portfolio_summary");
         expect(body.statistic).toBe("mean");
-        return response({ resource_id: body.kind === "portfolio_sample" ? "samples-1" : "analysis-1", kind: body.kind, statistic: body.kind === "portfolio_sample" ? "realization" : "mean", cell_ids: ["cell-1"], time_bin_ids: ["bin-1"], expected_shape: [1, 1], values: [{ cell_id: "cell-1", time_bin_id: "bin-1", value: 3 }], unit: "s", zero_fill: "absent_sparse_rows_are_zero", complete: true, replications_R: 2, sampling_rounds_J: 4, portfolio_id: "p-tie-1", round_id: body.kind === "portfolio_sample" ? 0 : null, time_summary: [{ time_bin_id: "bin-1", value: 3 }], overall_value: 3, positive_cell_count: 1, summary_semantics: "statistic_of_within_observation_cell_sum" });
+        return response({ resource_id: body.kind === "portfolio_sample" ? "samples-1" : "analysis-1", kind: body.kind, statistic: body.kind === "portfolio_sample" ? "realization" : "mean", cell_ids: ["cell-1"], time_bin_ids: ["bin-1"], expected_shape: [1, 1], values: [{ cell_id: "cell-1", time_bin_id: "bin-1", value: 300 }], unit: "s", zero_fill: "absent_sparse_rows_are_zero", complete: true, replications_R: 2, sampling_rounds_J: 4, portfolio_id: "p-tie-1", round_id: body.kind === "portfolio_sample" ? 0 : null, time_summary: [{ time_bin_id: "bin-1", value: 300 }], overall_value: 300, positive_cell_count: 1, mean_coverage_fraction: 0.25, summary_semantics: "statistic_of_within_observation_cell_sum" });
       }
       throw new Error(`Unexpected request ${init?.method ?? "GET"} ${url}`);
     });
@@ -129,6 +129,11 @@ describe("M11 result workspaces", () => {
     fireEvent.click(await screen.findByRole("option", { name: "Fleet 2" }));
     expect(await screen.findByLabelText("Fleet cost 0.02000 CHF_minor")).toBeInTheDocument();
     expect(screen.getByText("Portfolio mean sensing duration")).toBeInTheDocument();
+    expect(screen.getByText("100.00%")).toBeInTheDocument();
+    expect(screen.getByText("Mean spatial grid coverage")).toBeInTheDocument();
+    expect(screen.getByText("25.00%")).toBeInTheDocument();
+    expect(screen.getByRole("checkbox", { name: "Only cells above 5 min saturation" })).not.toBeChecked();
+    expect(screen.getByText(/at least 5 minutes/)).toBeInTheDocument();
     for (const removed of ["Retained round utilities", "Selected sample matrix", "Sampled vehicles", "p-tie-1", "p-tie-2"])
       expect(screen.queryByText(removed, { exact: true })).not.toBeInTheDocument();
     await waitFor(() => expect(fetchMock.mock.calls.some(([url, init]) => String(url) === "/api/v1/matrix-queries" && JSON.parse(String(init?.body)).portfolio_id === "p-tie-2")).toBe(true));

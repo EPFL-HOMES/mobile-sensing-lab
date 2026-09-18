@@ -1,5 +1,9 @@
 # User Interface Specification
 
+The exponential saturation-duration field explains that local utility reaches 99% at the configured cumulative duration within each utility interval, with `u(d)=1-exp(-ln(100)*d/D)`. Capped-linear utility instead reaches 100% at its configured duration.
+
+Selected portfolio displays mean spatial grid coverage from the backend window query: the fraction of exposure-domain cells with positive duration in each allocation round, averaged over all rounds. Zero-coverage cells remain in the denominator. The selected reporting window applies; saturation-map filtering does not change this metric.
+
 Status: current public interface specification. It aligns with the immutable [simulation framework](MOBILE_SENSING_FRAMEWORK.tex). Architecture and endpoint names are owned by [ARCHITECTURE.md](ARCHITECTURE.md) and [INTERFACES.md](INTERFACES.md).
 
 ## 1. Product structure and terminology
@@ -153,6 +157,8 @@ Changing a display time filter is a query. Changing reporting bins/grid submits 
 Primary visualization: mean utility on y and the configured risk statistic on x. Budget overlays use shared axes. Each point is a count portfolio summarized over J random draws. The default displays only nondominated points; a checkbox can reveal dominated evaluated portfolios. No frontier line is drawn.
 
 Point inspector contains count vector, total cost, unspent budget, R/J, mean/std/SE/quantiles, utility distribution, and sensing matrix mean/std maps. A sample-round selector reveals selected joint replication, exact sampled vehicles, that sample's utility and matrix. Show these as sample details, not as an optimized recommended installation.
+
+Duration heatmap legends display minutes while retained matrix values and exports remain in seconds. The portfolio mean map provides an explicit toggle that retains only cells whose displayed mean duration is strictly greater than the configured saturation duration. The selected-portfolio inspector reports the percentage of displayed space–time units satisfying the same strict threshold, with sparse certified zeros included in the denominator.
 
 Coincident objective points open a tie list retaining all portfolios. The empty portfolio remains in underlying results, even if a visible toggle hides it. Connected frontier lines are explicitly a visual guide and not deployable interpolated mixtures. No single “best portfolio” is chosen without a user-specified preference model.
 

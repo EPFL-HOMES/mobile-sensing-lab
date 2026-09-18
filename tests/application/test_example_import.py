@@ -177,12 +177,22 @@ def test_offline_bundle_worker_fresh_project_copy_and_checksum(tmp_path, monkeyp
         }
     )
     (directory / "lausanne.json").write_text(upgraded.model_dump_json())
+    # An independently built equivalent environment has different creation provenance.
+    # Upgrade must reuse it without overwriting the retained manifest.
+    import json
+
+    retained_manifest = next((target / "environments").glob("*/manifest.json"))
+    retained = json.loads(retained_manifest.read_text())
+    retained["created_at_utc"] = "2000-01-01T00:00:00Z"
+    retained_manifest.write_text(json.dumps(retained))
+    retained_bytes = retained_manifest.read_bytes()
     opened = client.post("/api/v1/examples/lausanne/open", json={"editable": False}).json()
     assert opened["project_id"] == project["project_id"]
     with LocalCoordinator(target, max_workers=1) as coordinator:
         coordinator.run_once()
     finished = client.post(f"/api/v1/examples/lausanne/finalize/{opened['job_id']}")
     assert finished.status_code == 200, finished.text
+    assert retained_manifest.read_bytes() == retained_bytes
     for identifier, expected in (
         (project["project_id"], latest.run_id),
         (copied["project_id"], run.run_id),
@@ -201,6 +211,17 @@ def test_offline_bundle_worker_fresh_project_copy_and_checksum(tmp_path, monkeyp
     other = tmp_path / "damaged"
     with pytest.raises(ValueError, match="checksum mismatch"):
         install_example(other, cancellation=BuildCancellation(other), progress=BuildProgress(other))
+
+    # A scientific change still conflicts; the provenance exception is narrow.
+    (directory / "lausanne.json").write_text(
+        upgraded.model_copy(update={"bundle_id": "example_scientific_conflict"}).model_dump_json()
+    )
+    retained["content_fingerprint"] = "0" * 64
+    retained_manifest.write_text(json.dumps(retained))
+    with pytest.raises(ValueError, match="Existing immutable resource conflicts"):
+        install_example(
+            target, cancellation=BuildCancellation(target), progress=BuildProgress(target)
+        )
 
 
 def test_map_defaults_to_observation_clock_and_cached_environment_remains_verified(tmp_path):

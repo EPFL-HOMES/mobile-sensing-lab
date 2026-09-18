@@ -1,4 +1,4 @@
-"""Audit the real Lausanne example before packaging; never manufacture results."""
+"""Audit a real city example before packaging; never manufacture results."""
 
 import argparse
 import json
@@ -19,29 +19,35 @@ from mobile_sensing.contracts import canonical_json_text
 def audit_example(root):
     root = Path(root).resolve()
     run = RunView.model_validate_json((root / "example-run.json").read_bytes())
-    analysis = AnalysisView.model_validate_json((root / "example-analysis.json").read_bytes())
+    analysis_paths = [root / "example-analysis.json"]
+    if (root / "example-analysis-std.json").is_file():
+        analysis_paths.append(root / "example-analysis-std.json")
+    analyses = tuple(AnalysisView.model_validate_json(path.read_bytes()) for path in analysis_paths)
     from mobile_sensing.application.example_build import ROUTE_IDS
 
-    bus_configs = [f for f in run.config.fleets if f.fleet_id.startswith("bus_")]
-    is_lausanne = bool(bus_configs)
-    delivery_id = "postal" if is_lausanne else "delivery_van"
-    delivery = next(f for f in run.config.fleets if f.fleet_id == delivery_id)
-    if delivery.supply.service_area_mode != "auto" or delivery.supply.auto_service_area_count != 4:
-        raise ValueError(
-            "Current examples require four frozen Auto service areas for the delivery fleet"
-        )
-    if is_lausanne and tuple(r for f in bus_configs for r in f.demand.route_ids) != ROUTE_IDS:
-        raise ValueError("Current Lausanne example requires separate bus lines 1, 3 and 7")
-    expected_spatial_weight = "population" if is_lausanne else "uniform"
+    fleet_ids = {fleet.fleet_id for fleet in run.config.fleets}
+    is_lausanne = fleet_ids == {"bus", "postal", "taxi"}
+    bus_configs = [fleet for fleet in run.config.fleets if fleet.fleet_id == "bus"]
+    if is_lausanne:
+        postal = next(fleet for fleet in run.config.fleets if fleet.fleet_id == "postal")
+        if postal.supply.service_area_mode != "auto" or postal.supply.auto_service_area_count != 4:
+            raise ValueError("Lausanne requires four frozen Postal Auto service areas")
+        if bus_configs[0].demand.route_ids != ROUTE_IDS:
+            raise ValueError("Lausanne requires lines 1, 3 and 7 in one Bus fleet")
+    elif fleet_ids != {"taxi"}:
+        raise ValueError("San Francisco requires exactly one Taxi fleet")
+    expected_saturation = 5
+    expected_risks = {"p05", "std"}
     if (
-        analysis.config.spatial_weight != expected_spatial_weight
-        or analysis.config.saturation_minutes != 5
-        or analysis.config.utility_temporal_resolution_minutes != 1440
-    ):
-        raise ValueError(
-            "Current examples require their declared spatial utility weight, five-minute "
-            "saturation and a 24-hour utility interval"
+        {item.config.risk_metric for item in analyses} != expected_risks
+        or any(
+            item.config.spatial_weight != ("population" if is_lausanne else "uniform")
+            for item in analyses
         )
+        or any(item.config.saturation_minutes != expected_saturation for item in analyses)
+        or any(item.config.utility_temporal_resolution_minutes != 1440 for item in analyses)
+    ):
+        raise ValueError("Example portfolio utility/risk settings disagree with the city design")
     catalog = ArtifactCatalog(root)
     located = {}
 
@@ -66,8 +72,11 @@ def audit_example(root):
 
     require(run.replications == 10, "ten complete joint replications")
     require(
-        analysis.sampling_runs == 100
-        and analysis.count_portfolios == feasible_portfolio_count(analysis.config),
+        all(
+            item.sampling_runs == 100
+            and item.count_portfolios == feasible_portfolio_count(item.config)
+            for item in analyses
+        ),
         "portfolio R/J/count design",
     )
     resolution = artifact(run.resolution).manifest.scientific_identity.resolved_config
@@ -160,17 +169,18 @@ def audit_example(root):
         services = outcomes[
             (outcomes.kind == "service") & (outcomes.release_s >= 0) & (outcomes.release_s < 86400)
         ]
-        postal = services[services.fleet_id == delivery_id]
-        realized_delivery = [
-            json.loads(row.task_json) for row in tasks[tasks.fleet_id == delivery_id].itertuples()
-        ]
-        expected_delivery = sum(task["kind"] == "service" for task in realized_delivery)
-        require(
-            len(postal) == expected_delivery
-            and expected_delivery > 0
-            and (postal.status == "completed").all(),
-            "all realized mandatory delivery tasks complete in every replication",
-        )
+        if is_lausanne:
+            postal_outcomes = services[services.fleet_id == "postal"]
+            realized_postal = [
+                json.loads(row.task_json) for row in tasks[tasks.fleet_id == "postal"].itertuples()
+            ]
+            expected_postal = sum(task["kind"] == "service" for task in realized_postal)
+            require(
+                len(postal_outcomes) == expected_postal
+                and expected_postal > 0
+                and (postal_outcomes.status == "completed").all(),
+                "all realized mandatory Postal tasks complete in every replication",
+            )
         counts = (
             services.groupby(["replication_id", "fleet_id", "status"])
             .size()
@@ -224,7 +234,11 @@ def audit_example(root):
         require(
             (exposure_status.sensor_active_time_s > 0).all()
             and (exposure_status.sensor_active_stationary_time_s > 0).all()
-            and (exposure_status.excluded_depot_time_s > 0).all()
+            and (
+                (exposure_status.excluded_depot_time_s > 0).all()
+                if is_lausanne
+                else (exposure_status.excluded_depot_time_s == 0).all()
+            )
             and (
                 (exposure_status.excluded_offduty_time_s > 0).all()
                 if is_lausanne
@@ -260,21 +274,34 @@ def audit_example(root):
             "duration_seconds_by_fleet": sparse.groupby("fleet_id").duration_s.sum().to_dict(),
             "conservation": exposure_status.to_dict("records"),
         }
-    samples = table(analysis.samples, "portfolio_samples")
-    require(
-        len(samples) == analysis.count_portfolios * 100
-        and samples.groupby("portfolio_id").size().eq(100).all(),
-        "all count portfolios by 100 sample utilities retained",
-    )
-    require(
-        set(samples.selected_joint_replication_id) <= set(rep_ids),
-        "joint replication sampling identity",
-    )
+    portfolio_reports = []
+    for item in analyses:
+        samples = table(item.samples, "portfolio_samples")
+        require(
+            len(samples) == item.count_portfolios * 100
+            and samples.groupby("portfolio_id").size().eq(100).all(),
+            "all count portfolios by 100 sample utilities retained",
+        )
+        require(
+            set(samples.selected_joint_replication_id) <= set(rep_ids),
+            "joint replication sampling identity",
+        )
+        portfolio_reports.append(
+            {
+                "analysis_id": item.analysis_id,
+                "risk_metric": item.config.risk_metric,
+                "sampling_rounds": 100,
+                "count_portfolios": item.count_portfolios,
+                "sample_utilities": len(samples),
+                "elapsed_seconds": item.elapsed_seconds,
+                "config": item.config.model_dump(mode="json"),
+            }
+        )
     report = {
-        "audit_version": "city-example-audit@5",
+        "audit_version": "city-example-audit@6",
         "passed": True,
         "run_id": run.run_id,
-        "analysis_id": analysis.analysis_id,
+        "analysis_ids": [item.analysis_id for item in analyses],
         "clock": clock,
         "vehicle_counts": run.vehicle_counts,
         "environment": {
@@ -297,21 +324,15 @@ def audit_example(root):
             },
         },
         "spatial_support": reports["spatial_support"],
-        "service_areas": reports[delivery_id]["service_areas"],
-        "postal_location_condition": reports["postal" if is_lausanne else "delivery_van"][
-            "location_condition"
-        ],
+        "service_areas": reports["postal"]["service_areas"] if is_lausanne else None,
+        "postal_location_condition": (
+            reports["postal"]["location_condition"] if is_lausanne else None
+        ),
         "od_rejections": len(table(run.resolution, "od_rejections")),
         "postal_search_seconds": table(run.resolution, "planning_metrics").to_dict("records"),
         "operations": operations,
         "sensing": sensing,
-        "portfolio": {
-            "sampling_rounds": 100,
-            "count_portfolios": analysis.count_portfolios,
-            "sample_utilities": len(samples),
-            "elapsed_seconds": analysis.elapsed_seconds,
-            "config": analysis.config.model_dump(mode="json"),
-        },
+        "portfolios": portfolio_reports,
         "reference_machine": {
             "system": platform.platform(),
             "machine": platform.machine(),

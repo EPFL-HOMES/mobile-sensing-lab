@@ -415,7 +415,7 @@ def analyze_portfolio_samples(
             "portfolio-samples-reconstruct@2",
         }
         or versions.get("sample_utility")
-        not in {"sample-utility@1", "sample-utility@2", "sample-utility@3"}
+        not in {"sample-utility@1", "sample-utility@2", "sample-utility@3", "sample-utility@4"}
         or any(versions.get(key) != value for key, value in required_versions.items())
     ):
         raise ValueError("M08B requires a compatible complete M08A sample artifact")

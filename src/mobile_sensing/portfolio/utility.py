@@ -2,6 +2,8 @@
 
 import math
 
+EXPONENTIAL_SATURATION_RATE = math.log(100.0)
+
 
 def pointwise_utility(duration_s, kind, saturation_s):
     if (
@@ -12,7 +14,7 @@ def pointwise_utility(duration_s, kind, saturation_s):
     ):
         raise ValueError("Utility needs finite nonnegative exposure and positive saturation")
     if kind in {"exponential", "exponential_saturation"}:
-        return -math.expm1(-duration_s / saturation_s)
+        return -math.expm1(-EXPONENTIAL_SATURATION_RATE * (duration_s / saturation_s))
     if kind == "linear_capped":
         return min(duration_s / saturation_s, 1.0)
     if kind == "binary":

@@ -70,8 +70,8 @@ See [installation troubleshooting](docs/INSTALLATION.md#troubleshooting) if a co
 
 When both matching example archives are installed, the Project page imports two read-only projects on first visit:
 
-- **[Example] Lausanne — Five-Fleet Weekday**: Bus lines 1, 3, and 7, Postal, and Ride-hailing over the Lausanne study region. Postal uses four demand-balanced automatic service areas.
-- **[Example] San Francisco — Delivery Vans and Taxis**: synthetic delivery and taxi fleets over a bounded OSM-derived study area. Delivery vans use four automatic service areas based on a normalized residential/commercial mixture.
+- **[Example] Lausanne — Bus, Postal and Taxi Weekday**: lines 1, 3, and 7 form one Bus fleet; fixed Postal demand and synthetic Taxi demand use explicit population/OSM feature mixtures.
+- **[Example] San Francisco — Taxi Weekday**: one synthetic 100-vehicle taxi fleet over a bounded OSM-derived study area, with residential, commercial, transportation, public-service and leisure demand proxies.
 
 Choose **Duplicate** before editing an example. The application creates its own `project/` workspace; the repository does not distribute a pre-created workspace.
 
@@ -103,7 +103,7 @@ See [Quickstart](docs/QUICKSTART.md) for the detailed workflow, [Lausanne exampl
 
 Select the **Mobile Sensing (Python 3.12)** Jupyter kernel and run cells in order:
 
-- [lausanne_simulation_tutorial.ipynb](notebooks/lausanne_simulation_tutorial.ipynb): the joint five-fleet example, results, and portfolio frontiers.
+- [lausanne_simulation_tutorial.ipynb](notebooks/lausanne_simulation_tutorial.ipynb): the joint Bus/Postal/Taxi example, results, and portfolio frontiers.
 - [ridehailing_simulation_tutorial.ipynb](notebooks/ridehailing_simulation_tutorial.ipynb): a small full-region ride-hailing run and ten-vehicle diagnostics.
 - [postal_simulation_tutorial.ipynb](notebooks/postal_simulation_tutorial.ipynb): a small delivery run with automatic service areas and ten-vehicle diagnostics.
 

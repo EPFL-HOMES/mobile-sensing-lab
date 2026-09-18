@@ -106,7 +106,7 @@ Default weighted exponential saturation:
 \quad w_{g,t}\ge0,\quad\sum_{g,t}w_{g,t}=1,\quad\tau_{g,t}>0.
 \]
 
-Exposure and saturation scale are seconds; utility is dimensionless in [0,1]. v1 supports a scalar `saturation_s`; any future array parameter requires explicit axis alignment. Use stable `-expm1(-S/tau)` arithmetic. Validate finite positive saturation and nonnegative exposure. Large arguments should saturate safely; never clip materially invalid data into a valid range.
+For new `sample-utility@4` artifacts, configured `saturation_s` is the 99% duration D, with tau = D / ln(100) in the framework formula above. Local utility is `-expm1(-ln(100) * S / D)`, equals 0.99 at D, and approaches 1 asymptotically. Exposure and D are seconds; utility is dimensionless in [0,1]. Historical sample-utility versions 1–3 interpret `saturation_s` as tau and retain their original results. The algorithm-version change invalidates new-evaluation caches without rewriting historical artifacts. Capped-linear and binary utilities are unchanged. Validate finite positive saturation and nonnegative exposure. Large arguments should saturate safely; never clip materially invalid data into a valid range.
 
 Weight sources: uniform, population × temporal weights, or uploaded cell-bin weights. Default temporal raw weights are bin durations. Normalize once on the declared evaluation domain. All-zero raw weights fail validation. Missing weights require an explicit policy; cells never reached by roads remain in the domain unless the user supplies an evaluation mask. Do not renormalize only onto cells reached by the current portfolio.
 

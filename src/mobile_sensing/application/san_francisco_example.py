@@ -1,4 +1,4 @@
-"""OSM-only geography and explicitly synthetic San Francisco operator subfleets."""
+"""OSM-only geography and an explicitly synthetic San Francisco taxi fleet."""
 
 from pathlib import Path
 import json
@@ -14,7 +14,6 @@ from mobile_sensing.application.project_models import (
     FleetEditor,
     DemandEditor,
     SupplyEditor,
-    DispatchEditor,
     SimulationEditor,
     TemporalInterval,
     ShiftGroup,
@@ -23,11 +22,11 @@ from mobile_sensing.application.project_models import (
 from mobile_sensing.application.studio_models import EnvironmentEditor, FeatureSelection
 from mobile_sensing.application.services import HeadlessApplication
 from mobile_sensing.application.run_pipeline import run_project, run_analysis
-from mobile_sensing.application.run_models import RunOptions
+from mobile_sensing.application.run_models import RunOptions, RunView
 from mobile_sensing.datasets.inputs import InputRegistration, snapshot_input
 from mobile_sensing.environment.acquisition import acquire_osm
 
-EXAMPLE_NAME = "[Example] San Francisco — Delivery Vans and Taxis"
+EXAMPLE_NAME = "[Example] San Francisco — Taxi Weekday"
 
 
 def simplify_osm_roads(edges, grid):
@@ -192,6 +191,7 @@ def prepare_san_francisco(root, *, cancellation, progress):
         speed_source="constant",
         speed_kph=20,
         features=tuple(features),
+        osm_features=("transportation", "public_services", "leisure"),
     )
     prepared = build_environment(
         root,
@@ -228,59 +228,20 @@ def prepare_san_francisco(root, *, cancellation, progress):
             "assumptions": (
                 *prepared.assumptions,
                 "OSM urban study window excludes offshore islands; SFO airport is outside this study region.",
-                "OSM residential/commercial features are spatial activity proxies, not measured population or orders.",
-                "Synthetic operator subfleets, depot, demand profiles and service times; no claim of citywide market calibration.",
+                "OSM residential, commercial, transportation, public-service and leisure features are spatial activity proxies, not measured population or requests.",
+                "Synthetic taxi fleet, demand profile and service times; no claim of citywide market calibration.",
                 "Uniform 20 km/h is an uncalibrated urban operating-speed assumption, not measured traffic.",
             ),
         }
     )
     fleets = (
         FleetEditor(
-            fleet_id="delivery_van",
-            name="Delivery vans · synthetic operator",
-            demand=DemandEditor(
-                task_volume=1600,
-                volume_mode="expected",
-                start_time="08:00",
-                end_time="18:00",
-                release_mode="at_start",
-                spatial_feature="residential_area",
-                spatial_weights=(
-                    SpatialFeatureWeight(feature="residential_area", weight=0.6),
-                    SpatialFeatureWeight(feature="commercial_locations", weight=0.4),
-                ),
-                location_condition="depot_roundtrip",
-                service_seconds=120,
-                quantity=1,
-            ),
-            supply=SupplyEditor(
-                fleet_size=20,
-                operating_start="08:00",
-                operating_end="18:00",
-                activation="uniform_bounded",
-                latest_start="09:00",
-                work_hours=8,
-                initial_location="depot",
-                synthetic_depot=True,
-                spatial_feature="commercial_locations",
-                post_service="return_after_plan",
-                capacity_mode="consumable",
-                capacity=100,
-                depot_min_stay_minutes=15,
-                service_area_mode="auto",
-                auto_service_area_count=4,
-            ),
-            dispatch=DispatchEditor(
-                mode="one_shot", max_cost_pairs=5_000_000, planning_timeout_seconds=600
-            ),
-        ),
-        FleetEditor(
             fleet_id="taxi",
-            name="Taxis · synthetic operator",
+            name="Taxi",
             demand=DemandEditor(
                 task_type="od",
                 volume_mode="expected",
-                task_volume=900,
+                task_volume=2000,
                 generation_timing="online",
                 start_time="00:00",
                 end_time="24:00",
@@ -299,19 +260,25 @@ def prepare_san_francisco(root, *, cancellation, progress):
                 ),
                 spatial_feature="residential_area",
                 spatial_weights=(
-                    SpatialFeatureWeight(feature="residential_area", weight=0.6),
-                    SpatialFeatureWeight(feature="commercial_locations", weight=0.4),
+                    SpatialFeatureWeight(feature="residential_area", weight=0.35),
+                    SpatialFeatureWeight(feature="commercial_locations", weight=0.25),
+                    SpatialFeatureWeight(feature="transportation", weight=0.20),
+                    SpatialFeatureWeight(feature="public_services", weight=0.10),
+                    SpatialFeatureWeight(feature="leisure", weight=0.10),
                 ),
                 destination_spatial_weights=(
-                    SpatialFeatureWeight(feature="residential_area", weight=0.6),
-                    SpatialFeatureWeight(feature="commercial_locations", weight=0.4),
+                    SpatialFeatureWeight(feature="residential_area", weight=0.30),
+                    SpatialFeatureWeight(feature="commercial_locations", weight=0.30),
+                    SpatialFeatureWeight(feature="transportation", weight=0.20),
+                    SpatialFeatureWeight(feature="public_services", weight=0.10),
+                    SpatialFeatureWeight(feature="leisure", weight=0.10),
                 ),
                 destination_feature="residential_area",
                 pickup_seconds=60,
                 service_seconds=30,
             ),
             supply=SupplyEditor(
-                fleet_size=60,
+                fleet_size=100,
                 operating_start="00:00",
                 operating_end="24:00",
                 activation="uniform_bounded",
@@ -322,15 +289,16 @@ def prepare_san_francisco(root, *, cancellation, progress):
                     SpatialFeatureWeight(feature="residential_area", weight=0.6),
                     SpatialFeatureWeight(feature="commercial_locations", weight=0.4),
                 ),
+                post_service="random_cruise",
                 capacity_mode="occupancy",
                 capacity=1,
                 shift_groups=tuple(
                     ShiftGroup(name=n, count=c, start_time=a, latest_start=b)
                     for n, c, a, b in [
-                        ("Night", 6, "00:00", "00:00"),
-                        ("Morning", 18, "05:00", "06:00"),
-                        ("Daytime", 18, "09:00", "11:00"),
-                        ("Afternoon", 18, "15:00", "16:00"),
+                        ("Night", 10, "00:00", "00:00"),
+                        ("Morning", 30, "05:00", "06:00"),
+                        ("Daytime", 30, "09:00", "11:00"),
+                        ("Afternoon", 30, "15:00", "16:00"),
                     ]
                 ),
             ),
@@ -361,7 +329,7 @@ def prepare_san_francisco(root, *, cancellation, progress):
                     "https://www.sfmta.com/notices/taxi-upfront-fare-pilot-2024-q2-report",
                     "https://www.sfcta.org/blogs/transportation-board-approves-eco-friendly-downtown-delivery-study-final-report",
                 ],
-                "scope": "Synthetic suboperators: 20 delivery vans / expected 1600 daily consignments; 60 taxis / expected 900 intra-region requests. Counts and profiles are workload assumptions, not observed SFMTA totals. No airport trips. One eight-hour shift per vehicle; no previous-day carry-in.",
+                "scope": "Synthetic taxi operator: 100 taxis / expected 2000 intra-region requests. Counts, feature mixtures and profiles are workload assumptions, not observed SFMTA totals. No airport trips. One eight-hour shift per vehicle; no previous-day carry-in.",
             },
             indent=2,
         )
@@ -382,17 +350,40 @@ def compute_san_francisco(root, config, *, cancellation, progress):
         progress=progress,
     )
     (root / "example-run.json").write_text(run.model_dump_json(indent=2))
+    analysis, _ = analyze_san_francisco(root, run, cancellation=cancellation, progress=progress)
+    return run, analysis
+
+
+def analyze_san_francisco(root, run, *, cancellation, progress):
+    """Retain both objectives using the same physical run and allocation sample."""
+    root = Path(root)
+    options = RunOptions(workers=4, memory_limit_bytes=8 * 1024**3, job_timeout_s=14400)
     analysis = run_analysis(
         root,
-        demonstration_portfolio(run),
-        name="Uniform utility · 5-minute saturation",
+        demonstration_portfolio(
+            run,
+            risk_metric="p05",
+            budgets=tuple(float(value) for value in range(10, 101, 10)),
+            saturation_minutes=5.0,
+        ),
+        name="Worst-case utility · 5-minute saturation",
         source_revision_id=None,
         options=options,
         cancellation=cancellation,
         progress=progress,
     )
     (root / "example-analysis.json").write_text(analysis.model_dump_json(indent=2))
-    return run, analysis
+    standard_deviation = run_analysis(
+        root,
+        analysis.config.model_copy(update={"risk_metric": "std"}),
+        name="Standard-deviation utility · 5-minute saturation",
+        source_revision_id=None,
+        options=options,
+        cancellation=cancellation,
+        progress=progress,
+    )
+    (root / "example-analysis-std.json").write_text(standard_deviation.model_dump_json(indent=2))
+    return analysis, standard_deviation
 
 
 def main():
@@ -402,9 +393,13 @@ def main():
 
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, required=True)
-    parser.add_argument("--stage", choices=("prepare", "compute"), default="prepare")
+    parser.add_argument("--stage", choices=("prepare", "compute", "analyze"), default="prepare")
     args = parser.parse_args()
     cancellation, progress = BuildCancellation(args.root), BuildProgress(args.root)
+    if args.stage == "analyze":
+        run = RunView.model_validate_json((args.root / "example-run.json").read_bytes())
+        analyze_san_francisco(args.root, run, cancellation=cancellation, progress=progress)
+        return
     config = prepare_san_francisco(args.root, cancellation=cancellation, progress=progress)
     if args.stage == "compute":
         compute_san_francisco(args.root, config, cancellation=cancellation, progress=progress)
