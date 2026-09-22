@@ -674,9 +674,20 @@ class SimulationArtifactReader:
             values[location.location_id] = location
         return values
 
-    def read_activities(self):
+    def read_activities(self, replication_ids: Sequence[str] | None = None):
+        requested = (
+            self.replication_ids if replication_ids is None else tuple(sorted(replication_ids))
+        )
+        if not requested or not set(requested) <= set(self.replication_ids):
+            raise ValueError("activity replication filter is empty or outside the complete set")
+        table = self._tables["activity_intervals"]
+        axis_values = tuple(table.partition_axes[0].values)
+        indices = [axis_values.index(replication_id) for replication_id in requested]
         return read_partitioned_table(
-            self.artifact, table_name="activity_intervals", schema=ACTIVITY_SCHEMA
+            self.artifact,
+            table_name="activity_intervals",
+            schema=ACTIVITY_SCHEMA,
+            partition_indices=indices,
         ).to_pandas()
 
     def read_movements(self, replication_ids: Sequence[str] | None = None):

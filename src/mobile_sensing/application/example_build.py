@@ -37,7 +37,13 @@ from mobile_sensing.contracts import canonical_json_text, ArtifactRef
 
 
 EXAMPLE_NAME = "[Example] Lausanne — Bus, Postal and Taxi Weekday"
-ROUTE_IDS = ("92-1-V-j26-1", "92-3-S-j26-1", "92-7-P-j26-1")
+ROUTE_IDS = (
+    "92-1-V-j26-1",
+    "92-9-P-j26-1",
+    "92-21-I-j26-1",
+    "92-33-G-j26-1",
+    "92-54-B-j26-1",
+)
 STATION_LONGITUDE = 6.6290923032
 STATION_LATITUDE = 46.5167918355
 STATION_SOURCE = "https://data.sbb.ch/explore/dataset/linie/api/"
@@ -167,7 +173,7 @@ def prepare_example(root, data, *, cancellation, progress):
         "population",
         "EPSG:2056",
     )
-    gtfs_id = register(archive, "Lausanne GTFS · lines 1, 3, 7, 9, 13", "gtfs")
+    gtfs_id = register(archive, "Lausanne GTFS · lines 1, 9, 21, 33, 54", "gtfs")
     editor = EnvironmentEditor(
         boundary_input=boundary_id,
         network_input=network_id,
@@ -195,14 +201,14 @@ def prepare_example(root, data, *, cancellation, progress):
         environment=editor,
         prepared_environment=prepared,
         fleets=fleets,
-        simulation=SimulationEditor(replications=10, temporal_resolution_minutes=60.0),
+        simulation=SimulationEditor(replications=50, temporal_resolution_minutes=60.0),
     )
     _write_json(config_path, config)
     _write_json(
         root / "input-provenance.json",
         {
             "sources": sources,
-            "derived_rule": "Union all 28 polygons; retain full grid; exact 2024 population lattice join with missing cells zero; filter three full GTFS route IDs across the complete calendar without dropping stop rows",
+            "derived_rule": "Union all 28 polygons; retain full grid; exact 2024 population lattice join with missing cells zero; filter five full GTFS route IDs across the complete calendar without dropping stop rows",
             "boundary_features": len(boundary),
             "grid_cells": len(grid),
             "population_source_rows": len(population),
@@ -222,7 +228,7 @@ def demonstration_fleets(gtfs_id):
     return (
         FleetEditor(
             fleet_id="bus",
-            name="Bus · lines 1, 3 and 7",
+            name="Bus · lines 1, 9, 21, 33 and 54",
             demand=DemandEditor(
                 source="import",
                 task_type="ordered",
@@ -345,7 +351,7 @@ def demonstration_fleets(gtfs_id):
 
 def compute_example(root, config, *, cancellation, progress):
     root = Path(root)
-    options = RunOptions(memory_limit_bytes=8 * 1024**3, job_timeout_s=14400)
+    options = RunOptions(workers=4, memory_limit_bytes=8 * 1024**3, job_timeout_s=43200)
     resolution = root / "example-resolution.json"
     run = run_project(
         root,
@@ -371,32 +377,23 @@ def compute_example(root, config, *, cancellation, progress):
         cancellation=cancellation,
         progress=progress,
     )
-    standard_deviation = run_analysis(
-        root,
-        demonstration_portfolio(run, risk_metric="std", spatial_weight="population"),
-        name="Standard-deviation utility · 5-minute saturation",
-        source_revision_id=None,
-        options=options,
-        cancellation=cancellation,
-        progress=progress,
-    )
     _write_json(Path(root) / "example-analysis.json", worst_case)
-    _write_json(Path(root) / "example-analysis-std.json", standard_deviation)
-    return run, worst_case, standard_deviation
+    return run, worst_case
 
 
 def demonstration_portfolio(
     run,
     *,
     risk_metric="p05",
-    budgets=(0.0, 20.0, 40.0, 60.0, 80.0, 100.0),
+    budgets=tuple(float(value) for value in range(0, 51, 5)),
     saturation_minutes=5.0,
     spatial_weight="uniform",
+    sampling_runs=200,
 ):
     return PortfolioEditor(
         source_run_id=run.run_id,
         spatial_weight=spatial_weight,
-        sampling_runs=100,
+        sampling_runs=sampling_runs,
         cost_unit="sensor",
         budgets=budgets,
         saturation_minutes=saturation_minutes,
@@ -405,8 +402,16 @@ def demonstration_portfolio(
         fleets=tuple(
             PortfolioFleetEditor(
                 fleet_id=fleet,
-                counts=tuple(sorted(set(range(0, count + 1, 5)) | {count})),
-                count_range=NumericRange(minimum=0, maximum=count, step=5),
+                counts=(
+                    tuple(range(0, count - count % 5 + 1, 5))
+                    if count >= 5
+                    else tuple(sorted({0, count}))
+                ),
+                count_range=NumericRange(
+                    minimum=0,
+                    maximum=count - count % 5 if count >= 5 else count,
+                    step=5,
+                ),
             )
             for fleet, count in sorted(run.vehicle_counts.items())
         ),
@@ -459,10 +464,26 @@ def main():
     parser.add_argument("--root", type=Path, required=True)
     parser.add_argument("--data", type=Path, required=True)
     parser.add_argument("--stage", choices=("prepare", "compute"), default="prepare")
+    parser.add_argument(
+        "--preserve-bundled-features",
+        action="store_true",
+        help="Reuse the installed Lausanne bundle's prepared feature artifact.",
+    )
     args = parser.parse_args()
     args.root.mkdir(parents=True, exist_ok=True)
     cancellation, progress = BuildCancellation(args.root), BuildProgress(args.root)
     config = prepare_example(args.root, args.data, cancellation=cancellation, progress=progress)
+    if args.preserve_bundled_features:
+        from mobile_sensing.application.example_bundle import bundle_manifest
+
+        preserved = bundle_manifest(example_key="lausanne").config.prepared_environment
+        if preserved is None or config.prepared_environment is None:
+            raise ValueError("Both source and prepared Lausanne configurations are required")
+        if preserved.artifact != config.prepared_environment.artifact:
+            raise ValueError("Bundled and rebuilt Lausanne routing environments differ")
+        if not (args.root / "datasets" / preserved.features.artifact_id).is_dir():
+            raise ValueError("Install the bundled Lausanne feature artifact before preserving it")
+        config = config.model_copy(update={"prepared_environment": preserved})
     if args.stage == "compute":
         compute_example(args.root, config, cancellation=cancellation, progress=progress)
 

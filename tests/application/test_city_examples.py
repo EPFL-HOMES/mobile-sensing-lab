@@ -7,8 +7,8 @@ from pathlib import Path
 from fastapi.testclient import TestClient
 
 from mobile_sensing.api.workspace import create_workspace_app
-from mobile_sensing.application.example_build import demonstration_fleets
-from mobile_sensing.application.example_bundle import ExampleBundle, install_example
+from mobile_sensing.application.example_build import ROUTE_IDS, demonstration_fleets
+from mobile_sensing.application.example_bundle import ExampleBundle, bundle_manifest, install_example
 from mobile_sensing.application.project_models import ProjectConfig
 from mobile_sensing.application.example_build import BuildCancellation, BuildProgress
 
@@ -66,6 +66,26 @@ def test_two_city_references_use_independent_owned_stores(tmp_path, monkeypatch)
         assert copied.json()["project_id"] not in value["example_project_ids"]
 
 
+def test_published_city_manifests_are_the_two_current_examples():
+    folder = Path("src/mobile_sensing/_examples")
+    assert {path.name for path in folder.glob("*.json")} == {
+        "lausanne.json",
+        "san-francisco.json",
+    }
+    lausanne = bundle_manifest(folder, example_key="lausanne")
+    assert lausanne.example_key == "lausanne"
+    assert lausanne.config.fleets[0].demand.route_ids == ROUTE_IDS
+    assert lausanne.config.simulation.replications == 50
+    assert lausanne.config.portfolio.sampling_runs == 200
+    assert lausanne.config.portfolio.risk_metric == "p05"
+    assert lausanne.config.portfolio.budgets == tuple(float(value) for value in range(0, 51, 5))
+    assert len(lausanne.config.linked_run_ids) == 1
+    assert len(lausanne.config.linked_analysis_ids) == 1
+    san_francisco = bundle_manifest(folder, example_key="san-francisco")
+    assert san_francisco.example_key == "san-francisco"
+    assert {fleet.fleet_id for fleet in san_francisco.config.fleets} == {"taxi"}
+
+
 def test_tutorial_defaults_match_five_fleet_example():
     from types import SimpleNamespace
     from mobile_sensing.application import project_models as models
@@ -90,11 +110,14 @@ def test_tutorial_defaults_match_five_fleet_example():
     for index in (3, 5, 7):
         exec("".join(cells[index]["source"]), scope)
     assert scope["configuration"].fleets == fleets
+    assert scope["simulation"].replications == 50
     assert [fleet.fleet_id for fleet in fleets] == ["bus", "postal", "taxi"]
     assert fleets[0].demand.route_ids == (
         "92-1-V-j26-1",
-        "92-3-S-j26-1",
-        "92-7-P-j26-1",
+        "92-9-P-j26-1",
+        "92-21-I-j26-1",
+        "92-33-G-j26-1",
+        "92-54-B-j26-1",
     )
     assert all(not c.get("outputs") for c in cells)
 
@@ -149,7 +172,10 @@ def test_packaging_preserves_requested_city_name(tmp_path):
     )
     run = run_project(root, config, name="Analytic city fixture", **kwargs)
     analysis = run_analysis(
-        root, demonstration_portfolio(run), name="Analytic portfolio fixture", **kwargs
+        root,
+        demonstration_portfolio(run, sampling_runs=100),
+        name="Analytic portfolio fixture",
+        **kwargs,
     )
     (root / "example-run.json").write_text(run.model_dump_json())
     (root / "example-analysis.json").write_text(analysis.model_dump_json())

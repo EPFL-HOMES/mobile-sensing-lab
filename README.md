@@ -55,7 +55,7 @@ If you downloaded or cloned the **source repository**, you can launch it from Fi
 3. Keep its Terminal window open. The first launch creates `.app-venv`, installs Python dependencies and builds the browser interface, then starts the App. This first setup needs internet access and can take several minutes.
 4. For later sessions, double-click the same file again. Stop the App with **Ctrl+C** in its Terminal window.
 
-This launcher belongs to the source repository; the installed-wheel route above does not need it. To see both city examples from a source checkout, install the four matching [example assets](#example-projects). If an extracted ZIP has lost executable permission, open Terminal in the project folder and run `chmod +x "Start Mobile Sensing.command"` before double-clicking again.
+This launcher belongs to the source repository; the installed-wheel route above does not need it. To see both city examples from a source checkout, install the matching [example assets](#example-projects). If an extracted ZIP has lost executable permission, open Terminal in the project folder and run `chmod +x "Start Mobile Sensing.command"` before double-clicking again.
 
 ### Windows and Linux
 
@@ -70,12 +70,18 @@ See [installation troubleshooting](docs/INSTALLATION.md#troubleshooting) if a co
 
 When both matching example archives are installed, the Project page imports two read-only projects on first visit:
 
-- **[Example] Lausanne — Bus, Postal and Taxi Weekday**: lines 1, 3, and 7 form one Bus fleet; fixed Postal demand and synthetic Taxi demand use explicit population/OSM feature mixtures.
+- **[Example] Lausanne — Bus, Postal and Taxi Weekday**: lines 1, 9, 21, 33 and 54 form one Bus fleet; 50 joint operational replications and 200 sensor-allocation rounds are retained alongside Postal and Taxi results.
 - **[Example] San Francisco — Taxi Weekday**: one synthetic 100-vehicle taxi fleet over a bounded OSM-derived study area, with residential, commercial, transportation, public-service and leisure demand proxies.
 
 Choose **Duplicate** before editing an example. The application creates its own `project/` workspace; the repository does not distribute a pre-created workspace.
 
-A Git checkout or GitHub-generated source archive contains the small manifests but excludes the large ZIP files. Download these matching pairs from the [same GitHub Release](https://github.com/EPFL-HOMES/mobile-sensing-lab/releases/tag/v0.1.0) and place them together in `src/mobile_sensing/_examples/`, or set `MOBILE_SENSING_EXAMPLE_DIRECTORY` to their directory. The release wheel and packaged source distribution already include them:
+A Git checkout or GitHub-generated source archive contains both current JSON manifests but excludes the large ZIP files. From the repository root, install the matching, checksum-verified archives from the [example-data release](https://github.com/EPFL-HOMES/mobile-sensing-lab/releases/tag/examples-2026-09-22):
+
+```bash
+python3 scripts/install_example_assets.py
+```
+
+The Lausanne archive is 2.67 GB and downloads in two release-asset parts; San Francisco is 174 MB. The script reconstructs the original Lausanne ZIP without adding the results to Git. Existing matching archives are reused; use `--replace` to back up and replace an older ZIP. Only these two example projects are installed:
 
 ```text
 lausanne.json
@@ -84,7 +90,7 @@ san-francisco.json
 san-francisco.zip
 ```
 
-Without the archives, the application remains usable with your own data and reports that the offline examples are unavailable.
+The earlier v0.1.0 release wheel and example assets contain the former Lausanne configuration and are not interchangeable with the current source manifest. Without matching archives, the application remains usable with your own data and reports that the offline examples are unavailable.
 
 ## First workflow
 

@@ -4,6 +4,18 @@ The current release implements the complete local workflow from data registratio
 
 ## Release maintenance
 
+Completed: place the budget-series chart below the utility frontier in a common-width column opposite Selected portfolio; retain hover-only composition and empirically derived percentile whiskers. Regenerate the Lausanne report's spatial-feature, full-budget frontier/sensitivity, and five-budget duration PNGs from retained artifacts without rerunning mobility.
+
+Completed: add backend-owned fleet-subset frontier projections and utility/coverage budget-series presentation without mutating retained portfolio artifacts.
+
+Completed: regenerated and audited the Lausanne example with five selected bus lines, `R=50`, four workers, `J=200`, five-sensor count/budget steps through 50 and P05-only risk analysis. Exposure allocation now reads one complete replication at a time and preserves the original canonical sparse-exposure hash, bounding the 50-replication build's peak working set.
+
+Completed: keep large research and report artifacts outside Git; publish the current two city examples through checksum-verified optional release assets, with the Lausanne ZIP split into sub-2-GiB parts and reassembled by the source installer.
+
+Completed: suppress zero-budget categories consistently in portfolio result presentation while retaining complete analysis data and exports.
+
+Completed: connect frontier markers only within their displayed budget category, sharing color and legend visibility; leave singleton categories unconnected.
+
 Maintain the versioned 99%-duration convention across the utility curve, both evaluators, caches, and city-example regeneration; keep historical results readable without relabeling their utility semantics.
 
 Completed: expose per-round mean any-visit grid coverage in Selected portfolio using the existing backend statistic and zero-inclusive exposure domain.

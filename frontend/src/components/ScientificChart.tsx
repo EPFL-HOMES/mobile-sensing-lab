@@ -8,10 +8,14 @@ export interface ScientificTrace {
   mode?: "lines" | "markers" | "lines+markers";
   type?: "scatter" | "bar";
   text?: string[];
+  textposition?: "none";
   customdata?: unknown[];
   hovertemplate?: string;
   marker?: Record<string, unknown>;
   line?: Record<string, unknown>;
+  error_y?: Record<string, unknown>;
+  showlegend?: boolean;
+  legendgroup?: string;
 }
 
 export function ScientificChart({
@@ -56,7 +60,7 @@ export function ScientificChart({
             xaxis: { title: { text: xTitle }, automargin: true, nticks: 5, tickformat: precision == null ? undefined : `.${precision}f`, gridcolor: "#e8eef3", zeroline: false },
             yaxis: { title: { text: yTitle }, automargin: true, tickformat: precision == null ? undefined : `.${precision}f`, gridcolor: "#e8eef3", zeroline: false },
             showlegend: traces.length > 1,
-            legend: horizontalLegend ? { orientation: "h", x: 0, y: 1.18, font: { size: 11 } } : undefined,
+            legend: horizontalLegend ? { orientation: "h", x: 0, y: 1.18, font: { size: 11 }, groupclick: "togglegroup" } : { groupclick: "togglegroup" },
             hovermode: "closest",
           },
           { responsive: true, displaylogo: false, modeBarButtonsToRemove: ["lasso2d", "select2d"] },

@@ -44,7 +44,9 @@ a { color: #0d5f9e; }
 .form-actions > .MuiButton-root { flex-shrink: 0; }
 .file-source-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: start; gap: 16px; }
 .result-context { padding: 18px 24px; }
-.portfolio-overview { display: grid; grid-template-columns: minmax(0, 1fr) minmax(340px, .64fr); gap: 20px; align-items: start; }
+.portfolio-overview { display: grid; grid-template-columns: minmax(0, 1fr) minmax(340px, .64fr); gap: 20px; align-items: stretch; }
+.portfolio-overview-charts { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+.portfolio-overview-charts > .analysis-panel { width: 100%; }
 .portfolio-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .portfolio-metrics > div { padding: 12px 14px; background: #f1f6f9; border: 1px solid #dce7ed; border-radius: 8px; }
 .numeric, .metric-value { font-variant-numeric: tabular-nums; font-feature-settings: "tnum"; }

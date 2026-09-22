@@ -48,7 +48,11 @@ from mobile_sensing.simulation import (
     VehicleOutcome,
     publish_simulation_results,
 )
-from mobile_sensing.simulation.storage import ACTIVITY_SCHEMA, MOVEMENT_SCHEMA
+from mobile_sensing.simulation.storage import (
+    ACTIVITY_SCHEMA,
+    MOVEMENT_SCHEMA,
+    SimulationArtifactReader,
+)
 
 
 FIXTURE = Path(__file__).resolve().parents[1] / "fixtures" / "exposure" / "canonical_exposure.json"
@@ -660,6 +664,27 @@ def test_reallocation_is_immutable_cacheable_and_missing_is_not_empty(tmp_path: 
         config=config,
     )
     assert repeated == exposure
+    simulation_reader = SimulationArtifactReader(tmp_path, simulation)
+    assert set(simulation_reader.read_activities(("r1",)).replication_id) == {"r1"}
+    assert set(simulation_reader.read_activities(("r2",)).replication_id) == {"r2"}
+    axes = ExposureArtifactReader(tmp_path).axes(exposure)
+    grid_axis = GridAxis(
+        grid_axis_id="grid",
+        cell_ids=axes["cell_ids"],
+        working_crs=CRS,
+    )
+    time_axis, _ = build_time_axis(config.bin_edges_s)
+    expected_rows = allocate_movement_exposure(
+        simulation_reader.read_movements(),
+        build_edge_grid_pieces(road, grid),
+        grid_axis=grid_axis,
+        time_axis=time_axis,
+        active_movement_kinds=config.active_movement_kinds,
+        fleet_movement_kinds=config.fleet_movement_kinds,
+    ).rows
+    assert axes["artifact"].manifest.scientific_identity.resolved_config[
+        "sparse_exposure_hash"
+    ] == scientific_hash([row.model_dump(mode="json") for row in expected_rows])
     reallocated = publish_exposure_artifact(
         artifact_root=tmp_path,
         simulation=simulation,

@@ -263,9 +263,11 @@ def write_bundle(root, destination, *, example_key="lausanne", name=EXAMPLE_NAME
     read_named_record(root, run.run_id, "studio_run")
     for item in analyses:
         read_named_record(root, item.analysis_id, "studio_analysis")
+    expected_replications = 50 if example_key == "lausanne" else 10
+    expected_sampling_runs = 200 if example_key == "lausanne" else 100
     if (
-        run.replications != 10
-        or any(item.sampling_runs != 100 for item in analyses)
+        run.replications != expected_replications
+        or any(item.sampling_runs != expected_sampling_runs for item in analyses)
         or any(item.count_portfolios != feasible_portfolio_count(item.config) for item in analyses)
     ):
         raise ValueError("Example bundle has not completed the required R/J/count design")
@@ -420,7 +422,7 @@ def write_bundle(root, destination, *, example_key="lausanne", name=EXAMPLE_NAME
         files=files,
         saved_views=views,
         description=description
-        or f"Full Lausanne region · 14 January 2026 · 00:00–24:00 · {config.simulation.temporal_resolution_minutes:g}-minute reporting · {(config.portfolio.utility_temporal_resolution_minutes or config.simulation.temporal_resolution_minutes):g}-minute utility interval · Bus, Postal and Taxi · 10 joint replications · 100 fleet sampling runs. Demand, duties, depot, speeds and costs carry explicit demonstration assumptions.",
+        or f"Full Lausanne region · 14 January 2026 · 00:00–24:00 · {config.simulation.temporal_resolution_minutes:g}-minute reporting · {(config.portfolio.utility_temporal_resolution_minutes or config.simulation.temporal_resolution_minutes):g}-minute utility interval · Bus, Postal and Taxi · {run.replications} joint replications · {analysis.sampling_runs} fleet sampling runs. Demand, duties, depot, speeds and costs carry explicit demonstration assumptions.",
     )
     destination.mkdir(parents=True, exist_ok=True)
     with zipfile.ZipFile(

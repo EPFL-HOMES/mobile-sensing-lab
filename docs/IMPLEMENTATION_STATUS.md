@@ -2,6 +2,16 @@
 
 ## Current candidate
 
+The portfolio overview now stacks the frontier and budget-series bars in one equal-width left column beside a full-height Selected portfolio inspector. Bar composition is hover-only; paired median and empirical percentile whiskers use a distinct accent color. The Lausanne report section and figures are regenerated directly from the retained 50-replication/200-round artifacts, with all configured budget frontiers and five representative duration maps. Frontend validation: 47 tests and production build passed; a Chrome capture documents the updated layout.
+
+Portfolio results now support conditional single-fleet, partial-fleet and all-fleet comparisons. The API recomputes Pareto membership after constraining excluded fleet counts to zero. The result page adds a maximum-mean portfolio series by sensor count with selectable utility or spatial coverage and empirical median/P05/P95 uncertainty.
+
+The Lausanne research example was recomputed and audited for bus lines 1, 9, 21, 33 and 54, 50 joint replications with four workers, and one P05 portfolio analysis with 200 allocation rounds and 230 feasible count portfolios. Budgets and fleet counts use five-sensor increments through 50; population weighting, full-day utility, five-minute saturation and unit sensor costs are retained. The complete simulation and analysis artifacts are retained locally under `report/results/lausanne_workspace/` and excluded from Git; the optional example-data release provides the checksummed 531-file archive in two parts because the complete ZIP exceeds GitHub's single-asset limit. A 50-replication exposure-memory failure led to per-replication movement/activity loading and a streaming canonical sparse-exposure hash; the original hash semantics and immutable artifact contracts were preserved. The full Python suite passed 292 tests with one skip; all 47 frontend tests, TypeScript checking and production build passed.
+
+All portfolio result views hide the zero-budget category and its portfolios, including nested appearances under positive budgets. Scientific artifacts and exports remain unchanged.
+
+Portfolio result charts connect nondominated markers within their lowest-feasible-budget color category. Lines and markers share color and legend visibility. Singleton categories remain unconnected, and no cross-budget guide is drawn. Existing scientific frontier membership is unchanged.
+
 Exponential utility now uses the 99%-attainment duration (`sample-utility@4`), with synchronized scalar/indexed evaluation and cache invalidation. Both city examples are reanalyzed at five minutes: population weights for Lausanne and uniform weights for San Francisco. Historical utility artifacts retain their original version and values.
 
 Selected portfolio now displays the backend-computed mean spatial grid coverage over allocation rounds for the selected reporting window. Frontend regression coverage distinguishes this mean from the union of positive mean-duration cells. All 42 frontend tests, TypeScript compilation and the production build pass.

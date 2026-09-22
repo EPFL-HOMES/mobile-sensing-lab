@@ -127,9 +127,12 @@ class PortfolioFrontierPoint(ApiModel):
 class PortfolioFrontierView(ApiModel):
     max_mean_utility: float | None = None
     max_p05_utility: float | None = None
+    best_mean_portfolio_id: str | None = None
     frontier_portfolio_count: int = 0
     analysis_id: str
     risk_metric: Literal["std", "p05"] = "std"
+    available_fleet_ids: list[str]
+    selected_fleet_ids: list[str]
     budget: PortfolioBudgetView
     replications_R: int
     sampling_rounds_J: int
@@ -137,6 +140,26 @@ class PortfolioFrontierView(ApiModel):
     inference_scope: str
     points: list[PortfolioFrontierPoint]
     returned_count: int
+    is_complete: Literal[True]
+
+
+class PortfolioBudgetSeriesRow(ApiModel):
+    budget: PortfolioBudgetView
+    portfolio: PortfolioFrontierPoint
+    coverage_mean_fraction: float
+    coverage_p05_fraction: float
+    coverage_p50_fraction: float
+    coverage_p95_fraction: float
+
+
+class PortfolioBudgetSeriesView(ApiModel):
+    analysis_id: str
+    available_fleet_ids: list[str]
+    selected_fleet_ids: list[str]
+    replications_R: int
+    sampling_rounds_J: int
+    coverage_semantics: str
+    rows: list[PortfolioBudgetSeriesRow]
     is_complete: Literal[True]
 
 

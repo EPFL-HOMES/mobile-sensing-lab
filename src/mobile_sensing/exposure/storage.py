@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import math
 from collections import defaultdict
 from collections.abc import Iterator, Sequence
@@ -22,6 +23,7 @@ from mobile_sensing.artifacts import (
 from mobile_sensing.contracts import (
     ArtifactDependency,
     ArtifactRef,
+    CANONICAL_JSON_VERSION,
     ExposureConfig,
     ExposureReadMetadata,
     GridAxis,
@@ -35,6 +37,7 @@ from mobile_sensing.contracts import (
     TimeAxis,
     TimeBin,
     VehicleKey,
+    canonical_json_bytes,
     scientific_hash,
     scientific_projection,
     stable_id,
@@ -228,9 +231,17 @@ def publish_exposure_artifact(
         or simulation_environment.content_hash != environment.content_hash
     ):
         raise ValueError("exposure environment must equal the simulation environment dependency")
-    movements = simulation_reader.read_movements()
+    replication_ids = simulation_reader.replication_ids
     time_axis, time_axis_hash = build_time_axis(config.bin_edges_s)
-    used_edge_ids = tuple(sorted({str(value) for value in movements["edge_id"]}))
+    used_edge_ids = tuple(
+        sorted(
+            {
+                str(value)
+                for replication_id in replication_ids
+                for value in simulation_reader.read_movements((replication_id,))["edge_id"]
+            }
+        )
+    )
     available_edge_ids = {str(value) for value in road_edges["edge_id"]}
     missing_edge_ids = tuple(sorted(set(used_edge_ids) - available_edge_ids))
     if missing_edge_ids:
@@ -242,14 +253,7 @@ def publish_exposure_artifact(
     used_edges = road_edges.loc[road_edges["edge_id"].astype(str).isin(used_edge_ids)]
     pieces = build_edge_grid_pieces(used_edges, sensing_grid_cells) if used_edge_ids else ()
     grid_axis, grid_axis_hash = _grid_axis(sensing_grid_cells, working_crs=working_crs)
-    allocation = allocate_movement_exposure(
-        movements,
-        pieces,
-        grid_axis=grid_axis,
-        time_axis=time_axis,
-        active_movement_kinds=config.active_movement_kinds,
-        fleet_movement_kinds=config.fleet_movement_kinds,
-    )
+    stationary = None
     if config.measurement == "operating_duration":
         if config.activity_source_ref is None:
             raise ValueError(
@@ -271,47 +275,65 @@ def publish_exposure_artifact(
             raise ValueError("Operating exposure references a fleet outside the physical catalog")
         from mobile_sensing.exposure.operating import stationary_context, add_stationary_exposure
 
-        locations, location_cells, depots = stationary_context(
+        stationary = stationary_context(
             artifact_root,
             config.activity_source_ref,
             sensing_grid_cells,
             simulation_reader.read_stationary_locations(),
         )
-        allocation = add_stationary_exposure(
-            allocation,
-            simulation_reader.read_activities(),
-            time_axis=time_axis,
-            locations=locations,
-            location_cells=location_cells,
-            depot_nodes=depots,
-            operating_fleets=config.operating_fleet_ids,
-            idle_break_seconds=config.fleet_idle_break_seconds,
-        )
-    replication_ids = simulation_reader.replication_ids
     replication_axis = (PartitionAxis(name="replication_id", values=replication_ids),)
     exposure_partitions = {(replication_id,): [] for replication_id in replication_ids}
-    for row in allocation.rows:
-        exposure_partitions[(row.replication_id,)].append(
-            {
-                "replication_id": row.replication_id,
-                "fleet_id": row.vehicle.fleet_id,
-                "vehicle_id": row.vehicle.vehicle_id,
-                "cell_id": row.cell_id,
-                "time_bin_id": row.time_bin_id,
-                "duration_s": row.duration_s,
-            }
-        )
-    diagnostic_by_replication: dict[str, list] = defaultdict(list)
-    for row in allocation.diagnostics:
-        diagnostic_by_replication[row.replication_id].append(row)
     catalog_hash = simulation_reader.artifact.manifest.scientific_identity.catalog_hash
     replication_set_hash = (
         simulation_reader.artifact.manifest.scientific_identity.replication_set_hash
     )
     assert catalog_hash is not None and replication_set_hash is not None
     status_partitions = {}
+    sparse_hash = hashlib.sha256()
+    sparse_hash.update(CANONICAL_JSON_VERSION.encode("ascii") + b"\x00[")
+    first_row = True
     for replication_id in replication_ids:
-        diagnostics = diagnostic_by_replication[replication_id]
+        movements = simulation_reader.read_movements((replication_id,))
+        allocation = allocate_movement_exposure(
+            movements,
+            pieces,
+            grid_axis=grid_axis,
+            time_axis=time_axis,
+            active_movement_kinds=config.active_movement_kinds,
+            fleet_movement_kinds=config.fleet_movement_kinds,
+        )
+        del movements
+        if stationary is not None:
+            activities = simulation_reader.read_activities((replication_id,))
+            allocation = add_stationary_exposure(
+                allocation,
+                activities,
+                time_axis=time_axis,
+                locations=stationary[0],
+                location_cells=stationary[1],
+                depot_nodes=stationary[2],
+                operating_fleets=config.operating_fleet_ids,
+                idle_break_seconds=config.fleet_idle_break_seconds,
+            )
+            del activities
+        for row in allocation.rows:
+            if row.replication_id != replication_id:
+                raise ValueError("exposure allocation crossed replication partitions")
+            if not first_row:
+                sparse_hash.update(b",")
+            sparse_hash.update(canonical_json_bytes(row.model_dump(mode="json")))
+            first_row = False
+            exposure_partitions[(replication_id,)].append(
+                {
+                    "replication_id": row.replication_id,
+                    "fleet_id": row.vehicle.fleet_id,
+                    "vehicle_id": row.vehicle.vehicle_id,
+                    "cell_id": row.cell_id,
+                    "time_bin_id": row.time_bin_id,
+                    "duration_s": row.duration_s,
+                }
+            )
+        diagnostics = allocation.diagnostics
         exposure_count = len(exposure_partitions[(replication_id,)])
         status_partitions[(replication_id,)] = [
             {
@@ -331,10 +353,8 @@ def publish_exposure_artifact(
                 ),
             }
         ]
-    if config.measurement == "operating_duration":
-        for (replication_id,), records in status_partitions.items():
-            diagnostics = diagnostic_by_replication[replication_id]
-            records[0].update(
+        if stationary is not None:
+            status_partitions[(replication_id,)][0].update(
                 {
                     "sensor_active_stationary_time_s": math.fsum(
                         d.stationary_time_s for d in diagnostics
@@ -350,6 +370,8 @@ def publish_exposure_artifact(
                     ),
                 }
             )
+        del allocation
+    sparse_hash.update(b"]")
     edge_rows = {
         (): [
             {
@@ -476,9 +498,7 @@ def publish_exposure_artifact(
             "eligible_cell_count": len(sensing_grid_cells),
         },
         "edge_grid_piece_hash": scientific_hash(edge_rows[()]),
-        "sparse_exposure_hash": scientific_hash(
-            [row.model_dump(mode="json") for row in allocation.rows]
-        ),
+        "sparse_exposure_hash": sparse_hash.hexdigest(),
     }
     identity = ScientificIdentity(
         schema_version="2.0",

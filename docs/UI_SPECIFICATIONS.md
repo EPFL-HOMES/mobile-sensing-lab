@@ -154,7 +154,13 @@ Changing a display time filter is a query. Changing reporting bins/grid submits 
 
 ## 9. Results — Portfolio
 
-Primary visualization: mean utility on y and the configured risk statistic on x. Budget overlays use shared axes. Each point is a count portfolio summarized over J random draws. The default displays only nondominated points; a checkbox can reveal dominated evaluated portfolios. No frontier line is drawn.
+Zero-budget categories are hidden in all portfolio results: budget chips, comparison rows, chart markers/lines/legends and portfolio selection. Portfolios feasible at zero budget are not reassigned to a positive-budget display category. Retained analysis data and exports remain complete.
+
+Lines connect only nondominated markers assigned to the same lowest-feasible-budget legend category. Each line has the marker color and shares its legend group, so legend clicks toggle points and line together. Single-point categories have no segment; there are no cross-budget connectors.
+
+Primary visualization: mean utility on y and the configured risk statistic on x. Budget overlays use shared axes. Each point is a count portfolio summarized over J random draws. The default displays only nondominated points; a checkbox can reveal dominated evaluated portfolios. Within-category frontier segments are displayed by default in ascending risk-axis order and remain visible when dominated points are revealed. Lower-budget markers are not repeated or connected in a higher-budget category.
+
+Fleet-scope checkboxes support one fleet, any nonempty fleet subset, or all fleets. Excluded fleets are constrained to zero equipped vehicles, and the backend recomputes frontier membership over that conditional feasible set; the browser must not infer scientific dominance. A budget-series panel directly below the utility frontier shares its column width; the two panels occupy the same overall column height as Selected portfolio on desktop. It shows the maximum-mean-utility feasible portfolio at each configured budget. Users can switch between utility and mean spatial coverage; teal bars show means and amber median markers have empirical 5th--95th percentile whiskers. Composition appears in the hover details, not as on-bar text. Clicking selects the corresponding retained portfolio.
 
 Point inspector contains count vector, total cost, unspent budget, R/J, mean/std/SE/quantiles, utility distribution, and sensing matrix mean/std maps. A sample-round selector reveals selected joint replication, exact sampled vehicles, that sample's utility and matrix. Show these as sample details, not as an optimized recommended installation.
 

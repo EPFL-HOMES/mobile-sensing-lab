@@ -41,6 +41,7 @@ from mobile_sensing.api.models import (
     MatrixQueryRequest,
     MeanFleetView,
     PortfolioAnalysisJobRequest,
+    PortfolioBudgetSeriesView,
     PortfolioFrontierView,
     PortfolioPreviewRequest,
     ScenarioJobRequest,
@@ -52,6 +53,7 @@ from mobile_sensing.api.queries import (
     query_map,
     query_matrix,
     query_operation_summary,
+    query_portfolio_budget_series,
     query_portfolio_frontier,
     query_table,
 )
@@ -611,11 +613,31 @@ def create_app(
         return located.manifest
 
     @app.get("/api/v1/portfolio-frontiers/{analysis_id}", response_model=PortfolioFrontierView)
-    def portfolio_frontier(analysis_id: str, budget_id: str):
+    def portfolio_frontier(
+        analysis_id: str,
+        budget_id: str,
+        fleet_id: Annotated[list[str] | None, Query()] = None,
+    ):
         return query_portfolio_frontier(
             root,
             analysis_id,
             budget_id=budget_id,
+            fleet_ids=tuple(fleet_id or ()),
+            limits=configured_limits,
+        )
+
+    @app.get(
+        "/api/v1/portfolio-budget-series/{analysis_id}",
+        response_model=PortfolioBudgetSeriesView,
+    )
+    def portfolio_budget_series(
+        analysis_id: str,
+        fleet_id: Annotated[list[str] | None, Query()] = None,
+    ):
+        return query_portfolio_budget_series(
+            root,
+            analysis_id,
+            fleet_ids=tuple(fleet_id or ()),
             limits=configured_limits,
         )
 

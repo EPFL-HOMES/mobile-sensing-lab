@@ -23,6 +23,9 @@ def test_mean_coverage_uses_replications_including_zero_not_union(tmp_path):
     )
     assert mean["positive_cell_count"] == 1
     assert mean["mean_coverage_fraction"] == pytest.approx(2 / 3)
+    assert mean["coverage_p05_fraction"] == pytest.approx(0.1)
+    assert mean["coverage_p50_fraction"] == pytest.approx(1.0)
+    assert mean["coverage_p95_fraction"] == pytest.approx(1.0)
     assert mean["coverage_denominator_cell_count"] == 1
     assert mean["coverage_semantics"] == (
         "mean_within_observation_any_time_spatial_coverage_road_intersecting_cells"
@@ -41,6 +44,9 @@ def test_mean_coverage_uses_replications_including_zero_not_union(tmp_path):
         JobStoreLimits(),
     )
     assert zero["mean_coverage_fraction"] == 0
+    assert zero["coverage_p05_fraction"] == 0
+    assert zero["coverage_p50_fraction"] == 0
+    assert zero["coverage_p95_fraction"] == 0
     assert zero["overall_value"] == 0
 
 

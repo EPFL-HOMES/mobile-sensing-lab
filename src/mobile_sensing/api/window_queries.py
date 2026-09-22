@@ -14,6 +14,71 @@ from mobile_sensing.portfolio.storage import PortfolioArtifactReader
 from mobile_sensing.portfolio.reconstruction import ReconstructedMatrices
 
 
+def portfolio_coverage_summaries(root, analysis_id, portfolio_ids, limits):
+    """Compute whole-window coverage distributions with one shared exposure read."""
+    from mobile_sensing.api.queries import ArtifactCatalog, QueryLimitExceeded
+    from mobile_sensing.portfolio.analysis import summarize_scalar_samples
+
+    catalog = ArtifactCatalog(root)
+    located = catalog.locate(analysis_id)
+    dependency = next(
+        value for value in located.manifest.dependencies if value.role == "portfolio_samples"
+    )
+    sample_reference = ArtifactRef(
+        artifact_id=dependency.artifact_id,
+        artifact_kind="portfolio",
+        content_hash=dependency.content_hash,
+    )
+    reader = PortfolioArtifactReader(root, sample_reference)
+    exposure_dependency = next(
+        value for value in reader.artifact.manifest.dependencies if value.role == "exposure"
+    )
+    exposure = ArtifactRef(
+        artifact_id=exposure_dependency.artifact_id,
+        artifact_kind="exposure",
+        content_hash=exposure_dependency.content_hash,
+    )
+    axes = ExposureArtifactReader(Path(root)).axes(exposure)
+    cells, bins = set(axes["cell_ids"]), set(axes["time_bin_ids"])
+    selected = set(portfolio_ids)
+    samples = reader.read(
+        "portfolio_samples", filters=[("portfolio_id", "in", sorted(selected))]
+    ).to_pylist()
+    if len(samples) > limits.max_matrix_rows:
+        raise QueryLimitExceeded(
+            "Coverage series exceeds the configured portfolio-observation limit"
+        )
+    grouped = defaultdict(list)
+    for row in samples:
+        grouped[row["portfolio_id"]].append(row)
+    if set(grouped) != selected:
+        raise ValueError("Budget series references an unavailable portfolio")
+    if any(len(rows) > 10000 for rows in grouped.values()):
+        raise QueryLimitExceeded("Coverage series exceeds the 10,000 observation limit")
+    matrices = ReconstructedMatrices(root, reader, matrix_ids={row["matrix_id"] for row in samples})
+    result = {}
+    for portfolio_id in sorted(selected):
+        rows = sorted(grouped[portfolio_id], key=lambda row: int(row["round_id"]))
+        coverage = [
+            sum(value > 0 for value in cell_sums.values()) / len(cells) if cells else 0.0
+            for _, cell_sums, _ in matrices.window_observations(rows, cells, bins)
+        ]
+        summary = summarize_scalar_samples(coverage)
+        result[portfolio_id] = {
+            "coverage_mean_fraction": summary.mean,
+            "coverage_p05_fraction": summary.p05,
+            "coverage_p50_fraction": summary.p50,
+            "coverage_p95_fraction": summary.p95,
+        }
+    semantics = (
+        "mean_within_observation_any_time_spatial_coverage_road_intersecting_cells"
+        if axes["artifact"].manifest.scientific_identity.algorithm_versions.get("grid_domain")
+        == "positive-length-road-grid@1"
+        else "mean_within_observation_any_time_spatial_coverage_prepared_grid"
+    )
+    return result, semantics
+
+
 def window_matrix(root, request, limits):
     from mobile_sensing.api.queries import ArtifactCatalog, QueryLimitExceeded
 
@@ -139,6 +204,7 @@ def window_matrix(root, request, limits):
     groups = matrices.window_observations(samples, cells, bins) if portfolio else source_groups()
     seen = set()
     positive_cells_sum = 0
+    coverage_fractions = []
     for observation, cell_sums, bin_sums in groups:
         if observation in seen or observation not in observations:
             raise ValueError(
@@ -147,11 +213,17 @@ def window_matrix(root, request, limits):
         seen.add(observation)
         for cell, duration in cell_sums.items():
             accumulate(moments["cells"], cell, duration)
-        positive_cells_sum += sum(value > 0 for value in cell_sums.values())
+        positive_cells = sum(value > 0 for value in cell_sums.values())
+        positive_cells_sum += positive_cells
+        coverage_fractions.append(positive_cells / len(cells) if cells else 0.0)
         for time_bin, duration in bin_sums.items():
             accumulate(moments["bins"], time_bin, duration)
         accumulate(moments["total"], "total", math.fsum(cell_sums.values()))
     count = len(observations)
+    coverage_fractions.extend(0.0 for observation in observations if observation not in seen)
+    from mobile_sensing.portfolio.analysis import summarize_scalar_samples
+
+    coverage = summarize_scalar_samples(coverage_fractions)
 
     def statistic(group, key):
         n, nonzero_mean, m2 = group.get(key, (0, 0.0, 0.0))
@@ -190,6 +262,9 @@ def window_matrix(root, request, limits):
         "positive_cell_count": len(values),
         "coverage_denominator_cell_count": len(cells),
         "mean_coverage_fraction": positive_cells_sum / count / len(cells) if cells else None,
+        "coverage_p05_fraction": coverage.p05 if cells else None,
+        "coverage_p50_fraction": coverage.p50 if cells else None,
+        "coverage_p95_fraction": coverage.p95 if cells else None,
         "coverage_semantics": (
             "mean_within_observation_any_time_spatial_coverage_road_intersecting_cells"
             if axes["artifact"].manifest.scientific_identity.algorithm_versions.get("grid_domain")

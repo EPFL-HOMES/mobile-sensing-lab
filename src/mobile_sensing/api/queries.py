@@ -691,9 +691,10 @@ def query_portfolio_frontier(
     analysis_id: str,
     *,
     budget_id: str,
+    fleet_ids: tuple[str, ...] = (),
     limits: JobStoreLimits,
 ) -> dict[str, Any]:
-    """Join one budget membership projection to immutable count statistics."""
+    """Project one budget frontier, optionally conditional on allowed nonzero fleets."""
 
     catalog = ArtifactCatalog(root)
     located = catalog.locate(analysis_id)
@@ -714,24 +715,53 @@ def query_portfolio_frontier(
     )
     if not budgets:
         raise KeyError(budget_id)
-    memberships = _filtered_rows(
-        located,
-        "budget_frontiers",
-        lambda row: row["budget_id"] == budget_id,
-        limit=limits.max_map_features,
-    )
-    statistics = {
-        row["portfolio_id"]: row
-        for row in _filtered_rows(
-            located,
-            "portfolio_statistics",
-            lambda row: True,
-            limit=limits.max_map_features,
-        )
-    }
     saved_config = located.manifest.scientific_identity.resolved_config["portfolio"]
     risk_metric = saved_config.get("risk_metric", "std")
     costs = saved_config["costs"]
+    available_fleet_ids = tuple(sorted(costs["by_fleet_minor"]))
+    selected_fleet_ids = tuple(sorted(set(fleet_ids))) or available_fleet_ids
+    if not selected_fleet_ids or not set(selected_fleet_ids) <= set(available_fleet_ids):
+        raise ValueError("fleet filter must be a nonempty subset of the analyzed fleets")
+    statistic_rows = _filtered_rows(
+        located,
+        "portfolio_statistics",
+        lambda row: True,
+        limit=limits.max_map_features,
+    )
+    statistics = {row["portfolio_id"]: row for row in statistic_rows}
+    if selected_fleet_ids == available_fleet_ids:
+        memberships = _filtered_rows(
+            located,
+            "budget_frontiers",
+            lambda row: row["budget_id"] == budget_id,
+            limit=limits.max_map_features,
+        )
+    else:
+        from mobile_sensing.contracts import PortfolioConfig
+        from mobile_sensing.portfolio.analysis import build_budget_frontiers
+
+        config = PortfolioConfig.model_validate_json(json.dumps(saved_config))
+        excluded = set(available_fleet_ids) - set(selected_fleet_ids)
+        filtered_statistics = [
+            row
+            for row in statistic_rows
+            if all(json.loads(row["count_by_fleet_json"])[fleet] == 0 for fleet in excluded)
+        ]
+        filtered_budgets, filtered_memberships = build_budget_frontiers(
+            filtered_statistics,
+            budgets=(int(budgets[0]["budget_minor"]),),
+            unit=config.costs.unit,
+            minor_unit_scale=config.costs.minor_unit_scale,
+            mean_resolution=config.comparison_resolution.mean_utility,
+            std_resolution=config.comparison_resolution.std_utility,
+            replications_R=int(budgets[0]["replications_R"]),
+            sampling_rounds_J=int(budgets[0]["sampling_rounds_J"]),
+            frontier_enabled=bool(budgets[0]["frontier_enabled"]),
+            risk_metric=config.risk_metric,
+            p05_resolution=config.comparison_resolution.p05_utility,
+        )
+        budgets = list(filtered_budgets)
+        memberships = list(filtered_memberships)
     scale = costs["minor_unit_scale"]
     points = []
     for membership in memberships:
@@ -776,12 +806,30 @@ def query_portfolio_frontier(
         )
     )
     metadata = _filtered_rows(located, "portfolio_analysis_metadata", lambda row: True, limit=1)[0]
+    best_mean = min(
+        points,
+        key=lambda row: (
+            -row["utility_mean"],
+            (
+                -row["utility_p05"]
+                if risk_metric == "p05"
+                else (
+                    row["utility_sample_std"] if row["utility_sample_std"] is not None else math.inf
+                )
+            ),
+            row["portfolio_id"],
+        ),
+        default=None,
+    )
     response = {
         "max_mean_utility": max((p["utility_mean"] for p in points), default=None),
         "max_p05_utility": max((p["utility_p05"] for p in points), default=None),
+        "best_mean_portfolio_id": best_mean["portfolio_id"] if best_mean else None,
         "frontier_portfolio_count": sum(bool(p["nondominated"]) for p in points),
         "analysis_id": analysis_id,
         "risk_metric": risk_metric,
+        "available_fleet_ids": list(available_fleet_ids),
+        "selected_fleet_ids": list(selected_fleet_ids),
         "budget": budgets[0],
         "replications_R": metadata["replications_R"],
         "sampling_rounds_J": metadata["sampling_rounds_J"],
@@ -794,6 +842,69 @@ def query_portfolio_frontier(
     if len(json.dumps(response, separators=(",", ":")).encode()) > limits.max_map_bytes:
         raise QueryLimitExceeded("frontier response exceeds limits; export the scientific tables")
     return response
+
+
+def query_portfolio_budget_series(
+    root: Path,
+    analysis_id: str,
+    *,
+    fleet_ids: tuple[str, ...] = (),
+    limits: JobStoreLimits,
+) -> dict[str, Any]:
+    """Return maximum-mean budget points plus whole-window coverage uncertainty."""
+    catalog = ArtifactCatalog(root)
+    located = catalog.locate(analysis_id)
+    budgets = sorted(
+        _filtered_rows(located, "budget_levels", lambda row: True, limit=10000),
+        key=lambda row: int(row["budget_minor"]),
+    )
+    if len(budgets) > 100:
+        raise QueryLimitExceeded("Budget series supports at most 100 configured levels")
+    projections = [
+        query_portfolio_frontier(
+            root,
+            analysis_id,
+            budget_id=row["budget_id"],
+            fleet_ids=fleet_ids,
+            limits=limits,
+        )
+        for row in budgets
+        if int(row["budget_minor"]) > 0
+    ]
+    selected = []
+    for projection in projections:
+        identifier = projection["best_mean_portfolio_id"]
+        if identifier is None:
+            continue
+        point = next(row for row in projection["points"] if row["portfolio_id"] == identifier)
+        selected.append((projection, point))
+    from mobile_sensing.api.window_queries import portfolio_coverage_summaries
+
+    summaries, semantics = portfolio_coverage_summaries(
+        root,
+        analysis_id,
+        {point["portfolio_id"] for _, point in selected},
+        limits,
+    )
+    first = projections[0] if projections else None
+    metadata = _filtered_rows(located, "portfolio_analysis_metadata", lambda row: True, limit=1)[0]
+    return {
+        "analysis_id": analysis_id,
+        "available_fleet_ids": first["available_fleet_ids"] if first else [],
+        "selected_fleet_ids": first["selected_fleet_ids"] if first else [],
+        "replications_R": metadata["replications_R"],
+        "sampling_rounds_J": metadata["sampling_rounds_J"],
+        "coverage_semantics": semantics,
+        "rows": [
+            {
+                "budget": projection["budget"],
+                "portfolio": point,
+                **summaries[point["portfolio_id"]],
+            }
+            for projection, point in selected
+        ],
+        "is_complete": True,
+    }
 
 
 def _table_paths(located: LocatedArtifact, table_name: str, filters=None) -> list[Path]:

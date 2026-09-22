@@ -688,6 +688,26 @@ export interface PortfolioAnalysisJobRequest {
   "weights"?: UtilityWeightResource | null;
 }
 
+export interface PortfolioBudgetSeriesRow {
+  "budget": PortfolioBudgetView;
+  "coverage_mean_fraction": number;
+  "coverage_p05_fraction": number;
+  "coverage_p50_fraction": number;
+  "coverage_p95_fraction": number;
+  "portfolio": PortfolioFrontierPoint;
+}
+
+export interface PortfolioBudgetSeriesView {
+  "analysis_id": string;
+  "available_fleet_ids": ReadonlyArray<string>;
+  "coverage_semantics": string;
+  "is_complete": true;
+  "replications_R": number;
+  "rows": ReadonlyArray<PortfolioBudgetSeriesRow>;
+  "sampling_rounds_J": number;
+  "selected_fleet_ids": ReadonlyArray<string>;
+}
+
 export interface PortfolioBudgetView {
   "budget_id": string;
   "budget_minor": number;
@@ -776,6 +796,8 @@ export interface PortfolioFrontierPoint {
 
 export interface PortfolioFrontierView {
   "analysis_id": string;
+  "available_fleet_ids": ReadonlyArray<string>;
+  "best_mean_portfolio_id"?: string | null;
   "budget": PortfolioBudgetView;
   "frontier_portfolio_count"?: number;
   "inference_scope": string;
@@ -787,6 +809,7 @@ export interface PortfolioFrontierView {
   "returned_count": number;
   "risk_metric"?: "std" | "p05";
   "sampling_rounds_J": number;
+  "selected_fleet_ids": ReadonlyArray<string>;
   "variability_interpretation": string;
 }
 
@@ -1279,4 +1302,4 @@ export interface WorkspaceInfo {
   "example_project_ids"?: ReadonlyArray<string>;
 }
 
-export type ApiPath = "/api/v1/artifacts/{artifact_id}/download" | "/api/v1/capabilities" | "/api/v1/datasets" | "/api/v1/datasets/{dataset_id}" | "/api/v1/datasets/{dataset_id}/issues" | "/api/v1/datasets/{dataset_id}/preview" | "/api/v1/environments" | "/api/v1/environments/{environment_id}" | "/api/v1/examples/lausanne" | "/api/v1/examples/lausanne/finalize/{job_id}" | "/api/v1/examples/lausanne/open" | "/api/v1/exports" | "/api/v1/exposures" | "/api/v1/exposures/{exposure_id}" | "/api/v1/fleet-summaries/{exposure_id}" | "/api/v1/gtfs-reconstructions" | "/api/v1/health" | "/api/v1/imports" | "/api/v1/inputs" | "/api/v1/inputs/register" | "/api/v1/inputs/upload" | "/api/v1/inputs/{input_id}/confirm-crs" | "/api/v1/jobs" | "/api/v1/jobs/{job_id}" | "/api/v1/jobs/{job_id}/cancel" | "/api/v1/jobs/{job_id}/events" | "/api/v1/jobs/{job_id}/retry" | "/api/v1/maps/{resource_id}/{layer}" | "/api/v1/matrix-queries" | "/api/v1/operation-summaries/{simulation_id}" | "/api/v1/portfolio-analyses" | "/api/v1/portfolio-analyses/{analysis_id}" | "/api/v1/portfolio-enumerations/preview" | "/api/v1/portfolio-frontiers/{analysis_id}" | "/api/v1/portfolio-samples/{samples_id}" | "/api/v1/project-imports" | "/api/v1/projects" | "/api/v1/projects/{project_id}" | "/api/v1/projects/{project_id}/files" | "/api/v1/projects/{project_id}/files/{file_id}" | "/api/v1/projects/{project_id}/open-directory" | "/api/v1/projects/{project_id}/package" | "/api/v1/projects/{project_id}/revisions" | "/api/v1/projects/{project_id}/revisions/{revision_id}" | "/api/v1/results/{resource_id}/{table_name}" | "/api/v1/scenarios/validate" | "/api/v1/schemas/{name}" | "/api/v1/simulations" | "/api/v1/simulations/{simulation_id}" | "/api/v1/uploads" | "/api/v1/workbench/analyses" | "/api/v1/workbench/calendar-preview" | "/api/v1/workbench/deleted-runs" | "/api/v1/workbench/environment/defaults" | "/api/v1/workbench/environments" | "/api/v1/workbench/environments/{artifact_id}/map" | "/api/v1/workbench/environments/{resource_id}/result" | "/api/v1/workbench/feature-source/map" | "/api/v1/workbench/features/{artifact_id}/map" | "/api/v1/workbench/fleet/defaults" | "/api/v1/workbench/inputs/{input_id}/gtfs-routes" | "/api/v1/workbench/portfolio-preview" | "/api/v1/workbench/project/defaults" | "/api/v1/workbench/projects/{project_id}/copy" | "/api/v1/workbench/projects/{project_id}/migration" | "/api/v1/workbench/region-search" | "/api/v1/workbench/region-search/{resource_id}" | "/api/v1/workbench/resolutions/{resource_id}" | "/api/v1/workbench/resolve" | "/api/v1/workbench/run-options" | "/api/v1/workbench/runs" | "/api/v1/workbench/runs/{run_id}" | "/api/v1/workbench/runs/{run_id}/deletion-preview" | "/api/v1/workbench/runs/{run_id}/portfolio-defaults" | "/api/v1/workbench/runs/{run_id}/restore" | "/api/v1/workbench/temporal-preview" | "/api/v1/workbench/utility-curve" | "/api/v1/workbench/workspace" | "/api/v1/workbench/workspace/initialize";
+export type ApiPath = "/api/v1/artifacts/{artifact_id}/download" | "/api/v1/capabilities" | "/api/v1/datasets" | "/api/v1/datasets/{dataset_id}" | "/api/v1/datasets/{dataset_id}/issues" | "/api/v1/datasets/{dataset_id}/preview" | "/api/v1/environments" | "/api/v1/environments/{environment_id}" | "/api/v1/examples/lausanne" | "/api/v1/examples/lausanne/finalize/{job_id}" | "/api/v1/examples/lausanne/open" | "/api/v1/exports" | "/api/v1/exposures" | "/api/v1/exposures/{exposure_id}" | "/api/v1/fleet-summaries/{exposure_id}" | "/api/v1/gtfs-reconstructions" | "/api/v1/health" | "/api/v1/imports" | "/api/v1/inputs" | "/api/v1/inputs/register" | "/api/v1/inputs/upload" | "/api/v1/inputs/{input_id}/confirm-crs" | "/api/v1/jobs" | "/api/v1/jobs/{job_id}" | "/api/v1/jobs/{job_id}/cancel" | "/api/v1/jobs/{job_id}/events" | "/api/v1/jobs/{job_id}/retry" | "/api/v1/maps/{resource_id}/{layer}" | "/api/v1/matrix-queries" | "/api/v1/operation-summaries/{simulation_id}" | "/api/v1/portfolio-analyses" | "/api/v1/portfolio-analyses/{analysis_id}" | "/api/v1/portfolio-budget-series/{analysis_id}" | "/api/v1/portfolio-enumerations/preview" | "/api/v1/portfolio-frontiers/{analysis_id}" | "/api/v1/portfolio-samples/{samples_id}" | "/api/v1/project-imports" | "/api/v1/projects" | "/api/v1/projects/{project_id}" | "/api/v1/projects/{project_id}/files" | "/api/v1/projects/{project_id}/files/{file_id}" | "/api/v1/projects/{project_id}/open-directory" | "/api/v1/projects/{project_id}/package" | "/api/v1/projects/{project_id}/revisions" | "/api/v1/projects/{project_id}/revisions/{revision_id}" | "/api/v1/results/{resource_id}/{table_name}" | "/api/v1/scenarios/validate" | "/api/v1/schemas/{name}" | "/api/v1/simulations" | "/api/v1/simulations/{simulation_id}" | "/api/v1/uploads" | "/api/v1/workbench/analyses" | "/api/v1/workbench/calendar-preview" | "/api/v1/workbench/deleted-runs" | "/api/v1/workbench/environment/defaults" | "/api/v1/workbench/environments" | "/api/v1/workbench/environments/{artifact_id}/map" | "/api/v1/workbench/environments/{resource_id}/result" | "/api/v1/workbench/feature-source/map" | "/api/v1/workbench/features/{artifact_id}/map" | "/api/v1/workbench/fleet/defaults" | "/api/v1/workbench/inputs/{input_id}/gtfs-routes" | "/api/v1/workbench/portfolio-preview" | "/api/v1/workbench/project/defaults" | "/api/v1/workbench/projects/{project_id}/copy" | "/api/v1/workbench/projects/{project_id}/migration" | "/api/v1/workbench/region-search" | "/api/v1/workbench/region-search/{resource_id}" | "/api/v1/workbench/resolutions/{resource_id}" | "/api/v1/workbench/resolve" | "/api/v1/workbench/run-options" | "/api/v1/workbench/runs" | "/api/v1/workbench/runs/{run_id}" | "/api/v1/workbench/runs/{run_id}/deletion-preview" | "/api/v1/workbench/runs/{run_id}/portfolio-defaults" | "/api/v1/workbench/runs/{run_id}/restore" | "/api/v1/workbench/temporal-preview" | "/api/v1/workbench/utility-curve" | "/api/v1/workbench/workspace" | "/api/v1/workbench/workspace/initialize";

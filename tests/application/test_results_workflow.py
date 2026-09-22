@@ -62,6 +62,46 @@ def test_frontier_projects_saved_fleet_costs_in_display_units(tmp_path) -> None:
     assert empty["cost_by_fleet"] == {"fleet_a": 0.0, "fleet_b": 0.0}
     assert empty["total_cost"] == 0.0
 
+    filtered = TestClient(create_app(tmp_path)).get(
+        f"/api/v1/portfolio-frontiers/{analysis.artifact_id}",
+        params=[("budget_id", budget["budget_id"]), ("fleet_id", "fleet_a")],
+    )
+    assert filtered.status_code == 200, filtered.text
+    filtered_payload = filtered.json()
+    assert filtered_payload["available_fleet_ids"] == ["fleet_a", "fleet_b"]
+    assert filtered_payload["selected_fleet_ids"] == ["fleet_a"]
+    assert filtered_payload["best_mean_portfolio_id"] in {
+        row["portfolio_id"] for row in filtered_payload["points"]
+    }
+    assert all(row["count_by_fleet"]["fleet_b"] == 0 for row in filtered_payload["points"])
+    assert filtered_payload["frontier_portfolio_count"] == sum(
+        bool(row["nondominated"]) for row in filtered_payload["points"]
+    )
+
+    invalid = TestClient(create_app(tmp_path)).get(
+        f"/api/v1/portfolio-frontiers/{analysis.artifact_id}",
+        params=[("budget_id", budget["budget_id"]), ("fleet_id", "missing")],
+    )
+    assert invalid.status_code == 422
+
+    series = TestClient(create_app(tmp_path)).get(
+        f"/api/v1/portfolio-budget-series/{analysis.artifact_id}",
+        params=[("fleet_id", "fleet_a")],
+    )
+    assert series.status_code == 200, series.text
+    series_payload = series.json()
+    assert series_payload["selected_fleet_ids"] == ["fleet_a"]
+    assert series_payload["rows"]
+    assert all(
+        row["portfolio"]["count_by_fleet"]["fleet_b"] == 0
+        and 0
+        <= row["coverage_p05_fraction"]
+        <= row["coverage_p50_fraction"]
+        <= row["coverage_p95_fraction"]
+        <= 1
+        for row in series_payload["rows"]
+    )
+
 
 def test_operation_table_time_filters_are_half_open_and_cursor_bound(tmp_path) -> None:
     _, simulation, exposure, _, _, _, _ = _artifact_setup(tmp_path)

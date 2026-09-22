@@ -227,7 +227,8 @@ IDs in responses are opaque. Long-running creation returns `{job_id, resource_id
 | `POST /api/v1/portfolio-analyses` | PortfolioConfig → enumeration/evaluation/frontier job |
 | `GET /api/v1/portfolio-analyses/{id}` | Artifact manifest, enumeration scope, progress/result references |
 | `GET /api/v1/portfolio-samples/{id}` | Verified immutable sample-artifact manifest used for point-to-round lineage |
-| `GET /api/v1/portfolio-frontiers/{analysis_id}?budget_id=...` | One bounded budget membership joined to exact count statistics, comparison keys, tie IDs, and separate `R`/`J` metadata |
+| `GET /api/v1/portfolio-frontiers/{analysis_id}?budget_id=...&fleet_id=...` | One bounded budget membership joined to exact count statistics, comparison keys, tie IDs, and separate `R`/`J` metadata; repeated optional `fleet_id` values require every excluded fleet count to be zero and recompute the conditional frontier in Python |
+| `GET /api/v1/portfolio-budget-series/{analysis_id}?fleet_id=...` | Maximum-mean portfolio at each positive budget plus whole-window spatial-coverage mean/P05/P50/P95; selected portfolios share one bounded exposure reconstruction pass |
 | `GET /api/v1/jobs`, `/jobs/{id}` | Project-filtered durable job history; individual snapshot, counters, cancellation flag and failure details |
 | `GET /api/v1/jobs/{id}/events` | Resumable SSE stream |
 | `POST /api/v1/jobs/{id}/cancel` | Idempotent cancellation request; terminal jobs return their existing state |
@@ -247,6 +248,8 @@ Browser JSON arrays for matrix axes and vehicle keys are normalized at the HTTP 
 Default table page size 100, maximum 1,000. Map requests have a configured feature/byte limit, default 20,000 features and 10 MiB. Large results must aggregate or require narrower filters; never silently truncate scientific summaries. A response states `returned_count`, `total_matching_count` where affordable, `is_complete`, and any visualization sampling/aggregation. Exports are the complete alternative. Do not put the full exposure tensor into REST JSON or SSE.
 
 `MatrixQuery` specifies `resource_id`, `kind=vehicle_exposure|operational_aggregate|portfolio_sample|portfolio_summary`, optional fleet/vehicle/replication/portfolio/round IDs as required by kind, requested cells/bins and `statistic=realization|mean|variance|std`. `MatrixSlice` returns grid/time-axis references, selected axis IDs, unit (`s` or `s^2`), sparse `(cell_id,time_bin_id,value)` entries, expected shape, completeness, zero-fill convention, R/J where relevant and resolved filter provenance. Limit nonzero rows/response bytes; large slices return an explicit export/narrow-filter requirement rather than a misleading partial matrix. For a complete single-vehicle realization, this is exactly the vehicle's E matrix. The UI can reconstruct its zeros from the axis metadata without requiring dense physical storage.
+
+Whole-window matrix projections also return mean, P05, median and P95 spatial coverage fractions. Each coverage statistic is computed from the fraction of eligible cells visited in each complete operational replication or portfolio round, including certified zero observations; quantiles use the retained empirical linear method.
 
 ### Validation and errors
 

@@ -1,0 +1,35 @@
+{
+  "release_tag": "examples-2026-09-22",
+  "repository": "EPFL-HOMES/mobile-sensing-lab",
+  "examples": {
+    "lausanne": {
+      "manifest_sha256": "f11f7e0c8726057bb39a137904ae25e4fca8923d691b9009c7fd8300c344f2eb",
+      "archive_sha256": "4213ea6fd5904ecac7f83bfd5911c92784359fe877638a886aa3e3638328272f",
+      "archive_size_bytes": 2668197489,
+      "parts": [
+        {
+          "name": "lausanne.zip.part00",
+          "size_bytes": 1572864000,
+          "sha256": "65424746d584eff81a2cf62d079e1feee1f31a561455ef3366c889ab49520065"
+        },
+        {
+          "name": "lausanne.zip.part01",
+          "size_bytes": 1095333489,
+          "sha256": "500de223c1ba52ceb2418936133e5434bb2c4d96d71dd9837fdf73893f1c87ca"
+        }
+      ]
+    },
+    "san-francisco": {
+      "manifest_sha256": "919b6a3ea812077407d39ad53985aa34bfe1e0bd52f54c4427c8f4d903d69ece",
+      "archive_sha256": "689ab3786679dea7571e1126d6277b9675a9be6723c211fd3df9a5b045b3028f",
+      "archive_size_bytes": 174425324,
+      "parts": [
+        {
+          "name": "san-francisco.zip",
+          "size_bytes": 174425324,
+          "sha256": "689ab3786679dea7571e1126d6277b9675a9be6723c211fd3df9a5b045b3028f"
+        }
+      ]
+    }
+  }
+}

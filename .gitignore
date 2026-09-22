@@ -42,10 +42,12 @@ project/
 /data/
 /ref/
 /results/
+/report/
 /.app-venv/
 /.mobile-sensing/
 /.release-venv/
 /src/mobile_sensing/_examples/*.zip
+/src/mobile_sensing/_examples/*.zip.previous
 /src/mobile_sensing/_web/
 **/.ipynb_checkpoints/
 

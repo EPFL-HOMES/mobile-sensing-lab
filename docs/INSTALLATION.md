@@ -119,7 +119,7 @@ On **Ubuntu 24.04**, open Terminal and follow step 2 under [Windows with WSL2](#
 
 ## Install from source
 
-Use a source checkout when editing code. Download **Code → Download ZIP** and extract it, or clone the repository. Open a terminal in the folder containing `pyproject.toml`. Source code and example manifests are in Git; the large example archives are separate [Release assets](https://github.com/EPFL-HOMES/mobile-sensing-lab/releases/tag/v0.1.0).
+Use a source checkout when editing code. Download **Code → Download ZIP** and extract it, or clone the repository. Open a terminal in the folder containing `pyproject.toml`. Source code and current example manifests are in Git; the matching large archives are separate [example-data release assets](https://github.com/EPFL-HOMES/mobile-sensing-lab/releases/tag/examples-2026-09-22).
 
 For macOS/Linux/WSL, with Python 3.12 installed, enter:
 
@@ -140,7 +140,7 @@ mobile-sensing launch --artifact-root ./project --port 8820
 
 For native Windows Python-only work, use the PowerShell source commands above and skip the browser build. Building the frontend on Windows does not make its Python App backend compatible.
 
-To enable examples in a source checkout, download `lausanne.json`, `lausanne.zip`, `san-francisco.json`, and `san-francisco.zip` from the same Release and place them in `src/mobile_sensing/_examples/`. Keep the ZIP files zipped. The installed release wheel and packaged `.tar.gz` already contain both examples; GitHub's automatically generated source ZIP does not.
+To enable the two current examples in a source checkout, run `python3 scripts/install_example_assets.py` from the repository root. The script verifies the two committed JSON manifests, downloads the corresponding release assets, reconstructs the 2.67 GB Lausanne ZIP from two parts, verifies complete SHA-256 hashes, and places only `lausanne.zip` and `san-francisco.zip` beside the manifests. Existing matching ZIPs are reused; `--replace` backs up mismatched older archives before replacing them. GitHub's automatically generated source ZIP cannot include these large data assets. The v0.1.0 wheel and its example assets are an earlier, internally matching release, not the current five-line Lausanne bundle.
 
 The macOS-only [Start Mobile Sensing.command](../Start%20Mobile%20Sensing.command) is an alternative for source users with Python 3.12 and Node.js installed. It creates `.app-venv` and builds the interface; it is not a Windows launcher.
 
@@ -157,5 +157,5 @@ For AI-assisted changes, read [AGENTS.md](../AGENTS.md) first, then [CONTRIBUTIN
 | `mobile-sensing` not found | Activate the correct environment, or use `.venv/bin/mobile-sensing` (Unix) / `.\.venv\Scripts\mobile-sensing.exe` (Windows). |
 | Browser interface assets missing | A source checkout needs the frontend build; use the release wheel if you only want to run the App. |
 | Address already in use | Stop the earlier instance or choose another port, such as `--port 8821`, and open the matching URL. |
-| Examples unavailable | Use the release wheel or install the four matching example assets as described above. |
+| Examples unavailable | For current source, run `python3 scripts/install_example_assets.py`; for the earlier v0.1.0 wheel, use its own matching example assets. |
 | VS Code shows a red configuration marker | Open **View → Problems** to read the diagnostic. For a source checkout, install dependencies and run `npm --prefix frontend run typecheck`; a stale marker alone is not a compiler failure. |

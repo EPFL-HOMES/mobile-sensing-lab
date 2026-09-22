@@ -33,11 +33,11 @@ def audit_example(root):
         if postal.supply.service_area_mode != "auto" or postal.supply.auto_service_area_count != 4:
             raise ValueError("Lausanne requires four frozen Postal Auto service areas")
         if bus_configs[0].demand.route_ids != ROUTE_IDS:
-            raise ValueError("Lausanne requires lines 1, 3 and 7 in one Bus fleet")
+            raise ValueError("Lausanne requires lines 1, 9, 21, 33 and 54 in one Bus fleet")
     elif fleet_ids != {"taxi"}:
         raise ValueError("San Francisco requires exactly one Taxi fleet")
     expected_saturation = 5
-    expected_risks = {"p05", "std"}
+    expected_risks = {"p05"} if is_lausanne else {"p05", "std"}
     if (
         {item.config.risk_metric for item in analyses} != expected_risks
         or any(
@@ -70,10 +70,15 @@ def audit_example(root):
         if not condition:
             raise ValueError("Example audit failed: " + message)
 
-    require(run.replications == 10, "ten complete joint replications")
+    expected_replications = 50 if is_lausanne else 10
+    expected_sampling_runs = 200 if is_lausanne else 100
+    require(
+        run.replications == expected_replications,
+        f"{expected_replications} complete joint replications",
+    )
     require(
         all(
-            item.sampling_runs == 100
+            item.sampling_runs == expected_sampling_runs
             and item.count_portfolios == feasible_portfolio_count(item.config)
             for item in analyses
         ),
@@ -159,7 +164,8 @@ def audit_example(root):
     for name, value in (("Full day", run),):
         statuses = table(value.simulation, "replication_status")
         require(
-            len(statuses) == 10 and statuses.complete.all(), "complete operational replication set"
+            len(statuses) == expected_replications and statuses.complete.all(),
+            "complete operational replication set",
         )
         require(
             set(statuses.replication_id) == set(rep_ids) and statuses.catalog_hash.nunique() == 1,
@@ -278,9 +284,9 @@ def audit_example(root):
     for item in analyses:
         samples = table(item.samples, "portfolio_samples")
         require(
-            len(samples) == item.count_portfolios * 100
-            and samples.groupby("portfolio_id").size().eq(100).all(),
-            "all count portfolios by 100 sample utilities retained",
+            len(samples) == item.count_portfolios * expected_sampling_runs
+            and samples.groupby("portfolio_id").size().eq(expected_sampling_runs).all(),
+            f"all count portfolios by {expected_sampling_runs} sample utilities retained",
         )
         require(
             set(samples.selected_joint_replication_id) <= set(rep_ids),
@@ -290,7 +296,7 @@ def audit_example(root):
             {
                 "analysis_id": item.analysis_id,
                 "risk_metric": item.config.risk_metric,
-                "sampling_rounds": 100,
+                "sampling_rounds": expected_sampling_runs,
                 "count_portfolios": item.count_portfolios,
                 "sample_utilities": len(samples),
                 "elapsed_seconds": item.elapsed_seconds,

@@ -70,6 +70,9 @@ export interface MatrixSliceValue {
   positive_cell_count: number;
   coverage_denominator_cell_count?: number;
   mean_coverage_fraction?: number | null;
+  coverage_p05_fraction?: number | null;
+  coverage_p50_fraction?: number | null;
+  coverage_p95_fraction?: number | null;
   coverage_semantics?: "mean_within_observation_any_time_spatial_coverage_road_intersecting_cells" | "mean_within_observation_any_time_spatial_coverage_prepared_grid";
   summary_semantics: "statistic_of_within_observation_cell_sum";
 }
