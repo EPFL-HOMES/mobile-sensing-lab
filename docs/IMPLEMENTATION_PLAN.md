@@ -4,6 +4,16 @@ The current release implements the complete local workflow from data registratio
 
 ## Release maintenance
 
+Completed: bound heatmap colour scales by the backend-computed positive-value 95th percentile, with manual upper limits and a data-maximum option. Keep scale metadata and controls in the presentation boundary, preserve raw scientific values and camera position, and apply the same scale to grid fills, source features and value-coloured road maps.
+
+Completed: expose OD distributions as registered demand data and an explicit Fleet Configuration spatial source. Show the selected file, hide inactive marginal controls, preserve existing references and results, and reject missing/incompatible inputs without a Uniform fallback. Register cell-ID-only OD tables without a CRS; retain coordinate/geometry checks and historical record readability.
+
+Completed: provide addable grid-filter rows with per-feature any/must logic, including Road network in either group. Retain the intersection of all required conditions and the union of alternatives when present. Preserve legacy any/all-plus-road semantics and historical artifacts. Apply the same Python filter to previews, generated support, exposure and source-run portfolios; preserve the full routing network and verify contracts, cache compatibility and persistence.
+
+Completed: replace full event-heap scans with exact pruned lookahead and reuse only verified complete exposure artifacts. Record separate-process Lausanne timing and deterministic result comparisons; retain a read-only replication benchmark tool.
+
+Completed: remove repeated waiting-pool sorting and complete-plan copying, reuse bounded reverse pickup trees and exact route caches, and avoid repeated infeasible cruising checks. Preserve scientific hashes and trajectories while coalescing idle diagnostics. Verify full-day replication speed separately from input resolution, publication and exposure allocation; retain complete Python/frontend regression gates.
+
 Completed: place the budget-series chart below the utility frontier in a common-width column opposite Selected portfolio; retain hover-only composition and empirically derived percentile whiskers. Regenerate the Lausanne report's spatial-feature, full-budget frontier/sensitivity, and five-budget duration PNGs from retained artifacts without rerunning mobility.
 
 Completed: add backend-owned fleet-subset frontier projections and utility/coverage budget-series presentation without mutating retained portfolio artifacts.
@@ -33,6 +43,8 @@ Completed bounded change: regenerated both immutable city-example bundles after 
 
 ## Reliability and performance
 
+- Further reduce initial large exposure allocation and publication costs; the new exposure cache accelerates repeated identical builds. Measure the complete 50-replication/four-worker workflow separately before advertising an end-to-end speedup.
+
 - Reduce cold large-region acquisition time and provide a documented local/offline road-network path.
 - Bound cache growth and expose cache maintenance without changing scientific identities.
 - Reduce first large portfolio-map query latency and large browser bundle sizes.
@@ -43,6 +55,8 @@ Completed bounded change: regenerated both immutable city-example bundles after 
 ## Scientific extensions
 
 Any extension requires an explicit contract, deterministic random-stream ownership, analytic regression cases, resource bounds, and migration behavior. Candidate areas include additional calibrated data sources, alternative dispatch policies through the existing executor boundary, and out-of-sample portfolio evaluation. Fleet-specific kernels and sensor-dependent operating supply remain outside the model.
+
+Pending research idea retained from the retired revision note: a gravity-model demand generator. No implementation or scientific specification is defined yet.
 
 ## Acceptance for a new capability
 

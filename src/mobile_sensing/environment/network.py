@@ -484,6 +484,7 @@ class PreparedRoutingService:
                     incoming[target].append((source, edge, weight))
             self._incoming_indexed[profile] = tuple(tuple(values) for values in incoming)
         self._bound_graphs = {}
+        self._reverse_bound_graphs = {}
         self._bounds_cached = lru_cache(maxsize=128)(self._lower_bound_tree)
         components = sorted(
             (tuple(sorted(group)) for group in nx.strongly_connected_components(graph)),
@@ -497,6 +498,7 @@ class PreparedRoutingService:
             | {component}
         )
         self._route_cached = lru_cache(maxsize=cache_size)(self._route_uncached)
+        self._neighbors_cached = lru_cache(maxsize=cache_size)(self._outgoing_neighbor_node_ids)
 
     def reachable(self, source_node_id, target_node_id):
         if source_node_id not in self._component or target_node_id not in self._component:
@@ -507,7 +509,7 @@ class PreparedRoutingService:
     def roundtrip_node_ids(self, node_id):
         return frozenset(self._components[self._component[node_id]])
 
-    def _native_distances(self, profile_id, source):
+    def _native_distances(self, profile_id, source, reverse=False):
         from scipy.sparse import csr_matrix
         from scipy.sparse.csgraph import dijkstra
 
@@ -521,15 +523,18 @@ class PreparedRoutingService:
             self._bound_graphs[profile_id] = csr_matrix(
                 (weights, (rows, cols)), shape=(len(self._node_index), len(self._node_index))
             )
-        return dijkstra(
-            self._bound_graphs[profile_id], directed=True, indices=self._node_index[source]
-        )
+        graph = self._bound_graphs[profile_id]
+        if reverse:
+            if profile_id not in self._reverse_bound_graphs:
+                self._reverse_bound_graphs[profile_id] = graph.transpose().tocsr()
+            graph = self._reverse_bound_graphs[profile_id]
+        return dijkstra(graph, directed=True, indices=self._node_index[source])
 
-    def _lower_bound_tree(self, profile_id, source):
+    def _lower_bound_tree(self, profile_id, source, reverse=False):
         """Native costs only bound candidate order; accepted pairs use exact routes."""
         import numpy as np
 
-        distances = self._native_distances(profile_id, source)
+        distances = self._native_distances(profile_id, source, reverse)
         # Positive-weight simple paths have at most |V|-1 edges. A generous
         # forward-error margin makes native sums conservative relative to fsum.
         finite = np.isfinite(distances)
@@ -544,6 +549,20 @@ class PreparedRoutingService:
             raise KeyError(profile_id)
         if source not in self._node_index:
             return {target: math.inf for target in targets}
+        targets = tuple(targets)
+        if len(targets) <= 4:
+            # Small waiting pools repeatedly query the same pickup from many
+            # moving vehicles. A reverse directed tree bounds all those sources
+            # while sharing the same bounded LRU budget with forward trees.
+            source_index = self._node_index[source]
+            return {
+                target: (
+                    float(self._bounds_cached(profile_id, target, True)[source_index])
+                    if target in self._node_index
+                    else math.inf
+                )
+                for target in targets
+            }
         distances = self._bounds_cached(profile_id, source)
         return {
             target: (
@@ -567,16 +586,15 @@ class PreparedRoutingService:
 
         if profile_id not in self.profile_hashes:
             raise KeyError(f"unknown routing profile: {profile_id}")
-        if source_node_id not in self._graph:
-            return ()
+        return self._neighbors_cached(profile_id, source_node_id)
+
+    def _outgoing_neighbor_node_ids(self, profile_id, source_node_id):
         return tuple(
             sorted(
                 {
-                    str(target)
-                    for _, target, _, data in self._graph.out_edges(
-                        source_node_id, keys=True, data=True
-                    )
-                    if float(data["durations"][profile_id]) > 0.0
+                    target
+                    for target, _, duration in self._adjacency[profile_id].get(source_node_id, ())
+                    if duration > 0.0
                 }
             )
         )
@@ -656,7 +674,12 @@ class PreparedRoutingService:
                 return native
         remaining = set(requested.values())
         adjacency = self._indexed_adjacency[profile_id]
-        best = [None] * len(self._node_index)
+        if remaining.issubset({source, *(target for target, _, _ in adjacency[source])}):
+            # Cruise queries usually touch a few nodes. Avoid initializing an
+            # entire city-sized array for every immediate-neighbor route.
+            best = defaultdict(lambda: None)
+        else:
+            best = [None] * len(self._node_index)
         best[source] = (0.0, ())
         heap = [(0.0, (), source)]
         while heap and remaining:
@@ -665,8 +688,11 @@ class PreparedRoutingService:
                 continue
             remaining.discard(node)
             for target, edge, weight in adjacency[node]:
-                candidate = (duration + weight, path + (edge,))
                 current = best[target]
+                candidate_duration = duration + weight
+                if current is not None and candidate_duration > current[0]:
+                    continue
+                candidate = (candidate_duration, path + (edge,))
                 if current is None or candidate < current:
                     best[target] = candidate
                     heapq.heappush(heap, (candidate[0], candidate[1], target))

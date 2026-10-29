@@ -52,6 +52,7 @@ from mobile_sensing.exposure.geometry import (
     build_edge_grid_pieces,
     road_intersecting_grid_cells,
 )
+from mobile_sensing.exposure.operating import OPERATING_ALLOCATION_VERSION
 from mobile_sensing.simulation.storage import (
     SIMULATION_STORAGE_VERSION,
     SimulationArtifactReader,
@@ -249,6 +250,12 @@ def publish_exposure_artifact(
             "simulation movements reference edges absent from the prepared environment: "
             f"{missing_edge_ids[:5]!r}"
         )
+    prepared_cell_count = len(grid_cells)
+    if config.included_cell_ids is not None:
+        missing_cells = set(config.included_cell_ids) - set(grid_cells.cell_id.astype(str))
+        if missing_cells:
+            raise ValueError("Included exposure cells are absent from the prepared grid")
+        grid_cells = grid_cells.loc[grid_cells.cell_id.isin(config.included_cell_ids)]
     sensing_grid_cells = road_intersecting_grid_cells(road_edges, grid_cells)
     used_edges = road_edges.loc[road_edges["edge_id"].astype(str).isin(used_edge_ids)]
     pieces = build_edge_grid_pieces(used_edges, sensing_grid_cells) if used_edge_ids else ()
@@ -494,12 +501,17 @@ def publish_exposure_artifact(
         "grid_domain": {
             "algorithm": ROAD_GRID_DOMAIN_VERSION,
             "definition": "prepared cells with a positive-length sensing-road intersection",
-            "prepared_cell_count": len(grid_cells),
+            "prepared_cell_count": prepared_cell_count,
             "eligible_cell_count": len(sensing_grid_cells),
         },
         "edge_grid_piece_hash": scientific_hash(edge_rows[()]),
         "sparse_exposure_hash": sparse_hash.hexdigest(),
     }
+    # An omitted filter preserves historical unfiltered scientific identities.
+    if config.included_cell_ids is None:
+        resolved_config["exposure"].pop("included_cell_ids")
+    else:
+        resolved_config["grid_domain"]["retained_cell_count"] = len(grid_cells)
     identity = ScientificIdentity(
         schema_version="2.0",
         artifact_kind="exposure",
@@ -510,7 +522,7 @@ def publish_exposure_artifact(
             "edge_grid": EDGE_GRID_ALGORITHM_VERSION,
             "grid_domain": ROAD_GRID_DOMAIN_VERSION,
             "allocation": (
-                "operating-activity-exposure@2"
+                OPERATING_ALLOCATION_VERSION
                 if config.measurement == "operating_duration"
                 else EXPOSURE_ALLOCATION_VERSION
             ),

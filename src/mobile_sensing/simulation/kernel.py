@@ -284,6 +284,7 @@ class _Kernel:
             for key, runtime in self.tasks.items()
             if runtime.status == TaskLifecycleStatus.WAITING
         }
+        self._waiting_snapshot: tuple[Task, ...] | None = None
         self.online_iterator = iter(online_tasks)
         self.online_previous_key: tuple[float, str, str] | None = None
         self.online_pending: Task | None = None
@@ -586,6 +587,7 @@ class _Kernel:
             raise RuntimeError("duplicate task release event")
         runtime.status = TaskLifecycleStatus.WAITING
         self.waiting_keys.add((event.fleet_id, event.task_id))
+        self._waiting_snapshot = None
         self._record(
             time_s=event.time_s,
             phase_order=4,
@@ -849,28 +851,45 @@ class _Kernel:
         )
 
     def _snapshot(self) -> DecisionSnapshot:
+        # _initialize_vehicles inserts the fixed catalog in canonical key order.
         idle = tuple(
             runtime.state
-            for key, runtime in sorted(self.vehicles.items())
+            for runtime in self.vehicles.values()
             if runtime.state.status == VehicleStatus.IDLE
             and runtime.availability.active
             and runtime.availability.availability_end_s is not None
             and self.now_s < runtime.availability.availability_end_s
             and self.now_s < self.end_s
         )
-        waiting = tuple(self.tasks[key].task for key in sorted(self.waiting_keys))
-        next_candidates = [self.end_s]
-        if self.queue:
-            next_candidates.extend(
-                event.time_s for _, event in self.queue if event.time_s > self.now_s
+        # Tasks are immutable; cruise events do not change the waiting pool.
+        # Rebuild its canonical order only after a release or service assignment.
+        if self._waiting_snapshot is None:
+            self._waiting_snapshot = tuple(
+                self.tasks[key].task for key in sorted(self.waiting_keys)
             )
+        waiting = self._waiting_snapshot
+        next_time_s = self.end_s
+        # Every descendant is at least as late as its heap parent. Once a
+        # future event is found, its subtree cannot improve that candidate.
+        # Usually only the root is visited; same-time pending events require
+        # inspecting their children to preserve the strictly-future rule.
+        pending = [0] if self.queue else []
+        while pending:
+            index = pending.pop()
+            event_time_s = self.queue[index][1].time_s
+            if event_time_s > self.now_s:
+                next_time_s = min(next_time_s, event_time_s)
+            else:
+                for child in (2 * index + 1, 2 * index + 2):
+                    if child < len(self.queue):
+                        pending.append(child)
         if self.online_pending is not None and self.online_pending.release_s > self.now_s:
-            next_candidates.append(self.online_pending.release_s)
+            next_time_s = min(next_time_s, self.online_pending.release_s)
         return DecisionSnapshot(
             time_s=self.now_s,
             idle_vehicles=idle,
             waiting_tasks=waiting,
-            next_decision_s=min(next_candidates),
+            next_decision_s=next_time_s,
         )
 
     def _apply_assignments(
@@ -946,7 +965,9 @@ class _Kernel:
                 raise ValueError("execution_id must be globally unique within a replication")
             runtime_task = self.tasks[task_key]
             runtime_task.status = TaskLifecycleStatus.ASSIGNED
-            self.waiting_keys.discard(task_key)
+            if task_key in self.waiting_keys:
+                self.waiting_keys.remove(task_key)
+                self._waiting_snapshot = None
             runtime_task.assigned_at_s = self.now_s
             runtime_task.vehicle_id = key[1]
             runtime_task.execution_id = plan.execution_id
@@ -1018,15 +1039,14 @@ class _Kernel:
                     f"same-timestamp decision closure exceeded {self.max_micro_rounds} rounds"
                 )
             snapshot = self._snapshot()
-            immediate = self._apply_assignments(
-                self.decisions.service_assignments(snapshot), operational=False
-            )
+            service_assignments = self.decisions.service_assignments(snapshot)
+            immediate = self._apply_assignments(service_assignments, operational=False)
             if immediate:
                 drained = self._drain_zero_completions()
                 if drained != immediate:
                     raise RuntimeError("zero-duration completion queue is inconsistent")
                 continue
-            operational_snapshot = self._snapshot()
+            operational_snapshot = self._snapshot() if service_assignments else snapshot
             self._apply_assignments(
                 self.decisions.operational_assignments(operational_snapshot), operational=True
             )

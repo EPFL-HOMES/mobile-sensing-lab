@@ -21,6 +21,7 @@ from shapely.geometry.base import BaseGeometry
 from shapely.ops import substring, transform
 
 from mobile_sensing.artifacts import partition_file, verify_partitioned_artifact
+from mobile_sensing.api.map_presentation import color_scale_metadata
 from mobile_sensing.contracts import (
     ArtifactManifest,
     ArtifactRef,
@@ -294,7 +295,9 @@ def _parse_bbox(value: str | None):
     return box(west, south, east, north)
 
 
-def _bounded_geojson(features: list[dict[str, Any]], *, limits: JobStoreLimits, filters):
+def _bounded_geojson(
+    features: list[dict[str, Any]], *, limits: JobStoreLimits, filters, color_values=None
+):
     if len(features) > limits.max_map_features:
         raise QueryLimitExceeded(
             "map feature limit exceeded; narrow bbox, time, or vehicle filters"
@@ -308,6 +311,11 @@ def _bounded_geojson(features: list[dict[str, Any]], *, limits: JobStoreLimits, 
         "crs": "EPSG:4326",
         "aggregation": None,
         "filters": filters,
+        "color_scale": color_scale_metadata(
+            color_values
+            if color_values is not None
+            else (feature["properties"].get("value", 0) for feature in features)
+        ),
     }
     if len(json.dumps(response, separators=(",", ":")).encode()) > limits.max_map_bytes:
         raise QueryLimitExceeded("map byte limit exceeded; narrow bbox, time, or vehicle filters")
@@ -1255,6 +1263,7 @@ def query_matrix(root: Path, request, limits: JobStoreLimits) -> dict[str, Any]:
         )
     result["summary_semantics"] = "statistic_of_within_observation_cell_sum"
     result["positive_cell_count"] = len({row["cell_id"] for row in result["values"]})
+    result["color_scale"] = color_scale_metadata(row["value"] for row in result["values"])
     encoded = json.dumps(result, separators=(",", ":"), allow_nan=False).encode()
     if len(result["values"]) > limits.max_matrix_rows or len(encoded) > limits.max_matrix_bytes:
         raise QueryLimitExceeded("matrix response exceeds limits; narrow the query or export")

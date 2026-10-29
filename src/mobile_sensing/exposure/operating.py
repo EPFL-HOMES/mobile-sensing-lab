@@ -24,7 +24,7 @@ def read_table(root, reference, name):
     return pd.read_parquet(partition_file(artifact.directory / table.relative_path, 0))
 
 
-OPERATING_ALLOCATION_VERSION = "operating-activity-exposure@1"
+OPERATING_ALLOCATION_VERSION = "operating-activity-exposure@2"
 
 
 def stationary_context(root, source, grid, retained_locations=None):

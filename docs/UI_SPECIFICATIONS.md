@@ -1,5 +1,7 @@
 # User Interface Specification
 
+Environment's Grid section includes an addable list of filter rows. Each row selects a prepared spatial feature, excluding uniform, or Road network; each independently chooses Any of (OR) or Must include and can be removed. Selected conditions cannot be duplicated. A retained cell satisfies all Must include rows and, when Any of rows exist, at least one of them. Spatial features match strictly positive values; roads match positive-length overlap and can use either logic. No rows keep all cells. Legacy feature any/all choices and the old road requirement display as equivalent rows without changing the saved configuration until an edit. Unavailable saved feature names remain visible with backend validation errors. Python supplies retained/total counts and rejects empty retained domains. Editing a filter preserves the prepared environment. Read-only projects disable the controls. Simulation shows the current filter; Portfolio shows the selected source run's filter. The control distinguishes population from residential-geometry proxies and explains its effect on generated spatial support, sensing and downstream portfolios. Sensing always requires road intersection, independently of the authoring filter.
+
 The exponential saturation-duration field explains that local utility reaches 99% at the configured cumulative duration within each utility interval, with `u(d)=1-exp(-ln(100)*d/D)`. Capped-linear utility instead reaches 100% at its configured duration.
 
 Selected portfolio displays mean spatial grid coverage from the backend window query: the fraction of exposure-domain cells with positive duration in each allocation round, averaged over all rounds. Zero-coverage cells remain in the denominator. The selected reporting window applies; saturation-map filtering does not change this metric.
@@ -41,6 +43,8 @@ Header: application/project name, active revision, dirty-state indicator, Save R
 
 Use neutral surfaces, compact headings, aligned controls and restrained color. Blue indicates primary/configuration, green valid/completed, amber warnings/waiting, red error/failed, gray inactive. Pair color with text/icons. Map fleet categories use distinct accessible colors, separate from status colors. Duration heatmaps use a perceptually ordered sequential scale with a displayed unit and legend.
 
+Value-coloured maps default to an upper limit at the backend-computed 95th percentile of strictly positive values in the selected query. Users can select Data maximum or enter a finite positive Custom upper limit in the displayed unit; durations shown in minutes accept minutes. Values above the limit share the highest colour, and the legend labels that colour as greater than or equal to the limit and explains clipping. Invalid edits retain the last valid limit. Colour changes update paint without resetting the camera or changing source values, statistics, exports or scientific artifacts. Manual limits persist while values change within one map context and reset when the resource, display mode or unit changes. Portfolio's saturated-only display filter keeps the selected query's scale. Historical responses without presentation metadata fall back explicitly to the data maximum.
+
 ## 3. Project and environment
 
 Project supports new/open/save/duplicate and notes. The working directory is a managed artifact root, not an arbitrary server path entered into data endpoints. Show referenced datasets, source revision and recent jobs. No account, login, sharing, deployment, or permission screens in v1.
@@ -77,6 +81,8 @@ Upload wizard:
 A small preview is not full validation. Display `preview rows` versus `validated total rows/tasks` separately. Errors link to source row/task and mapped field. No spreadsheet formula execution or arbitrary transform expression field.
 
 Generator controls: intensity intervals with units, spatial/OD weights, constant service duration and quantity, explicit source/seed preview information. Generate Preview uses a separate preview stream. Display synthetic-model labels and population as a proxy, not observed demand.
+
+Generated OD tasks have one explicit **Demand spatial source** selector: independent origin/destination feature distributions, or a named registered OD data file. A selected file displays its original filename and hides both inactive feature editors. The selector accepts CSV/Parquet inputs with `origin_cell_id`, `destination_cell_id`, and `weight`, registered as demand or a supported legacy feature/weight/population role. Missing or incompatible saved references remain visible with an error; loading or failed input requests must not clear them or activate Uniform. Switching away from generated OD tasks clears the draft OD reference. Read-only cases disable the selector. This presentation uses the existing `od_distribution_input` field and does not migrate saved cases or rerun results.
 
 GTFS controls: feed reference, selected service date and routes, timezone resolved from feed, snap tolerance, duty source/grouping, turnaround time. Output preview shows active trips, full stop chains, actual inferred vehicle count, deadhead, lateness and rejected trips. Label inferred duties clearly; `buses.csv` is shown as a routes source. Completing reconstruction proposes linked Demand, Supply and Predefined assignment references in one reviewable draft update; do not silently replace another fleet's supply.
 
@@ -174,6 +180,8 @@ Exports include count grid and budget settings, sampling settings, count statist
 
 Data catalog shows source/normalized type, size, checksum, created time, validation status, provenance and Used By links. Upload, inspect, download and delete-unreferenced actions map to backend contracts. Referenced immutable datasets cannot be removed accidentally; backend reports dependency conflicts.
 
+Data includes **Demand / OD distribution** registration and lists compatible tables as OD distributions. Its instructions name the three required columns and direct the user to select the file in Fleet Configuration. Registering a file never binds it automatically to a fleet. Canonical cell-ID-only OD tables require no coordinate declaration; ordinary coordinate and geometry inputs retain their CRS checks.
+
 Forms derive supported discriminators/parameter constraints from versioned backend schemas and use curated layout metadata. Do not generate an unusable raw JSON editor as the main experience or maintain a second scientific validation engine. Server field paths map errors to controls; cross-field errors appear in a linked validation panel.
 
 Every page handles empty, loading, stale draft, validation error, failed job, cancelled job, disconnected progress and completed states. Disabled controls have a concrete explanation. Error messages preserve dataset/task IDs without leaking local stack traces. Keyboard navigation, focus restoration, labels, contrast and accessible tables are part of acceptance.
@@ -193,7 +201,7 @@ Build the shell and contract client after M01; then project/environment/import/f
 
 Simulation labels `temporal_resolution_minutes` as **Simulation reporting interval** and states that it controls exposure statistics and time-series charts. Portfolio separately exposes **Utility temporal interval** and states that exposure is summed inside this interval before nonlinear utility; it never changes the source exposure resolution.
 
-Generated Demand origins/destinations and generated Supply initial locations use a repeated spatial-distribution editor. Each row selects a prepared feature and a nonnegative mixture coefficient. The editor states the evaluation order: normalize every feature across the full prepared grid, combine normalized layers, then apply routing eligibility. `uniform` remains an explicit selectable component. Environment lists source/prepared features only and does not materialize a fleet-specific activity proxy.
+Generated Demand origins/destinations and generated Supply initial locations use a repeated spatial-distribution editor. Each row selects a prepared feature and a nonnegative mixture coefficient. The editor states the evaluation order: apply the optional grid filter, normalize every feature across retained cells, combine normalized layers, then apply routing eligibility. With no filter, the retained domain is the full prepared grid. `uniform` remains an explicit selectable component. Environment lists source/prepared features only and does not materialize a fleet-specific activity proxy.
 
 ## MR34 service-area controls
 

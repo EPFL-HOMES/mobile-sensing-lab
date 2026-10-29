@@ -37,6 +37,34 @@ def test_explicit_ids_and_generated_ids_are_stable() -> None:
         canonical_json_bytes({"value": float("inf")})
 
 
+def test_scientific_hash_encodes_the_normalized_projection_once():
+    import hashlib
+    from datetime import date
+    from enum import StrEnum
+    from mobile_sensing.contracts import scientific_projection
+    from mobile_sensing.contracts.base import CANONICAL_JSON_VERSION
+
+    class Choice(StrEnum):
+        FIRST = "first"
+
+    value = {
+        "vehicle": VehicleKey(fleet_id="fleet", vehicle_id="001"),
+        "scalars": (None, True, 123, -0.0, "Lausanne – 湖", Choice.FIRST),
+        "date": date(2026, 10, 3),
+        "datetime": datetime(2026, 10, 3, tzinfo=timezone.utc),
+        "unordered": frozenset({"b", "a"}),
+    }
+    expected = hashlib.sha256(
+        CANONICAL_JSON_VERSION.encode("ascii")
+        + b"\x00"
+        + canonical_json_bytes(scientific_projection(value))
+    ).hexdigest()
+    assert scientific_hash(value) == expected
+    for number in (float("inf"), float("-inf"), float("nan")):
+        with pytest.raises(ValueError, match="non-finite"):
+            scientific_hash({"value": number})
+
+
 def test_catalog_and_joint_replication_identity_are_content_checked() -> None:
     metadata_hash = "1" * 64
     keys = (

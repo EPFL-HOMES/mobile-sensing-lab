@@ -11,6 +11,7 @@ import { JobMonitor } from "../components/JobMonitor";
 import { ScientificChart } from "../components/ScientificChart";
 import { RunManagement } from "./RunManagement";
 import { ApiIssues } from "../components/ApiIssues";
+import { gridFilterLabel } from "../components/GridFilterEditor";
 
 export function SimulationPage() {
   const workspace = useWorkspace();
@@ -44,6 +45,7 @@ export function SimulationPage() {
     {!config?.fleets?.length && <Alert severity="info">Configure at least one fleet. <Link to="/fleets">Open Fleet Configuration</Link></Alert>}
     {simulation && <Paper variant="outlined" sx={{ p: 3 }}><Stack gap={2}>
       <TextField label="Run name" value={name} onChange={(e) => setName(e.target.value)} />
+      <Typography variant="body2">Grid filter: {gridFilterLabel(config?.grid_filter)}. <Link to="/environment">Edit in Environment</Link></Typography>
       <div className="form-grid">
         <TextField select label="Simulation day" value={simulation.time_mode ?? "calendar"} onChange={(e) => update({ time_mode: e.target.value as SimulationEditor["time_mode"] })}><MenuItem value="relative">Generic day (no calendar)</MenuItem><MenuItem value="weekday">Representative weekday</MenuItem><MenuItem value="calendar">Exact calendar date</MenuItem></TextField>
         {simulation.time_mode === "weekday" && <TextField select label="Weekday" value={simulation.weekday ?? 2} onChange={(e) => update({ weekday: Number(e.target.value) })}>{["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].map((day, i) => <MenuItem key={day} value={i}>{day}</MenuItem>)}</TextField>}

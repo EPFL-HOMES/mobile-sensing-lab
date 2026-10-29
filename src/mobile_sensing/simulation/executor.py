@@ -364,6 +364,24 @@ def materialize_execution(
 
     if cutoff_s < plan.start_s or cutoff_s > plan.end_s:
         raise ValueError("execution cutoff must lie within the plan")
+    # The usual completion retains the complete immutable plan. Avoid copying
+    # every edge and repeatedly locating already passed task milestones. Keep
+    # the clipping path for fractional edges and tolerance-sized end overshoots.
+    if cutoff_s == plan.end_s and all(
+        interval.start_s < cutoff_s
+        and interval.end_s <= cutoff_s
+        and (
+            not isinstance(interval, MovementInterval)
+            or (interval.edge_start_fraction == 0.0 and interval.edge_end_fraction == 1.0)
+        )
+        for interval in plan.intervals
+    ):
+        if plan.intervals and len(plan.task_milestones) != len(task.steps):
+            raise ValueError("task milestones and steps must have equal lengths")
+        return MaterializedExecution(
+            intervals=plan.intervals,
+            position=MaterializedPosition(location_id=plan.end_location_id),
+        )
     realized = []
     position = MaterializedPosition(location_id=start_location_id)
     for interval in plan.intervals:

@@ -92,6 +92,12 @@ def test_bounded_allowlisted_table_and_matrix_queries_preserve_R_and_J(tmp_path)
     )
     assert realization["replications_R"] == 1
     assert realization["sampling_rounds_J"] is None
+    assert realization["color_scale"] == {
+        "positive_p95": 2.0,
+        "maximum": 2.0,
+        "positive_count": 1,
+        "scope": "complete_query",
+    }
     assert realization["expected_shape"] == [1, len(axes["cell_ids"]), len(axes["time_bin_ids"])]
     try:
         query_matrix(
@@ -129,6 +135,8 @@ def test_bounded_allowlisted_table_and_matrix_queries_preserve_R_and_J(tmp_path)
     assert (summary["replications_R"], summary["sampling_rounds_J"]) == (1, 8)
     assert summary["round_id"] is None
     assert summary["unit"] == "s"
+    assert summary["color_scale"]["positive_count"] == len(summary["values"])
+    assert summary["color_scale"]["scope"] == "complete_query"
 
     sample = query_matrix(
         tmp_path,
@@ -143,6 +151,7 @@ def test_bounded_allowlisted_table_and_matrix_queries_preserve_R_and_J(tmp_path)
     )
     assert (sample["replications_R"], sample["sampling_rounds_J"]) == (1, 8)
     assert sample["round_id"] == 0
+    assert sample["color_scale"]["scope"] == "complete_query"
 
 
 def test_wgs84_map_limits_and_managed_export_job(tmp_path) -> None:

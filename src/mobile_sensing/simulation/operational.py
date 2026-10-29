@@ -77,6 +77,7 @@ class OperationalPolicyEngine:
         self.register_location = register_location
         self.selection_counters: dict[VehicleTuple, int] = {key: 0 for key in self.specs}
         self.previous_cruise_legs: dict[VehicleTuple, tuple[str, str]] = {}
+        self._blocked_cruise_generations: dict[VehicleTuple, int] = {}
         self.node_locations = {
             location.node_id: location
             for location in self.locations.values()
@@ -84,11 +85,21 @@ class OperationalPolicyEngine:
         }
         self.diagnostics: list[OperationalDiagnostic] = []
         self._diagnostic_keys: set[tuple[float | None, VehicleTuple, str]] = set()
+        self._stationary_generations: dict[VehicleTuple, int] = {}
 
     def _diagnose(
         self, vehicle: VehicleState, *, time_s: float | None, code: str, message: str
     ) -> None:
-        key = (time_s, (vehicle.key.fleet_id, vehicle.key.vehicle_id), code)
+        vehicle_key = (vehicle.key.fleet_id, vehicle.key.vehicle_id)
+        if code == "STATIONARY_IDLE":
+            # One diagnostic describes a continuous idle episode. Unrelated
+            # fleet events must not allocate another row at every timestamp.
+            if self._stationary_generations.get(vehicle_key) == vehicle.execution_generation:
+                return
+            self._stationary_generations[vehicle_key] = vehicle.execution_generation
+            self.diagnostics.append(OperationalDiagnostic(time_s, vehicle.key, code, message))
+            return
+        key = (time_s, vehicle_key, code)
         if key in self._diagnostic_keys:
             return
         self._diagnostic_keys.add(key)
@@ -207,6 +218,10 @@ class OperationalPolicyEngine:
         fleet = self.fleets[key[0]]
         if fleet.supply.idle_policy.policy != "random_cruise":
             return None
+        if self._blocked_cruise_generations.get(key) == vehicle.execution_generation:
+            # With static roads and a shrinking remaining shift, an infeasible
+            # first leg stays infeasible until a service changes vehicle state.
+            return None
         current_location = self.locations[vehicle.committed_location_id]
         assert current_location.node_id is not None
         current_node = current_location.node_id
@@ -276,6 +291,11 @@ class OperationalPolicyEngine:
             if leg_count > 100_000:
                 raise RuntimeError("cruise walk exceeds the bounded leg count")
         if not intervals:
+            # At negative elapsed times, approaching zero can make a previously
+            # unrepresentable positive increment representable. Do not memoize
+            # that numerical failure, or a call with no future decision window.
+            if time_s >= 0.0 and decision_s > time_s:
+                self._blocked_cruise_generations[key] = vehicle.execution_generation
             self._diagnose(
                 vehicle,
                 time_s=time_s,

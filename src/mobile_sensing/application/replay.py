@@ -136,7 +136,7 @@ def replay_project(root, config, source_run=None, *, cancellation, progress, sou
         for key, value in source["assignment_plans"].items()
     }
     if source_run is not None:
-        source["project"] = config.model_dump(mode="json")
+        source["project"] = config.artifact_payload()
         source["reports"] = {
             **source["reports"],
             "replay": {

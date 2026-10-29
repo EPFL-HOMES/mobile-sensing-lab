@@ -462,7 +462,7 @@ class PreparedEnvironmentReader:
     def __init__(self, artifact_root: Path) -> None:
         self.artifact_root = Path(artifact_root).resolve()
 
-    def read(self, reference: EnvironmentArtifactRef) -> PreparedEnvironment:
+    def _verified_metadata(self, reference: EnvironmentArtifactRef):
         directory = self.artifact_root / "environments" / reference.artifact_id
         if not (directory / "_SUCCESS").is_file():
             raise FileNotFoundError(f"incomplete prepared environment: {reference.artifact_id}")
@@ -499,6 +499,18 @@ class PreparedEnvironmentReader:
         }
         if any(resolved[name] != value for name, value in factored.items()):
             raise ValueError("prepared environment metadata does not match scientific identity")
+        return directory, manifest, metadata
+
+    def read_grid_geometry(self, reference: EnvironmentArtifactRef):
+        """Read verified spatial tables without constructing routing or snapping state."""
+        directory, _, _ = self._verified_metadata(reference)
+        return (
+            gpd.read_parquet(directory / "road_edges.parquet"),
+            gpd.read_parquet(directory / "grid_cells.parquet"),
+        )
+
+    def read(self, reference: EnvironmentArtifactRef) -> PreparedEnvironment:
+        directory, manifest, metadata = self._verified_metadata(reference)
         boundary = gpd.read_parquet(directory / "boundary.parquet")
         edge_lineage = pd.read_parquet(directory / "edge_lineage.parquet")
         grid_cells = gpd.read_parquet(directory / "grid_cells.parquet")

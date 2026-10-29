@@ -10,6 +10,7 @@ import { Page } from "../components/Page";
 import { JobMonitor } from "../components/JobMonitor";
 import { ApiIssues } from "../components/ApiIssues";
 import { ScientificChart } from "../components/ScientificChart";
+import { gridFilterLabel } from "../components/GridFilterEditor";
 
 function NumberList({ label, values, onChange, onValidity }: { label: string; values: readonly number[]; onChange: (values: number[]) => void; onValidity: (valid: boolean) => void }) {
   const [text, setText] = useState(values.join(", "));
@@ -60,6 +61,7 @@ export function PortfolioPage() {
     <TextField select label="Source simulation run" value={selected?.run_id ?? ""} onChange={(e) => chooseRun(e.target.value)}><MenuItem value="">Select completed run</MenuItem>{runs.data?.map((run) => <MenuItem key={run.run_id} value={run.run_id}>{run.name} · {run.config.simulation?.time_mode === "relative" ? "Generic day" : run.config.simulation?.service_date}</MenuItem>)}</TextField>
     {selected && editor && <>
       <Alert severity="info">Source: {selected.name} · {selected.replications} simulation replications · {selected.config.simulation?.start_time}–{selected.config.simulation?.end_time} · {selected.config.simulation?.temporal_resolution_minutes} minute bins. Supply remains fixed.</Alert>
+      <Typography variant="body2">Source grid filter: {gridFilterLabel(selected.config.grid_filter)}. Portfolios use the source run’s retained sensing cells.</Typography>
       <Paper variant="outlined" sx={{ p: 3 }}><Stack gap={2}>
         <Typography variant="h6">Sensor counts and costs</Typography>
         <TextField label="Cost unit" value={editor.cost_unit} onChange={(e) => update({ cost_unit: e.target.value })} />

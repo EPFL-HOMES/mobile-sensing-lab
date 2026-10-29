@@ -1,5 +1,7 @@
 # Portfolio Random Enumeration and Analysis Specification
 
+An enabled source-run grid filter restricts the exposure axis before portfolio sampling. Utility spatial weights are selected and normalized on that axis; coverage denominators include every retained road-intersecting cell, including zero-exposure cells. Portfolio does not apply the current draft's filter to a historical source run or change its physical catalog. Selecting a different grid domain requires a new source run and analysis.
+
 ## MR33 extension: utility temporal interval
 
 The reporting time axis retained by exposure remains independent from the utility evaluation axis. Let \(B\) be the ordered reporting bins and let \(Q\) be an ordered partition in which every utility interval is a union of complete reporting bins. For every sampled portfolio matrix,

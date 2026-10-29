@@ -129,7 +129,7 @@ export function AppShell() {
           <Stack gap={1.5}>
             <ol>
               <li><strong>Project:</strong> Open the example results, duplicate a project to edit it, or create a new project. Use Files to access settings, inputs and exports.</li>
-              <li><strong>Data:</strong> Register boundary, grid, road network, speed and optional feature files. Features such as population are aggregated onto the grid.</li>
+              <li><strong>Data:</strong> Register boundary, grid, road network, speed, optional features and demand files. Select an OD distribution file explicitly in Fleet Configuration. Features such as population are aggregated onto the grid.</li>
               <li><strong>Environment:</strong> Select or search the study region and prepare its grid, roads and speeds. Inspect the prepared environment and optional spatial features on the maps.</li>
               <li><strong>Fleet Configuration:</strong> Add each fleet; configure Demand, Supply, Dispatch, Routing and sensing movements.</li>
               <li><strong>Simulation:</strong> Choose the day, observation hours, simulation replications, reporting resolution and worker processes. Run simulation saves, validates and computes movement and exposure.</li>

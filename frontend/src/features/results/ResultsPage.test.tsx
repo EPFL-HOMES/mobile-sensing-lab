@@ -113,7 +113,7 @@ describe("M11 result workspaces", () => {
         const body = JSON.parse(String(init.body)) as { kind: string; statistic: string };
         expect(body.kind).toBe("portfolio_summary");
         expect(body.statistic).toBe("mean");
-        return response({ resource_id: body.kind === "portfolio_sample" ? "samples-1" : "analysis-1", kind: body.kind, statistic: body.kind === "portfolio_sample" ? "realization" : "mean", cell_ids: ["cell-1"], time_bin_ids: ["bin-1"], expected_shape: [1, 1], values: [{ cell_id: "cell-1", time_bin_id: "bin-1", value: 300 }], unit: "s", zero_fill: "absent_sparse_rows_are_zero", complete: true, replications_R: 2, sampling_rounds_J: 4, portfolio_id: "p-tie-1", round_id: body.kind === "portfolio_sample" ? 0 : null, time_summary: [{ time_bin_id: "bin-1", value: 300 }], overall_value: 300, positive_cell_count: 1, mean_coverage_fraction: 0.25, summary_semantics: "statistic_of_within_observation_cell_sum" });
+        return response({ resource_id: body.kind === "portfolio_sample" ? "samples-1" : "analysis-1", kind: body.kind, statistic: body.kind === "portfolio_sample" ? "realization" : "mean", cell_ids: ["cell-1"], time_bin_ids: ["bin-1"], expected_shape: [1, 1], values: [{ cell_id: "cell-1", time_bin_id: "bin-1", value: 300 }], unit: "s", zero_fill: "absent_sparse_rows_are_zero", complete: true, replications_R: 2, sampling_rounds_J: 4, portfolio_id: "p-tie-1", round_id: body.kind === "portfolio_sample" ? 0 : null, time_summary: [{ time_bin_id: "bin-1", value: 300 }], overall_value: 300, positive_cell_count: 1, color_scale: { positive_p95: 300, maximum: 300, positive_count: 1, scope: "complete_query" }, mean_coverage_fraction: 0.25, summary_semantics: "statistic_of_within_observation_cell_sum" });
       }
       throw new Error(`Unexpected request ${init?.method ?? "GET"} ${url}`);
     });
@@ -133,6 +133,10 @@ describe("M11 result workspaces", () => {
     expect(screen.getByText("Mean spatial grid coverage")).toBeInTheDocument();
     expect(screen.getByText("25.00%")).toBeInTheDocument();
     expect(screen.getByRole("checkbox", { name: "Only cells above 5 min saturation" })).not.toBeChecked();
+    expect(await screen.findByText(/P95 of positive values in the selected query/)).toHaveTextContent("0–5.000 min");
+    fireEvent.click(screen.getByRole("checkbox", { name: "Only cells above 5 min saturation" }));
+    expect(screen.getByText(/P95 of positive values in the selected query/)).toHaveTextContent("0–5.000 min");
+    fireEvent.click(screen.getByRole("checkbox", { name: "Only cells above 5 min saturation" }));
     expect(screen.getByText(/at least 5 minutes/)).toBeInTheDocument();
     for (const removed of ["Retained round utilities", "Selected sample matrix", "Sampled vehicles", "p-tie-1", "p-tie-2"])
       expect(screen.queryByText(removed, { exact: true })).not.toBeInTheDocument();

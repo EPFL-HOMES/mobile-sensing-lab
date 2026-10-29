@@ -41,6 +41,82 @@ class SpatialFeatureWeight(ContractModel):
     weight: float = Field(default=1, ge=0, allow_inf_nan=False)
 
 
+class GridFilterRule(ContractModel):
+    kind: Literal["spatial_feature", "road_network"]
+    feature: str | None = None
+    logic: Literal["any", "must"] = "any"
+
+    @model_validator(mode="after")
+    def valid_condition(self):
+        if self.kind == "road_network":
+            if self.feature is not None:
+                raise ValueError("A road-network grid rule cannot name a spatial feature")
+        elif self.feature is None or not self.feature.strip() or self.feature == "uniform":
+            raise ValueError("Grid rules require named spatial features other than uniform")
+        return self
+
+
+class GridFilter(ContractModel):
+    rules: tuple[GridFilterRule, ...] = ()
+    features: tuple[str, ...] = ()
+    match: Literal["any", "all"] = "any"
+    require_road_intersection: bool = False
+
+    @property
+    def enabled(self):
+        return bool(self.effective_rules)
+
+    @property
+    def effective_rules(self):
+        if self.rules:
+            return self.rules
+        features = tuple(
+            GridFilterRule(
+                kind="spatial_feature", feature=name, logic="any" if self.match == "any" else "must"
+            )
+            for name in self.features
+        )
+        road = (
+            (GridFilterRule(kind="road_network", logic="must"),)
+            if self.require_road_intersection
+            else ()
+        )
+        return road + features
+
+    @property
+    def feature_names(self):
+        return tuple(
+            rule.feature for rule in self.effective_rules if rule.kind == "spatial_feature"
+        )
+
+    @property
+    def needs_road_geometry(self):
+        return any(rule.kind == "road_network" for rule in self.effective_rules)
+
+    @field_validator("rules")
+    @classmethod
+    def canonical_rules(cls, value):
+        keys = [(rule.kind, rule.feature or "") for rule in value]
+        if len(set(keys)) != len(keys):
+            raise ValueError("Grid filter conditions must be unique")
+        return tuple(sorted(value, key=lambda rule: (rule.kind, rule.feature or "")))
+
+    @model_validator(mode="after")
+    def one_representation(self):
+        if self.rules and (self.features or self.require_road_intersection):
+            raise ValueError("Grid filter rules cannot be combined with legacy conditions")
+        return self
+
+    @field_validator("features")
+    @classmethod
+    def canonical_features(cls, value):
+        if any(not name.strip() or name == "uniform" for name in value):
+            raise ValueError("Grid filters require named spatial features other than uniform")
+        if len(set(value)) != len(value):
+            raise ValueError("Grid filter features must be unique")
+        return tuple(sorted(value))
+
+
 class DemandEditor(ContractModel):
     source: Literal["import", "generator"] = "generator"
     task_type: Literal["location", "od", "ordered"] = "location"
@@ -269,6 +345,7 @@ class ProjectConfig(ContractModel):
     schema_version: Literal["3.0", "3.1", "3.2", "3.3", "3.4"] = "3.4"
     environment: EnvironmentEditor = Field(default_factory=EnvironmentEditor)
     prepared_environment: EnvironmentResult | None = None
+    grid_filter: GridFilter = Field(default_factory=GridFilter)
     fleets: tuple[FleetEditor, ...] = ()
     simulation: SimulationEditor = Field(default_factory=SimulationEditor)
     portfolio: PortfolioEditor = Field(
@@ -282,6 +359,27 @@ class ProjectConfig(ContractModel):
     example_bundle_id: str | None = None
     read_only: bool = False
     saved_views: dict[str, str] = Field(default_factory=dict)
+
+    def artifact_payload(self):
+        """Keep additive empty rules out of existing immutable artifact identities."""
+        value = self.model_dump(mode="json")
+        if not self.grid_filter.rules:
+            value["grid_filter"].pop("rules")
+        return value
+
+    def validate_active_od_selections(self):
+        """Check current choices without preventing historical configurations from loading."""
+        for fleet in self.fleets:
+            demand = fleet.demand
+            if demand.od_distribution_input is not None:
+                if not demand.od_distribution_input.strip():
+                    raise ValueError(
+                        f"{fleet.name}: Select an OD distribution input or use independent spatial features"
+                    )
+                if demand.source != "generator" or demand.task_type != "od":
+                    raise ValueError(
+                        f"{fleet.name}: An OD distribution input requires generated OD tasks"
+                    )
 
     @model_validator(mode="after")
     def historical_defaults(self):
@@ -343,6 +441,23 @@ class ProjectConfigRequest(ApiModel):
             if isinstance(value, ProjectConfig)
             else ProjectConfig.model_validate_json(json.dumps(value))
         )
+
+
+class GridFilterPreviewRequest(ApiModel):
+    prepared_environment: EnvironmentResult
+    grid_filter: GridFilter
+
+    @field_validator("prepared_environment", "grid_filter", mode="before")
+    @classmethod
+    def decode_nested(cls, value, info):
+        model = EnvironmentResult if info.field_name == "prepared_environment" else GridFilter
+        return value if isinstance(value, model) else model.model_validate_json(json.dumps(value))
+
+
+class GridFilterPreview(ContractModel):
+    total_cell_count: int
+    retained_cell_count: int
+    excluded_cell_count: int
 
 
 class ProjectResolutionResult(ContractModel):

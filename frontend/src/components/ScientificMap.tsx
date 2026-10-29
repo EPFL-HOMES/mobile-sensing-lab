@@ -1,5 +1,6 @@
 import { Alert, Box, Button, CircularProgress, MenuItem, Slider, Stack, TextField, Typography } from "@mui/material";
 import { useEffect, useMemo, useRef, useState } from "react";
+import type { ExpressionSpecification } from "maplibre-gl";
 import type { GeoJsonValue } from "../features/results/types";
 import workerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
 
@@ -59,6 +60,7 @@ function webglAvailable() {
 }
 
 type Basemap = "none" | "light" | "streets" | "imagery";
+type ColorLimit = "p95" | "maximum" | "custom";
 const EMPTY: GeoJsonValue = { type: "FeatureCollection", features: [], crs: "EPSG:4326", returned_count: 0, total_matching_count: 0, is_complete: true, aggregation: null };
 const PROVIDERS = {
   light: { tiles: "https://tile.openstreetmap.org/{z}/{x}/{y}.png", attribution: '© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a>' },
@@ -85,10 +87,38 @@ export function ScientificMap({ data, mode, unit, contextData, fallback, loading
   const [tileLoading, setTileLoading] = useState(false);
   const [tileError, setTileError] = useState<string | null>(null);
   const [retry, setRetry] = useState(0);
-  const maxValue = useMemo(() => (data?.features ?? []).reduce((value, feature) => Math.max(value, Number(feature.properties.value ?? 0)), 0), [data]);
+  const returnedMaxValue = useMemo(() => (data?.features ?? []).reduce((value, feature) => {
+    const next = Number(feature.properties.value ?? 0);
+    return Number.isFinite(next) ? Math.max(value, next) : value;
+  }, 0), [data]);
+  const scale = data?.color_scale;
+  const maxValue = scale && Number.isFinite(scale.maximum) && scale.maximum >= returnedMaxValue ? scale.maximum : returnedMaxValue;
+  const positiveP95 = scale?.positive_p95;
+  const hasP95 = typeof positiveP95 === "number" && Number.isFinite(positiveP95) && positiveP95 > 0 && positiveP95 <= maxValue;
   const durationInMinutes = mode === "duration" && unit === "s";
-  const displayedMaxValue = durationInMinutes ? maxValue / 60 : maxValue;
+  const displayDivisor = durationInMinutes ? 60 : 1;
   const displayedUnit = durationInMinutes ? "min" : unit;
+  const scaleContext = `${mode}:${unit ?? ""}:${fitKey ?? ""}`;
+  const [colorLimit, setColorLimit] = useState<ColorLimit>("p95");
+  const [customLimit, setCustomLimit] = useState(0);
+  const [customDraft, setCustomDraft] = useState("");
+  const [limitContext, setLimitContext] = useState(scaleContext);
+  // A changed resource or unit starts a fresh automatic scale. Query values may
+  // change without clearing a manually chosen limit for the same map context.
+  const currentColorLimit = limitContext === scaleContext ? colorLimit : "p95";
+  const automaticLimit = hasP95 ? positiveP95 : maxValue;
+  const colorMaximum = currentColorLimit === "custom" && customLimit > 0 ? customLimit : currentColorLimit === "maximum" ? maxValue : automaticLimit;
+  const displayedColorMaximum = colorMaximum / displayDivisor;
+  const customInvalid = currentColorLimit === "custom" && (!customDraft.trim() || !Number.isFinite(Number(customDraft) * displayDivisor) || Number(customDraft) <= 0);
+  const valueColored = mode === "duration" || mode === "feature" || mode === "movement" && !network && maxValue > 0;
+  const capped = maxValue > colorMaximum;
+
+  useEffect(() => {
+    setLimitContext(scaleContext);
+    setColorLimit("p95");
+    setCustomLimit(0);
+    setCustomDraft("");
+  }, [scaleContext]);
   const bounds = useMemo(() => coordinateBounds({ ...(data ?? EMPTY), features: [...(data?.features ?? []), ...contexts.flatMap(context => context.features)] }), [data, contexts]);
   const boundsRef = useRef(bounds); boundsRef.current = bounds;
   const hasMapExtent = Boolean(bounds || fitted.current);
@@ -164,9 +194,6 @@ export function ScientificMap({ data, mode, unit, contextData, fallback, loading
     created.setLayoutProperty("network-casing", "visibility", mode === "movement" && network ? "visible" : "none");
     created.setLayoutProperty("feature-point", "visibility", mode === "feature" ? "visible" : "none");
     created.setLayoutProperty("region-line", "visibility", mode === "region" ? "visible" : "none");
-    created.setPaintProperty("movement-line", "line-color", network ? "#79e6e6" : maxValue > 0 ? ["interpolate", ["linear"], ["sqrt", ["max", 0, ["coalesce", ["get", "value"], 0]]], 0, "#aecdd6", Math.max(Math.sqrt(maxValue)*.5, Number.EPSILON), "#168d9b", Math.max(Math.sqrt(maxValue), Number.EPSILON*2), "#073b64"] : "#00abb7");
-    created.setPaintProperty("duration-fill", "fill-color", mode === "region" ? "#24a0aa" : ["interpolate", ["linear"], ["sqrt", ["max", 0, ["coalesce", ["get", "value"], 0]]], 0, "#edf2f6", Math.max(Math.sqrt(maxValue)*.5, Number.EPSILON), "#42b7c4", Math.max(Math.sqrt(maxValue), Number.EPSILON*2), "#073b64"]);
-    created.setPaintProperty("feature-point", "circle-color", ["interpolate", ["linear"], ["sqrt", ["max", 0, ["coalesce", ["get", "value"], 0]]], 0, "#edf2f6", Math.max(Math.sqrt(maxValue)*.5, Number.EPSILON), "#42b7c4", Math.max(Math.sqrt(maxValue), Number.EPSILON*2), "#073b64"]);
     created.setPaintProperty("duration-fill", "fill-opacity", mode === "region" ? .12 : ["case", [">", ["coalesce", ["get", "value"], 0], 0], opacity, 0]);
     if ((!fitted.current || fittedKey.current !== fitKey) && boundsRef.current) { created.resize(); created.fitBounds(boundsRef.current, { padding: 36, maxZoom: 22, duration: 0 }); fitted.current = true; fittedKey.current = fitKey; }
     const layer = mode === "movement" ? "movement-line" : mode === "region" ? "region-line" : "duration-fill";
@@ -186,9 +213,23 @@ export function ScientificMap({ data, mode, unit, contextData, fallback, loading
     return () => { created.off("render", onRender); created.off("idle", onIdle); window.clearTimeout(timeout); };
   }, [data, contexts, initialized, mode, maxValue, fitKey, network]);
   useEffect(() => {
+    const created = map.current;
+    if (!created || !initialized) return;
+    const lowerStop = Math.max(Math.sqrt(colorMaximum) * .5, Number.EPSILON);
+    const upperStop = Math.max(Math.sqrt(colorMaximum), Number.EPSILON * 2);
+    const input: ExpressionSpecification = ["sqrt", ["max", 0, ["coalesce", ["get", "value"], 0]]];
+    const fillColor: ExpressionSpecification = ["interpolate", ["linear"], input, 0, "#edf2f6", lowerStop, "#42b7c4", upperStop, "#073b64"];
+    created.setPaintProperty("duration-fill", "fill-color", mode === "region" ? "#24a0aa" : fillColor);
+    created.setPaintProperty("feature-point", "circle-color", fillColor);
+    created.setPaintProperty("movement-line", "line-color", network ? "#79e6e6" : maxValue > 0
+      ? ["interpolate", ["linear"], input, 0, "#aecdd6", lowerStop, "#168d9b", upperStop, "#073b64"] : "#00abb7");
+  }, [colorMaximum, initialized, mode, network, maxValue]);
+  useEffect(() => {
     if (initialized && (mode === "duration" || mode === "feature")) map.current?.setPaintProperty("duration-fill", "fill-opacity", ["case", [">", ["coalesce", ["get", "value"], 0], 0], opacity, 0]);
-    if (initialized && mode === "feature") { map.current?.setPaintProperty("feature-point", "circle-opacity", opacity); map.current?.setPaintProperty("movement-line", "line-opacity", opacity); }
-  }, [opacity, initialized, mode]);
+    if (initialized && mode === "feature") map.current?.setPaintProperty("feature-point", "circle-opacity", ["case", [">", ["coalesce", ["get", "value"], 0], 0], opacity, 0]);
+    if (initialized) map.current?.setPaintProperty("movement-line", "line-opacity", valueColored
+      ? ["case", [">", ["coalesce", ["get", "value"], 0], 0], mode === "feature" ? opacity : .85, 0] : .85);
+  }, [opacity, initialized, mode, valueColored]);
 
   const failed = status.kind !== "loading" && status.kind !== "ready";
   const busy = loading || (Boolean(data?.features.length) && status.kind === "loading");
@@ -197,6 +238,21 @@ export function ScientificMap({ data, mode, unit, contextData, fallback, loading
       <TextField disabled={false} select size="small" label="Basemap" value={basemap} sx={{ minWidth: 190 }} onChange={(e) => { const value = e.target.value as Basemap; setBasemap(value); try { localStorage.setItem("sensing.basemap.v2", value); } catch { /* Presentation preferences are optional. */ } }}><MenuItem value="none">Local / no online tiles</MenuItem><MenuItem value="light">Light streets · OSM</MenuItem><MenuItem value="streets">Street map · OSM</MenuItem><MenuItem value="imagery">Satellite · Esri World Imagery</MenuItem></TextField>
       <Button disabled={!initialized || !bounds} onClick={() => { if (bounds) map.current?.fitBounds(bounds, { padding: 36, maxZoom: 22, duration: 300 }); }}>Fit result</Button>
       {(mode === "duration" || mode === "feature") && <Stack direction="row" gap={2} alignItems="center"><Typography variant="caption">Overlay opacity</Typography><Slider aria-label="Overlay opacity" value={opacity} min={0} max={1} step={.05} onChange={(_, value) => setOpacity(value as number)} sx={{ width: 100 }} /></Stack>}
+      {valueColored && <TextField select size="small" label="Color upper limit" value={currentColorLimit} sx={{ minWidth: 210 }} onChange={(event) => {
+        const next = event.target.value as ColorLimit;
+        if (next === "custom" && customLimit <= 0) {
+          const initial = colorMaximum > 0 ? colorMaximum : displayDivisor;
+          setCustomLimit(initial); setCustomDraft(String(initial / displayDivisor));
+        }
+        setColorLimit(next);
+      }}><MenuItem value="p95">95th percentile</MenuItem><MenuItem value="maximum">Data maximum</MenuItem><MenuItem value="custom">Custom upper limit</MenuItem></TextField>}
+      {valueColored && currentColorLimit === "custom" && <TextField size="small" type="number" label={displayedUnit ? `Upper limit (${displayedUnit})` : "Upper limit"} value={customDraft} error={customInvalid} helperText={customInvalid ? "Enter a finite value greater than zero. The last valid limit remains active." : "Changes colors only; original values are retained."} inputProps={{ min: 0, step: "any" }} sx={{ width: 250 }} onChange={(event) => {
+        const next = event.target.value;
+        setCustomDraft(next);
+        const parsed = Number(next);
+        const raw = parsed * displayDivisor;
+        if (next.trim() && Number.isFinite(raw) && raw > 0) setCustomLimit(raw);
+      }} />}
       {tileLoading && <Stack direction="row" alignItems="center" gap={1} role="status"><CircularProgress size={16} /><Typography variant="caption">Loading basemap…</Typography></Stack>}
     </Stack>
     {tileError && <Alert severity="warning" action={<Button onClick={() => setRetry(value => value+1)}>Retry</Button>}>{tileError}</Alert>}
@@ -209,6 +265,6 @@ export function ScientificMap({ data, mode, unit, contextData, fallback, loading
     </Box>
     {failed && fallback}
     {status.kind === "ready" && !busy && data && <Typography variant="caption" color="text.secondary">Map ready: {status.renderedFeatureCount} rendered features from {data?.features.length ?? 0} source features.</Typography>}
-    {(mode === "duration" || mode === "feature" || mode === "movement" && Boolean(unit) && maxValue > 0) && <Stack direction="row" alignItems="center" gap={1}><Box className="duration-legend" /><Typography variant="caption">0–{displayedMaxValue.toPrecision(4)} {displayedUnit}; square-root color scale.{mode === "duration" ? " Zero cells are transparent and retained in statistics." : mode === "feature" ? " Original source values." : " Mean time per directed edge."}</Typography></Stack>}
+    {valueColored && <Stack direction="row" alignItems="center" gap={1}><Box className="duration-legend" /><Typography variant="caption">0–{displayedColorMaximum.toPrecision(4)} {displayedUnit}; square-root color scale.{currentColorLimit === "p95" && hasP95 ? ` P95 of positive values in ${scale?.scope === "returned_features" ? "the returned features" : "the selected query"}.` : currentColorLimit === "p95" && maxValue > 0 ? " P95 unavailable; using the data maximum." : maxValue === 0 ? " No positive values in the selected query." : ""}{capped ? ` Highest color: ≥ ${displayedColorMaximum.toPrecision(4)} ${displayedUnit ?? ""}. Values above the limit share the highest color.` : ""}{mode === "duration" ? " Zero cells are transparent and retained in statistics." : mode === "feature" ? " Original source values." : " Mean time per directed edge."}</Typography></Stack>}
   </Stack>;
 }

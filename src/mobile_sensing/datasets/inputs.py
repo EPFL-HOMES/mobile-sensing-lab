@@ -98,6 +98,7 @@ def snapshot_input(root: Path, request: InputRegistration, *, limit: int = 2 * 1
         byte_hash = digest.hexdigest()
         crs = request.source_crs
         columns, preview, layers = [], [], []
+        has_geometry = suffix in {".gpkg", ".geojson", ".json"}
         if suffix == ".csv":
             frame = pd.read_csv(target, nrows=8, dtype=str, keep_default_na=False)
             columns = list(frame.columns)
@@ -107,6 +108,7 @@ def snapshot_input(root: Path, request: InputRegistration, *, limit: int = 2 * 1
             columns = file.schema_arrow.names
             metadata = file.schema_arrow.metadata or {}
             if b"geo" in metadata:
+                has_geometry = True
                 geo = json.loads(metadata[b"geo"])
                 native = geo["columns"][geo["primary_column"]].get("crs", "EPSG:4326")
                 if native is not None:
@@ -135,6 +137,20 @@ def snapshot_input(root: Path, request: InputRegistration, *, limit: int = 2 * 1
                         "Declared CRS conflicts with file metadata; transform instead of relabeling"
                     )
                 crs = native.to_string()
+        coordinate_names = {"x", "y", "longitude", "latitude", "lon", "lat", "easting", "northing"}
+        has_coordinates = any(
+            name.lower().rsplit("_", 1)[-1] in coordinate_names for name in columns
+        )
+        has_geometry = has_geometry or bool(
+            {name.lower() for name in columns} & {"geometry", "wkt", "wkb"}
+        )
+        cell_id_only_od = (
+            suffix in {".csv", ".parquet"}
+            and request.role in {"demand", "feature", "weight", "population"}
+            and {"origin_cell_id", "destination_cell_id", "weight"} <= set(columns)
+            and not has_coordinates
+            and not has_geometry
+        )
         identity = {"bytes": byte_hash, "role": request.role, "crs": crs, "layer": request.layer}
         input_id = stable_id("input", identity)
         metadata = {
@@ -164,7 +180,8 @@ def snapshot_input(root: Path, request: InputRegistration, *, limit: int = 2 * 1
                 "demand",
                 "supply",
             }
-            and "cell_id" not in columns,
+            and "cell_id" not in columns
+            and not cell_id_only_od,
             "crs_suggestion": (
                 "EPSG:4326"
                 if ({"longitude", "latitude"} <= set(columns) or {"lon", "lat"} <= set(columns))

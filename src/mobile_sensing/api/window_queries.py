@@ -8,6 +8,7 @@ from pathlib import Path
 import pyarrow.dataset as ds
 
 from mobile_sensing.artifacts import partition_file
+from mobile_sensing.api.map_presentation import color_scale_metadata
 from mobile_sensing.contracts import ArtifactRef
 from mobile_sensing.exposure import ExposureArtifactReader
 from mobile_sensing.portfolio.storage import PortfolioArtifactReader
@@ -279,6 +280,7 @@ def window_matrix(root, request, limits):
         ],
         "summary_semantics": "statistic_of_within_observation_cell_sum",
         "temporal_aggregation": "sum",
+        "color_scale": color_scale_metadata(row["value"] for row in values),
     }
     if len(json.dumps(result).encode()) > limits.max_matrix_bytes:
         raise QueryLimitExceeded("Window projection exceeds the response byte limit")

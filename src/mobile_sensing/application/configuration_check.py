@@ -19,12 +19,15 @@ from mobile_sensing.datasets.inputs import load_input
 def check_configuration(root, config, *, cancellation, progress):
     root = Path(root)
     config = ProjectConfig.model_validate(config)
+    config.validate_active_od_selections()
     if config.prepared_environment is None or not config.fleets:
         raise ValueError("Prepare an environment and configure at least one fleet")
     progress.update(phase="check.calendar_and_inputs", completed=0, total=len(config.fleets))
     cancellation.raise_if_cancelled()
     config, calendar = resolve_calendar(root, config)
     prepared = config.prepared_environment
+    if set(config.grid_filter.feature_names) - set(prepared.feature_names):
+        raise ValueError("A grid filter feature is absent from the prepared environment")
     # Only existence/metadata checks here. Run verifies all immutable bytes.
     for collection, reference in (
         ("environments", prepared.artifact),
@@ -57,9 +60,21 @@ def check_configuration(root, config, *, cancellation, progress):
             ]
             for identifier, roles in references:
                 if identifier:
-                    metadata, _ = load_input(root, identifier, verify=False)
+                    try:
+                        metadata, _ = load_input(root, identifier, verify=False)
+                    except FileNotFoundError as exc:
+                        raise ValueError(f"Selected input {identifier} is missing") from exc
                     if metadata["role"] not in roles:
                         raise ValueError(f"Input {metadata['name']} has an incompatible role")
+                    if identifier == demand.od_distribution_input:
+                        if metadata["format"] not in {"csv", "parquet"}:
+                            raise ValueError("An OD distribution input requires CSV or Parquet")
+                        required = {"origin_cell_id", "destination_cell_id", "weight"}
+                        if not required <= set(metadata["columns"]):
+                            raise ValueError(
+                                "An OD distribution input requires origin_cell_id, "
+                                "destination_cell_id and weight columns"
+                            )
                     if metadata.get("crs_required"):
                         raise ValueError(f"Confirm the CRS of input {metadata['name']}")
             if demand.source == "import" and not demand.input_id:
@@ -68,19 +83,20 @@ def check_configuration(root, config, *, cancellation, progress):
                 raise ValueError("Select a vehicle catalog input")
             required_features = []
             if demand.source == "generator":
-                (
-                    required_features.extend(item.feature for item in demand.spatial_weights)
-                    if demand.spatial_weights
-                    else required_features.append(demand.spatial_feature)
-                )
-                if demand.task_type == "od" and not demand.od_distribution_input:
+                if not demand.od_distribution_input:
                     (
-                        required_features.extend(
-                            item.feature for item in demand.destination_spatial_weights
-                        )
-                        if demand.destination_spatial_weights
-                        else required_features.append(demand.destination_feature)
+                        required_features.extend(item.feature for item in demand.spatial_weights)
+                        if demand.spatial_weights
+                        else required_features.append(demand.spatial_feature)
                     )
+                    if demand.task_type == "od":
+                        (
+                            required_features.extend(
+                                item.feature for item in demand.destination_spatial_weights
+                            )
+                            if demand.destination_spatial_weights
+                            else required_features.append(demand.destination_feature)
+                        )
                 if demand.temporal_mode == "window":
                     if not clock_seconds(demand.start_time, clock) < clock_seconds(
                         demand.end_time, clock

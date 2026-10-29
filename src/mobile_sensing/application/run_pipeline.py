@@ -9,6 +9,7 @@ from pathlib import Path
 import pandas as pd
 
 from mobile_sensing.application.project_models import ProjectConfig, PortfolioEditor
+from mobile_sensing.application.grid_filter import grid_filter_projection, resolve_grid_filter
 from mobile_sensing.application.run_models import RunView, AnalysisView, RunOptions
 from mobile_sensing.application.project_resolution import (
     PROJECT_RESOLUTION_VERSION,
@@ -49,6 +50,10 @@ from mobile_sensing.portfolio.analysis_storage import publish_portfolio_analysis
 
 def mobility_projection(config):
     value = config.model_dump(mode="json")
+    if config.grid_filter.enabled:
+        value["grid_filter"] = grid_filter_projection(config.grid_filter)
+    else:
+        value.pop("grid_filter", None)
     for field in (
         "portfolio",
         "source_revision",
@@ -155,6 +160,7 @@ def run_project(
 ):
     root = Path(root)
     config = ProjectConfig.model_validate(config)
+    config.validate_active_od_selections()
     from mobile_sensing.application.calendar_authoring import resolve_calendar
 
     config, calendar = resolve_calendar(root, config)
@@ -273,6 +279,13 @@ def run_project(
         schema_version="2.0",
         simulation_id=simulation.artifact_id,
         sensing_geometry_id=environment.metadata.sensing_hash,
+        included_cell_ids=(
+            resolve_grid_filter(
+                root, config.prepared_environment, config.grid_filter, environment=environment
+            )
+            if config.grid_filter.enabled
+            else None
+        ),
         bin_edges_s=edges,
         active_movement_kinds=(),
         fleet_movement_kinds={
@@ -319,7 +332,7 @@ def run_project(
     content = {
         "name": name,
         "source_revision_id": source_revision_id,
-        "config": config.model_dump(mode="json"),
+        "config": config.artifact_payload(),
         "simulation": simulation.model_dump(mode="json"),
         "exposure": exposure.model_dump(mode="json"),
         "resolution": resolution.model_dump(mode="json"),

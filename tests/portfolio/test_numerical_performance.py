@@ -275,3 +275,7 @@ def test_native_bulk_routing_matches_independent_string_heap_with_parallel_ties(
         assert router._search_from("p", source, names + ["missing"]) == best
         for target, total in router.travel_times_from("p", source, names).items():
             assert total == router.route("p", source, target).total_duration_s
+            assert router.travel_time_lower_bounds_from("p", source, (target,))[target] <= total
+        assert router.travel_time_lower_bounds_from("p", source, ("missing",))["missing"] == float(
+            "inf"
+        )

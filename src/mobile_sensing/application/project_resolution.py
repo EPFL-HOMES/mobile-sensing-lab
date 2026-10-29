@@ -13,6 +13,7 @@ from mobile_sensing.application.models import (
     ValidatedScenario,
 )
 from mobile_sensing.application.project_models import ProjectConfig
+from mobile_sensing.application.grid_filter import grid_filter_projection
 from mobile_sensing.application.resource_tables import publish_tables
 from mobile_sensing.application.spatial_support import prepare_support
 from mobile_sensing.application.supply_authoring import (
@@ -93,6 +94,7 @@ def resolve_project(
     root, config, *, cancellation, progress, workers=1, memory_limit_bytes=4 * 1024**3
 ):
     config = ProjectConfig.model_validate(config)
+    config.validate_active_od_selections()
     from mobile_sensing.application.calendar_authoring import resolve_calendar
     from mobile_sensing.application.temporal_authoring import profile_intervals
 
@@ -114,7 +116,13 @@ def resolve_project(
     )
     clock = civil_clock(config.simulation, config.prepared_environment.timezone)
     progress.update(phase="resolve.spatial_support", completed=0, total=1)
-    support = prepare_support(root, environment, config.prepared_environment.features, cancellation)
+    support = prepare_support(
+        root,
+        environment,
+        config.prepared_environment.features,
+        cancellation,
+        grid_filter=config.grid_filter,
+    )
 
     def cache(stage, identity, result_type, compute, rng=None):
         return cached_stage(
@@ -124,6 +132,11 @@ def resolve_project(
                 "algorithm": PROJECT_RESOLUTION_VERSION,
                 "environment": config.prepared_environment.artifact,
                 "features": config.prepared_environment.features,
+                **(
+                    {"grid_filter": grid_filter_projection(config.grid_filter)}
+                    if config.grid_filter.enabled
+                    else {}
+                ),
                 **identity,
             },
             result_type,
@@ -667,7 +680,7 @@ def resolve_project(
         "od_sampling": "Independent origin/destination or sparse-pair draws conditioned on distinct nodes and directed reachability; all rejected pairs retained",
     }
     resolved_config = {
-        "project": config.model_dump(mode="json"),
+        "project": config.artifact_payload(),
         "clock": clock.model_dump(mode="json"),
         "reports": reports,
         "assumptions": sorted(assumption_set),

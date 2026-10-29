@@ -48,7 +48,7 @@ function matrixBody(resourceId: string, mode: string, replication: string, vehic
 function attachValues(grid: GeoJsonValue | undefined, matrix: MatrixSliceValue | undefined): GeoJsonValue | null {
   if (!grid || !matrix) return null;
   const values = new Map(matrix.values.map((row) => [row.cell_id, row.value]));
-  return { ...grid, features: grid.features.map((feature) => ({ ...feature, properties: { ...feature.properties, value: values.get(String(feature.properties.cell_id)) ?? 0 } })) };
+  return { ...grid, color_scale: matrix.color_scale, features: grid.features.map((feature) => ({ ...feature, properties: { ...feature.properties, value: values.get(String(feature.properties.cell_id)) ?? 0 } })) };
 }
 
 export function SensingResults({ jobs, revisionForJob }: { jobs: JobSnapshot[]; revisionForJob: (jobId: string) => string | null }) {
@@ -95,7 +95,7 @@ export function SensingResults({ jobs, revisionForJob }: { jobs: JobSnapshot[]; 
     {summary.data && <Stack direction="row" gap={1} flexWrap="wrap"><Chip color="primary" variant="outlined" label={`Simulation replications: ${summary.data.replications_R}`} /><Chip variant="outlined" label="All physical vehicles remain eligible for sensor sampling" /><Chip variant="outlined" label={`${summary.data.positive_cell_count} positive cells`} /><Chip variant="outlined" label={`Total ${mode}: ${summary.data.overall_value?.toPrecision(5) ?? "—"} ${summary.data.unit}`} /></Stack>}
     <Alert severity="info">Vehicle matrices are summed inside each replication before statistics across replications. Aggregate standard deviation therefore preserves joint covariance; sparse absent rows are certified zeros.</Alert>
     <Box className="result-workspace">
-      <Paper variant="outlined" sx={{ p: 2 }}><Typography variant="h6" sx={{ mb: 1.5 }}>Sensing duration</Typography><ScientificMap loading={mapMatrix.isFetching || grid.isFetching} data={mapped} mode="duration" unit={mapMatrix.data?.unit} fallback={<MatrixTable matrix={mapMatrix.data} />} /></Paper>
+      <Paper variant="outlined" sx={{ p: 2 }}><Typography variant="h6" sx={{ mb: 1.5 }}>Sensing duration</Typography><ScientificMap loading={mapMatrix.isFetching || grid.isFetching} data={mapped} mode="duration" unit={mapMatrix.data?.unit} fitKey={resourceId} fallback={<MatrixTable matrix={mapMatrix.data} />} /></Paper>
       <Paper variant="outlined" sx={{ p: 2 }}><Typography variant="h6">Time summary</Typography><Typography variant="body2" color="text.secondary">Sensing movement duration depends on arrivals, active supply and dispatch; this is not a demand curve. Backend statistic of the within-observation cell sum; unit {summary.data?.unit ?? "s"}.</Typography><ScientificChart traces={summary.data ? [{ x: summary.data.time_summary.map((row) => (timeBins.find((bin) => bin.time_bin_id === row.time_bin_id)?.start_s ?? 0) / 3600), y: summary.data.time_summary.map((row) => row.value), name: mode, type: "bar" }] : []} xTitle="Hour from observation start" yTitle={`${mode} duration (${summary.data?.unit ?? "s"})`} fallback={<MatrixTable matrix={summary.data} />} /></Paper>
     </Box>
     <Paper variant="outlined" sx={{ p: 2 }}><Stack direction="row" gap={2}><Button component={Link} to="/simulation">Change temporal resolution in Simulation</Button>{sourceJob && <ExportActions resourceId={resourceId} table="exposure" sourceRevisionId={revisionForJob(sourceJob.job_id)} />}</Stack></Paper>

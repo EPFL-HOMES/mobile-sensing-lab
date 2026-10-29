@@ -26,7 +26,7 @@ const countLabel = (point: PortfolioFrontierPoint) => Object.entries(point.count
 function attachValues(grid: GeoJsonValue | undefined, matrix: MatrixSliceValue | undefined): GeoJsonValue | null {
   if (!grid || !matrix) return null;
   const values = new Map(matrix.values.map(row => [row.cell_id, row.value]));
-  return { ...grid, features: grid.features.map(feature => ({ ...feature,
+  return { ...grid, color_scale: matrix.color_scale, features: grid.features.map(feature => ({ ...feature,
     properties: { ...feature.properties, value: values.get(String(feature.properties.cell_id)) ?? 0 },
   })) };
 }
@@ -187,7 +187,7 @@ export function PortfolioResults({ jobs, revisionForJob, preferredView }: { jobs
     </Box>
     <Paper variant="outlined" className="analysis-panel portfolio-mean-map"><Stack direction="row" justifyContent="space-between" alignItems="flex-start" gap={2} flexWrap="wrap" sx={{ mb: 2 }}><Box><Typography variant="h6">Portfolio mean sensing duration</Typography><Typography variant="body2" color="text.secondary">Mean coverage of the selected sensor-count portfolio across sampling runs.</Typography></Box>
       <Stack gap={1} alignItems="flex-end"><TextField select label="Reporting bin" value={timeBin} onChange={event => set("time_bin", event.target.value)} sx={{ minWidth: 230 }}><MenuItem value="all">Whole observation window</MenuItem>{timeBins.map(row => <MenuItem key={row.time_bin_id} value={row.time_bin_id}>{(row.start_s / 3600).toFixed(2)}–{(row.end_s / 3600).toFixed(2)} elapsed h</MenuItem>)}</TextField><FormControlLabel control={<Checkbox checked={saturatedOnly} onChange={event => set("saturated_only", event.target.checked ? "1" : "")} />} label={`Only cells above ${saturationSeconds / 60} min saturation`} /></Stack></Stack>
-      <ScientificMap loading={summaryMatrix.isFetching || grid.isFetching} data={mappedSummary} mode="duration" unit={summaryMatrix.data?.unit} fallback={<MatrixTable matrix={summaryMatrix.data} />} />
+      <ScientificMap loading={summaryMatrix.isFetching || grid.isFetching} data={mappedSummary} mode="duration" unit={summaryMatrix.data?.unit} fitKey={resourceId} fallback={<MatrixTable matrix={summaryMatrix.data} />} />
       <Typography variant="caption" color="text.secondary">{saturatedPercentage == null ? "Saturation coverage is unavailable." : `${saturatedCount} of ${spaceTimeUnitCount} displayed space–time units (${saturatedPercentage.toFixed(2)}%) have mean sensing duration at least ${saturationSeconds / 60} minutes.`}</Typography>
     </Paper>
     <Accordion><AccordionSummary>Export analysis data</AccordionSummary><AccordionDetails><Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>Full-precision results and retained sample provenance remain available for reproducibility.</Typography><Stack direction="row" alignItems="flex-start" gap={2} flexWrap="wrap"><TextField select label="Table to export" value={exportChoice} onChange={event => set("export_table", event.target.value)} sx={{ minWidth: 280 }}>{exportOptions.map(([source, table, label]) => <MenuItem key={`${source}:${table}`} value={`${source}:${table}`}>{label}</MenuItem>)}</TextField>{exportResourceId && sourceJob && <ExportActions resourceId={exportResourceId} table={exportTable} sourceRevisionId={revisionForJob(sourceJob.job_id)} />}</Stack></AccordionDetails></Accordion>

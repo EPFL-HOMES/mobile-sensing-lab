@@ -12,6 +12,7 @@ import { JobMonitor } from "../components/JobMonitor";
 import { ApiIssues } from "../components/ApiIssues";
 import { FormSection, OptionHint } from "../components/FormSection";
 import { SpatialWeightEditor } from "../components/SpatialWeightEditor";
+import { DemandSpatialEditor } from "../components/DemandSpatialEditor";
 import { featureRoles, InputLibrary } from "./DataPage";
 
 const fleetRoles = ["demand", "supply", "assignment", "gtfs", "service_area", "area_assignment", "feature"] as const;
@@ -79,7 +80,7 @@ export function FleetPage() {
         setIndex(next); setName(""); setId("");
       }}>Add fleet</Button>
     </Stack></Paper>
-    <Accordion><AccordionSummary>Register fleet data: tasks, vehicles, assignments and GTFS</AccordionSummary><AccordionDetails><InputLibrary roles={fleetRoles} /></AccordionDetails></Accordion>
+    <Accordion><AccordionSummary>Register fleet data: tasks, OD distributions, vehicles, assignments and GTFS</AccordionSummary><AccordionDetails><InputLibrary roles={fleetRoles} /></AccordionDetails></Accordion>
     {(config?.fleets?.length ?? 0) > 0 && <Tabs value={Math.min(index, (config?.fleets?.length ?? 1)-1)} onChange={(_, value: number) => setIndex(value)} variant="scrollable" scrollButtons="auto">{config?.fleets?.map((item) => <Tab label={item.name} key={item.fleet_id} />)}</Tabs>}
     {fleet && demand && supply && dispatch ? <Paper variant="outlined" sx={{ p: 3 }}><Stack gap={2.5}>
       <Stack direction="row" justifyContent="space-between"><Typography variant="h6">{fleet.name}</Typography><Button color="error" onClick={() => { mutate((draft) => { draft.fleets = draft.fleets?.filter((_, i) => i !== index); }); setIndex(Math.max(0, index-1)); }}>Remove fleet</Button></Stack>
@@ -87,8 +88,8 @@ export function FleetPage() {
       {tab === "demand" && <Stack gap={2}>
         <FormSection title="Task definition" description="Choose how tasks enter this fleet and what each task represents.">
         <div className="form-grid">
-          <TextField select label="Demand source" value={demand.source} onChange={(e) => updateDemand({ source: e.target.value as DemandEditor["source"], temporal_mode: "window", time_profile: [], time_profile_input: null, content: "instances", count_semantics: null, generation_timing: "offline", template: "table", task_type: "location" })}><MenuItem value="import">Import tasks or demand table</MenuItem><MenuItem value="generator">Generate tasks</MenuItem></TextField>
-          <TextField select label="Task type" value={demand.task_type} onChange={(e) => updateDemand({ task_type: e.target.value as DemandEditor["task_type"] })}><MenuItem value="location">Location</MenuItem><MenuItem value="od">Origin–destination</MenuItem>{demand.source === "import" && <MenuItem value="ordered">Timetable / ordered stops</MenuItem>}</TextField>
+          <TextField select label="Demand source" value={demand.source} onChange={(e) => updateDemand({ source: e.target.value as DemandEditor["source"], temporal_mode: "window", time_profile: [], time_profile_input: null, content: "instances", count_semantics: null, generation_timing: "offline", template: "table", task_type: "location", od_distribution_input: null })}><MenuItem value="import">Import tasks or demand table</MenuItem><MenuItem value="generator">Generate tasks</MenuItem></TextField>
+          <TextField select label="Task type" value={demand.task_type} onChange={(e) => updateDemand({ task_type: e.target.value as DemandEditor["task_type"], ...(e.target.value !== "od" ? { od_distribution_input: null } : {}) })}><MenuItem value="location">Location</MenuItem><MenuItem value="od">Origin–destination</MenuItem>{demand.source === "import" && <MenuItem value="ordered">Timetable / ordered stops</MenuItem>}</TextField>
         </div>
         </FormSection>
         {demand.source === "import" ? <>
@@ -115,13 +116,7 @@ export function FleetPage() {
           <div className="form-grid"><TextField disabled={readOnly || demand.temporal_mode === "rates"} select label="Task volume mode" value={demand.volume_mode} onChange={(e) => updateDemand({ volume_mode: e.target.value as DemandEditor["volume_mode"] })}><MenuItem value="fixed">Fixed total tasks</MenuItem><MenuItem value="expected">Expected total tasks (Poisson)</MenuItem></TextField><TextField disabled={readOnly || demand.temporal_mode === "rates"} label={demand.volume_mode === "fixed" ? "Fixed task total" : "Expected task total"} type="number" value={demand.task_volume} onChange={(e) => updateDemand({ task_volume: Number(e.target.value) })} />
             <TextField select label="Generation timing" value={demand.generation_timing} onChange={(e) => updateDemand({ generation_timing: e.target.value as DemandEditor["generation_timing"] })}><MenuItem value="offline">Offline</MenuItem><MenuItem value="online">Online arrivals</MenuItem></TextField>
           </div></FormSection>
-          <FormSection title="Spatial distribution" description="Use one or more prepared grid features for sampling across the shared study area."><Stack gap={2}>
-            {featureWeights(demand.task_type === "od" ? "Origin spatial distribution" : "Task spatial distribution", demand.spatial_feature ?? "uniform", demand.spatial_weights, (value) => updateDemand({ spatial_weights: value }))}
-            {demand.task_type === "location" && <TextField select label="Location reachability" value={demand.location_condition ?? "all_resolved"} onChange={(e) => updateDemand({ location_condition: e.target.value as DemandEditor["location_condition"] })}><MenuItem value="all_resolved">All resolved locations</MenuItem><MenuItem value="depot_roundtrip">Require a route from and back to the depot</MenuItem></TextField>}
-            {demand.task_type === "od" && featureWeights("Destination spatial distribution", demand.destination_feature ?? "uniform", demand.destination_spatial_weights, (value) => updateDemand({ destination_spatial_weights: value }))}
-          </Stack>
-          {demand.task_type === "od" && <>{namedInput("Optional sparse OD distribution", "feature", demand.od_distribution_input, (value) => updateDemand({ od_distribution_input: value }))}<Typography variant="body2" color="text.secondary">Sparse columns: origin_cell_id, destination_cell_id, weight. Otherwise origins and destinations are drawn separately. Same-node and unreachable pairs are rejected and recorded.</Typography></>}
-          </FormSection>
+          <DemandSpatialEditor demand={demand} inputs={inputs.data} inputsError={inputs.error?.message} features={features} prepared={Boolean(preparedEnvironment)} readOnly={readOnly} onChange={updateDemand} />
         </>}
         {demand.template !== "gtfs" && <>
         <FormSection title="Daily timing" description="Times use the local clock. Relative shares distribute the daily total across non-overlapping intervals.">

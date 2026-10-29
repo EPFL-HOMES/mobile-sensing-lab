@@ -8,7 +8,7 @@ describe("SpatialWeightEditor", () => {
     const user = userEvent.setup();
     const change = vi.fn();
     render(<SpatialWeightEditor label="Task spatial distribution" features={["uniform", "population", "shops"]} legacyFeature="population" onChange={change} />);
-    expect(screen.getByText(/normalized over the full prepared grid first/)).toBeInTheDocument();
+    expect(screen.getByText(/normalized over the retained grid first/)).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Add feature" }));
     expect(change).toHaveBeenLastCalledWith([
       { feature: "population", weight: 1 },

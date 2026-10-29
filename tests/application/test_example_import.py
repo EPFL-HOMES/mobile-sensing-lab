@@ -20,12 +20,15 @@ def test_dispatch_bounds_preserve_exact_execution_and_route_totals(tmp_path, mon
         costs = router.travel_times_from("constant_2mps", source, nodes)
         for target in nodes:
             route = router.route("constant_2mps", source, target)
+            reverse_bound = bounds("constant_2mps", source, (target,))[target]
             assert router.reachable(source, target) == route.reachable
             if route.reachable:
                 assert values[target] <= route.total_duration_s
+                assert reverse_bound <= route.total_duration_s
                 assert costs[target] == route.total_duration_s
             else:
                 assert costs[target] is None
+                assert reverse_bound == float("inf")
     options = ExecutionOptions(memory_limit_bytes=1024**3)
     optimized = app.run_simulation(validated, options)
     monkeypatch.setattr(router, "travel_time_lower_bounds_from", None)

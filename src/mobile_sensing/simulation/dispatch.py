@@ -157,7 +157,7 @@ class SimulationDecisionAdapter:
         assignment_plans: Mapping[str, AssignmentPlan] | None = None,
         location_area_ids: Mapping[str, Sequence[str]] | None = None,
         max_feasible_pairs: int = DEFAULT_MAX_FEASIBLE_PAIRS,
-        route_cache_entries: int = 4096,
+        route_cache_entries: int = 16_384,
         replication_id: str | None = None,
         simulation_end_s: float | None = None,
         availability: Sequence[VehicleAvailability] | None = None,
@@ -183,6 +183,9 @@ class SimulationDecisionAdapter:
         self._predefined_cursor: dict[VehicleTuple, int] = {}
         self._batch_consumed_time: dict[str, float] = {}
         self._matching_snapshots = {}
+        self._waiting_snapshot: tuple[Task, ...] | None = None
+        self._waiting_by_key: dict[TaskTuple, Task] = {}
+        self._waiting_by_fleet: dict[str, tuple[Task, ...]] = {}
         self._configuration_diagnostics: list[OperationalDiagnostic] = []
         self._validate_inputs()
         self.eligibility = EligibilityEngine(
@@ -512,8 +515,17 @@ class SimulationDecisionAdapter:
         return PlannedAssignment(task=task, plan=plan)
 
     def service_assignments(self, snapshot: DecisionSnapshot) -> Sequence[PlannedAssignment]:
-        waiting = {(task.fleet_id, task.task_id): task for task in snapshot.waiting_tasks}
+        if snapshot.waiting_tasks is not self._waiting_snapshot:
+            ordered = sorted(snapshot.waiting_tasks, key=lambda task: (task.fleet_id, task.task_id))
+            self._waiting_by_key = {(task.fleet_id, task.task_id): task for task in ordered}
+            grouped: dict[str, list[Task]] = {}
+            for task in ordered:
+                grouped.setdefault(task.fleet_id, []).append(task)
+            self._waiting_by_fleet = {key: tuple(rows) for key, rows in grouped.items()}
+            self._waiting_snapshot = snapshot.waiting_tasks
+        waiting = self._waiting_by_key
         idle = {_vehicle_tuple(vehicle.key): vehicle for vehicle in snapshot.idle_vehicles}
+        ordered_idle = sorted(idle.items())
         assignments: list[PlannedAssignment] = []
         matching_fleets = set()
         for fleet_id, fleet in self.fleets.items():
@@ -541,13 +553,12 @@ class SimulationDecisionAdapter:
                         <= snapshot.time_s
                         < self.specs[key].availability_end_s,
                     )
-                    for key, vehicle in sorted(idle.items())
+                    for key, vehicle in ordered_idle
                     if key[0] == fleet_id
                 ),
                 tuple(
-                    (key, task.release_s <= snapshot.time_s)
-                    for key, task in sorted(waiting.items())
-                    if key[0] == fleet_id
+                    ((task.fleet_id, task.task_id), task.release_s <= snapshot.time_s)
+                    for task in self._waiting_by_fleet.get(fleet_id, ())
                 ),
             )
             if self._matching_snapshots.get(fleet_id) == signature:
@@ -572,10 +583,14 @@ class SimulationDecisionAdapter:
             self._predefined_cursor[vehicle_key] += 1
 
         pairs: list[FeasiblePair] = []
-        nearest_vehicles = [
-            vehicle for key, vehicle in sorted(idle.items()) if key[0] in matching_fleets
+        nearest_vehicles = [vehicle for key, vehicle in ordered_idle if key[0] in matching_fleets]
+        nearest_tasks = [
+            task
+            for fleet_id in sorted(matching_fleets)
+            for task in self._waiting_by_fleet.get(fleet_id, ())
         ]
-        nearest_tasks = [task for key, task in sorted(waiting.items()) if key[0] in matching_fleets]
+        if not nearest_tasks or not nearest_vehicles:
+            return tuple(assignments)
         if self.routing.supports_lower_bound_queries:
             assignments.extend(
                 self._nearest_with_bounds(nearest_vehicles, nearest_tasks, snapshot.time_s)

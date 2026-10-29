@@ -8,7 +8,11 @@ from fastapi.testclient import TestClient
 
 from mobile_sensing.api.workspace import create_workspace_app
 from mobile_sensing.application.example_build import ROUTE_IDS, demonstration_fleets
-from mobile_sensing.application.example_bundle import ExampleBundle, bundle_manifest, install_example
+from mobile_sensing.application.example_bundle import (
+    ExampleBundle,
+    bundle_manifest,
+    install_example,
+)
 from mobile_sensing.application.project_models import ProjectConfig
 from mobile_sensing.application.example_build import BuildCancellation, BuildProgress
 

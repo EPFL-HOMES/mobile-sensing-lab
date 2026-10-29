@@ -304,6 +304,110 @@ def test_stationary_idle_has_one_closed_interval_and_no_periodic_events() -> Non
     assert adapter.operational_diagnostics[-1].code == "STATIONARY_IDLE"
 
 
+def test_stationary_diagnostic_is_coalesced_until_a_new_idle_episode():
+    from mobile_sensing.contracts import VehicleState, VehicleStatus
+    from mobile_sensing.simulation import DecisionSnapshot
+
+    spec = _vehicle(end_s=100.0)
+    adapter, _ = _adapter(
+        fleet=_fleet(),
+        tasks=(),
+        spec=spec,
+        locations={"A": _location("A")},
+        routing=GraphRouting({}),
+        end_s=100.0,
+    )
+    state = VehicleState(
+        key=spec.key,
+        status=VehicleStatus.IDLE,
+        committed_location_id="A",
+        available_at_s=0.0,
+        execution_generation=0,
+        current_execution_id=None,
+        remaining_capacity=None,
+    )
+    for time_s in range(50):
+        adapter.operational_assignments(DecisionSnapshot(float(time_s), (state,), (), 100.0))
+    assert [(row.code, row.time_s) for row in adapter.operational_diagnostics] == [
+        ("STATIONARY_IDLE", 0.0)
+    ]
+    state = state.model_copy(update={"execution_generation": 1})
+    adapter.operational_assignments(DecisionSnapshot(50.0, (state,), (), 100.0))
+    assert [row.time_s for row in adapter.operational_diagnostics] == [0.0, 50.0]
+
+
+def test_waiting_snapshot_cache_matches_canonical_pool_through_cruise_and_service(monkeypatch):
+    from mobile_sensing.simulation.kernel import _Kernel
+
+    original = _Kernel._snapshot
+    checked = []
+
+    def audited_snapshot(kernel):
+        result = original(kernel)
+        assert result.waiting_tasks == tuple(
+            kernel.tasks[key].task for key in sorted(kernel.waiting_keys)
+        )
+        assert [state.key for state in result.idle_vehicles] == sorted(
+            (state.key for state in result.idle_vehicles),
+            key=lambda key: (key.fleet_id, key.vehicle_id),
+        )
+        checked.append(result)
+        return result
+
+    monkeypatch.setattr(_Kernel, "_snapshot", audited_snapshot)
+    result, _, _ = _run(
+        fleet=_fleet(idle_policy="random_cruise"),
+        tasks=tuple(
+            _task(str(i), location="A", release_s=float(i), service_s=2.0) for i in (5, 1, 3, 0)
+        ),
+        spec=_vehicle(end_s=12.0),
+        locations={"A": _location("A"), "B": _location("B")},
+        routing=GraphRouting({("A", "B"): 1.0, ("B", "A"): 1.0}),
+        end_s=12.0,
+    )
+    assert len(result.task_outcomes) == 4
+    assert len(checked) > 10
+    assert any(a.waiting_tasks is b.waiting_tasks for a, b in zip(checked, checked[1:]))
+
+
+def test_infeasible_cruise_is_rechecked_after_vehicle_execution_changes(monkeypatch):
+    from mobile_sensing.contracts import VehicleState, VehicleStatus
+    from mobile_sensing.simulation import DecisionSnapshot
+
+    spec = _vehicle(end_s=10.0)
+    routing = GraphRouting({("A", "B"): 6.0, ("B", "C"): 1.0})
+    adapter, _ = _adapter(
+        fleet=_fleet(idle_policy="random_cruise"),
+        tasks=(),
+        spec=spec,
+        locations={node: _location(node) for node in ("A", "B", "C")},
+        routing=routing,
+        end_s=10.0,
+    )
+    state = VehicleState(
+        key=spec.key,
+        status=VehicleStatus.IDLE,
+        committed_location_id="A",
+        available_at_s=5.0,
+        execution_generation=0,
+        current_execution_id=None,
+        remaining_capacity=None,
+    )
+    assert not adapter.operational_assignments(DecisionSnapshot(5.0, (state,), (), 6.0))
+    original = routing.outgoing_neighbor_node_ids
+
+    def unexpected(*args):
+        raise AssertionError("Unchanged infeasible cruise was queried again")
+
+    monkeypatch.setattr(routing, "outgoing_neighbor_node_ids", unexpected)
+    assert not adapter.operational_assignments(DecisionSnapshot(6.0, (state,), (), 7.0))
+    monkeypatch.setattr(routing, "outgoing_neighbor_node_ids", original)
+    state = state.model_copy(update={"execution_generation": 1, "committed_location_id": "B"})
+    assignments = adapter.operational_assignments(DecisionSnapshot(7.0, (state,), (), 8.0))
+    assert len(assignments) == 1
+    assert assignments[0].plan.end_s == 8.0
+
+
 def test_random_cruise_is_reproducible_avoids_immediate_reversal_and_leaves_area() -> None:
     fleet = _fleet(idle_policy="random_cruise", areas=True)
     spec = _vehicle(end_s=5.0, areas=("north",))

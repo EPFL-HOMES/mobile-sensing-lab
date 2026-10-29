@@ -4,12 +4,31 @@ import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import fixture from "../test/studioFixture.json";
+import type { InputDescriptor, ProjectConfig } from "../api/generated";
 import { WorkspaceProvider } from "./workspace";
 import { App } from "./App";
 
 vi.mock("../components/ScientificMap", () => ({ ScientificMap: ({ data, fitKey }: { data: unknown; fitKey?: string }) => <div data-testid="scientific-map" data-fit-key={fitKey}>{JSON.stringify(data)}</div> }));
 
 const project = { project_id: "project-1", name: "Acceptance project", description: "MR05", current_revision_id: "revision-1", created_at_utc: "2026-09-13T00:00:00Z", updated_at_utc: "2026-09-13T00:00:00Z" };
+const empiricalOd: InputDescriptor = {
+  input_id: "input_8110b5d05f4d21c2ebde33f2f80a1bf6", name: "Empirical joint OD — weekday", role: "demand",
+  format: "csv", original_filename: "demand_joint_od_weekday.csv", file: "source.csv",
+  columns: ["origin_cell_id", "destination_cell_id", "weight"], preview: [],
+  source_crs: null, crs_required: false, layer: null, layers: [], size_bytes: 100,
+  byte_hash: "a".repeat(64), content_hash: "b".repeat(64),
+};
+const weekendOd: InputDescriptor = {
+  ...empiricalOd, input_id: "input_29ad4fe9229229f33d18f709f904d336", name: "Empirical joint OD — weekend",
+  original_filename: "demand_joint_od_weekend.csv",
+};
+function odConfiguration(inputId: string | null = null): ProjectConfig {
+  const configuration = structuredClone(fixture.config) as unknown as ProjectConfig;
+  return { ...configuration, schema_version: "3.4", fleets: configuration.fleets!.map((fleet, index) => index ? fleet : {
+    ...fleet, demand: { ...fleet.demand, source: "generator", task_type: "od", od_distribution_input: inputId },
+  }) };
+}
+const storedDemand = () => JSON.parse(localStorage.getItem(`mobile-sensing-draft:${project.project_id}`) ?? "null")?.draft.authoring?.fleets?.[0]?.demand;
 const response = (value: unknown, status = 200) => Promise.resolve(new Response(JSON.stringify(value), { status, headers: { "Content-Type": "application/json" } }));
 function installFetch(saved = true, overrides: Record<string, unknown> = {}) {
   const selected = { ...project, current_revision_id: saved ? project.current_revision_id : null };
@@ -104,16 +123,112 @@ describe("MR05 public workbench", () => {
     expect(body.config.fleets).toEqual(fixture.config.fleets);
     expect(screen.queryByRole("button", { name: "Validate scenario" })).not.toBeInTheDocument();
   });
-  it("keeps global registration free of task and vehicle categories", async () => {
+  it("supports demand/OD registration on Data while preserving feature and fleet-only vehicle categories", async () => {
     installFetch(); const user = userEvent.setup(); renderRoute("/data");
     await user.click(await screen.findByLabelText("Data category"));
     expect(screen.getByRole("option", { name: "feature" })).toBeInTheDocument();
-    expect(screen.queryByRole("option", { name: "demand" })).not.toBeInTheDocument();
+    expect(screen.getByRole("option", { name: "Demand / OD distribution" })).toBeInTheDocument();
     expect(screen.queryByRole("option", { name: "supply" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("option", { name: "assignment" })).not.toBeInTheDocument();
+    await user.click(screen.getByRole("option", { name: "Demand / OD distribution" }));
+    expect(screen.getByText(/origin_cell_id, destination_cell_id and weight/)).toBeInTheDocument();
+    expect(screen.getByText(/registering a file does not activate it/)).toBeInTheDocument();
+    await user.click(screen.getByRole("combobox", { name: "Data category" }));
     await user.click(screen.getByRole("option", { name: "feature" }));
     expect(screen.queryByLabelText("Feature contents")).not.toBeInTheDocument();
     expect(screen.getByText(/Population, activity and custom weights are all features/)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Register input" })).toBeDisabled();
+  });
+  it("shows a saved demand-role OD in Data and Fleet, retains explicit selection after reload, and submits it only on Run", async () => {
+    const configuration = odConfiguration(empiricalOd.input_id);
+    const fetchMock = installFetch(true, {
+      [`/api/v1/projects/${project.project_id}/revisions/revision-1`]: { revision_id: "revision-1", payload: configuration },
+      "/api/v1/inputs": [empiricalOd, weekendOd],
+    });
+    const user = userEvent.setup();
+    const view = renderRoute("/data");
+    const inputRow = (await screen.findByRole("button", { name: empiricalOd.name })).closest("tr")!;
+    expect(within(inputRow).getByText("OD distribution")).toBeInTheDocument();
+    await user.click(within(screen.getByRole("list", { name: "Main navigation" })).getByRole("link", { name: "Fleet Configuration" }));
+    expect(await screen.findByRole("combobox", { name: "Demand spatial source" })).toHaveTextContent(empiricalOd.name);
+    expect(screen.getByText(empiricalOd.original_filename)).toBeInTheDocument();
+    expect(screen.queryByRole("combobox", { name: "Spatial feature" })).not.toBeInTheDocument();
+    await user.click(screen.getByRole("combobox", { name: "Demand spatial source" }));
+    await user.click(screen.getByRole("option", { name: "Independent origin and destination distributions" }));
+    await waitFor(() => expect(storedDemand().od_distribution_input).toBeNull());
+    await user.click(screen.getByRole("combobox", { name: "Demand spatial source" }));
+    await user.click(screen.getByRole("option", { name: new RegExp(weekendOd.name) }));
+    await waitFor(() => expect(storedDemand().od_distribution_input).toBe(weekendOd.input_id));
+    expect(fetchMock.mock.calls.some(([url, init]) => String(url) === "/api/v1/workbench/runs" && init?.method === "POST")).toBe(false);
+    view.unmount();
+    renderRoute("/fleets");
+    expect(await screen.findByRole("combobox", { name: "Demand spatial source" })).toHaveTextContent(weekendOd.name);
+    expect(screen.queryByRole("combobox", { name: "Spatial feature" })).not.toBeInTheDocument();
+    await user.click(within(screen.getByRole("list", { name: "Main navigation" })).getByRole("link", { name: "Simulation" }));
+    const runButton = await screen.findByRole("button", { name: "Run simulation" });
+    expect(fetchMock.mock.calls.some(([url, init]) => String(url) === "/api/v1/workbench/runs" && init?.method === "POST")).toBe(false);
+    await user.click(runButton);
+    await waitFor(() => expect(fetchMock.mock.calls.filter(([url, init]) => String(url) === "/api/v1/workbench/runs" && init?.method === "POST")).toHaveLength(1));
+    const request = fetchMock.mock.calls.find(([url, init]) => String(url) === "/api/v1/workbench/runs" && init?.method === "POST")!;
+    const payload = JSON.parse(String(request[1]?.body));
+    expect(payload.config.fleets[0].demand.od_distribution_input).toBe(weekendOd.input_id);
+    expect(payload.config.fleets[0].demand.task_type).toBe("od");
+    expect(payload.config.fleets[0].demand.source).toBe("generator");
+  });
+  it("uploads an OD table as demand without CRS and does not bind registration to a fleet", async () => {
+    const overrides: Record<string, unknown> = {
+      [`/api/v1/projects/${project.project_id}/revisions/revision-1`]: { revision_id: "revision-1", payload: odConfiguration() },
+      "/api/v1/inputs": [], "/api/v1/inputs/upload": empiricalOd,
+    };
+    const fetchMock = installFetch(true, overrides);
+    const user = userEvent.setup();
+    const view = renderRoute("/data");
+    await user.click(await screen.findByRole("combobox", { name: "Data category" }));
+    await user.click(screen.getByRole("option", { name: "Demand / OD distribution" }));
+    const file = new File(["origin_cell_id,destination_cell_id,weight\ncell-a,cell-b,3\n"], empiricalOd.original_filename, { type: "text/csv" });
+    await user.upload(view.container.querySelector<HTMLInputElement>('input[type="file"]')!, file);
+    overrides["/api/v1/inputs"] = [empiricalOd];
+    await user.click(screen.getByRole("button", { name: "Register input" }));
+    await screen.findByText(`Input preview: ${empiricalOd.name}`);
+    const upload = fetchMock.mock.calls.find(([url]) => String(url) === "/api/v1/inputs/upload")!;
+    const form = upload[1]?.body as FormData;
+    expect(form.get("role")).toBe("demand");
+    expect(form.get("source_crs")).toBe("");
+    expect(form.get("file")).toBe(file);
+    expect(screen.queryByRole("button", { name: "Confirm and register coordinate interpretation" })).not.toBeInTheDocument();
+    await user.click(within(screen.getByRole("list", { name: "Main navigation" })).getByRole("link", { name: "Fleet Configuration" }));
+    expect(await screen.findByRole("combobox", { name: "Demand spatial source" })).toHaveTextContent("Independent origin and destination distributions");
+    expect(screen.getAllByRole("combobox", { name: "Spatial feature" })).toHaveLength(2);
+    await user.click(screen.getByRole("combobox", { name: "Demand spatial source" }));
+    expect(screen.getByRole("option", { name: new RegExp(empiricalOd.name) })).toBeInTheDocument();
+    await user.keyboard("{Escape}");
+    expect(storedDemand()?.od_distribution_input ?? null).toBeNull();
+    expect(fetchMock.mock.calls.some(([url, init]) => String(url) === "/api/v1/workbench/runs" && init?.method === "POST")).toBe(false);
+  });
+  it.each([
+    ["Task type", "Location"],
+    ["Demand source", "Import tasks or demand table"],
+  ])("clears a stale OD reference when %s changes away from generated OD demand", async (field, option) => {
+    const fetchMock = installFetch(true, {
+      [`/api/v1/projects/${project.project_id}/revisions/revision-1`]: { revision_id: "revision-1", payload: odConfiguration(empiricalOd.input_id) },
+      "/api/v1/inputs": [empiricalOd],
+    });
+    const user = userEvent.setup(); renderRoute("/fleets");
+    expect(await screen.findByRole("combobox", { name: "Demand spatial source" })).toHaveTextContent(empiricalOd.name);
+    await user.click(screen.getByRole("combobox", { name: field }));
+    await user.click(screen.getByRole("option", { name: option }));
+    await waitFor(() => expect(storedDemand().od_distribution_input).toBeNull());
+    expect(screen.queryByRole("combobox", { name: "Demand spatial source" })).not.toBeInTheDocument();
+    if (field === "Demand source") {
+      expect(storedDemand().source).toBe("import");
+      await user.click(screen.getByRole("combobox", { name: "Demand source" }));
+      await user.click(screen.getByRole("option", { name: "Generate tasks" }));
+    }
+    await user.click(screen.getByRole("combobox", { name: "Task type" }));
+    await user.click(screen.getByRole("option", { name: "Origin–destination" }));
+    expect(screen.getByRole("combobox", { name: "Demand spatial source" })).toHaveTextContent("Independent origin and destination distributions");
+    expect(storedDemand().od_distribution_input).toBeNull();
+    expect(fetchMock.mock.calls.some(([url, init]) => String(url) === "/api/v1/workbench/runs" && init?.method === "POST")).toBe(false);
   });
   it("does not label an unsaved project as saved", async () => {
     installFetch(false); renderRoute("/project");
@@ -137,6 +252,50 @@ describe("MR05 public workbench", () => {
     await waitFor(() => expect(fetchMock.mock.calls.some(([url]) => String(url) === "/api/v1/workbench/runs")).toBe(true));
     const call = fetchMock.mock.calls.find(([url]) => String(url) === "/api/v1/workbench/runs")!;
     expect(JSON.parse(String(call[1]?.body)).config.prepared_environment).toEqual(prepared);
+  });
+  it("persists mixed grid-filter rows into Run while Portfolio describes its saved source filter", async () => {
+    const configuration = structuredClone(fixture.config) as unknown as ProjectConfig;
+    const prepared = { ...configuration.prepared_environment!, feature_names: ["uniform", "population", "shops"] };
+    configuration.prepared_environment = prepared;
+    configuration.grid_filter = { features: ["population"], match: "any" };
+    const empty = { type: "FeatureCollection", crs: "EPSG:4326", features: [] };
+    const source = { ...fixture.run, config: { ...fixture.run.config, prepared_environment: prepared,
+      grid_filter: { features: ["shops"], match: "all", require_road_intersection: true } } };
+    const fetchMock = installFetch(true, {
+      [`/api/v1/projects/${project.project_id}/revisions/revision-1`]: { revision_id: "revision-1", payload: configuration },
+      [`/api/v1/workbench/environments/${prepared.artifact.artifact_id}/map`]: { roads: empty, boundary: empty, road_count: 0, preview_road_count: 0, cell_count: 10, working_crs: "EPSG:2056" },
+      [`/api/v1/workbench/features/${prepared.features.artifact_id}/map?feature=population`]: { ...empty, unit: "people", zero_cell_count: 0, returned_count: 0, sources: [] },
+      "/api/v1/workbench/grid-filter/preview": { total_cell_count: 10, retained_cell_count: 7, excluded_cell_count: 3 },
+      [`/api/v1/workbench/runs?project_id=${project.project_id}`]: [source],
+    });
+    const user = userEvent.setup();
+    const view = renderRoute("/environment");
+    expect(await screen.findByRole("combobox", { name: "Filter feature 1" })).toHaveTextContent("population");
+    await screen.findByText(/7 \/ 10 cells retained/);
+    const initialPreview = fetchMock.mock.calls.find(([url]) => String(url) === "/api/v1/workbench/grid-filter/preview")!;
+    expect(JSON.parse(String(initialPreview[1]?.body)).grid_filter).toEqual(configuration.grid_filter);
+    await user.click(screen.getByRole("button", { name: "Add filter row" }));
+    await user.click(screen.getByRole("button", { name: "Add filter row" }));
+    expect(screen.getByRole("combobox", { name: "Filter feature 3" })).toHaveTextContent("Road network");
+    await user.click(screen.getByRole("combobox", { name: "Filter logic 1" }));
+    await user.click(screen.getByRole("option", { name: "Must include" }));
+    const expected = { features: [], match: "any", require_road_intersection: false, rules: [
+      { kind: "spatial_feature", feature: "population", logic: "must" },
+      { kind: "spatial_feature", feature: "shops", logic: "any" },
+      { kind: "road_network", feature: null, logic: "any" },
+    ] };
+    await waitFor(() => expect(JSON.parse(localStorage.getItem(`mobile-sensing-draft:${project.project_id}`)!).draft.authoring.grid_filter).toEqual(expected));
+    expect(fetchMock.mock.calls.some(([url, init]) => ["/api/v1/workbench/environments", "/api/v1/workbench/runs"].includes(String(url)) && init?.method === "POST")).toBe(false);
+    view.unmount();
+    renderRoute("/simulation");
+    expect(await screen.findByText(/Grid filter: Must include \(population > 0\) AND Any of \(shops > 0 OR Road network\)/)).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Run simulation" }));
+    await waitFor(() => expect(fetchMock.mock.calls.some(([url, init]) => String(url) === "/api/v1/workbench/runs" && init?.method === "POST")).toBe(true));
+    const runRequest = fetchMock.mock.calls.find(([url, init]) => String(url) === "/api/v1/workbench/runs" && init?.method === "POST")!;
+    expect(JSON.parse(String(runRequest[1]?.body)).config.grid_filter).toEqual(expected);
+    await user.click(within(screen.getByRole("list", { name: "Main navigation" })).getByRole("link", { name: "Portfolio" }));
+    expect(await screen.findByText(/Source grid filter: Must include \(shops > 0 AND Road network\)/)).toBeInTheDocument();
+    expect(screen.queryByText(/Source grid filter:.*population/)).not.toBeInTheDocument();
   });
   it("persists Supply feature selection separately from Demand and limits idle choices", async () => {
     const configuration = structuredClone(fixture.config);

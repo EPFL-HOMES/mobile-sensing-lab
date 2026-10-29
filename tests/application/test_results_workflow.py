@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 
+import numpy as np
 import pytest
 from fastapi.testclient import TestClient
 
@@ -248,6 +249,13 @@ def test_real_operation_map_uses_filtered_recorded_directed_movements(tmp_path) 
         feature["properties"]["duration_s"] for feature in mean_map.json()["features"]
     ) == pytest.approx(expected_duration)
     assert mean_map.json()["replications_R"] == len(validated.replications)
+    road_values = [feature["properties"]["value"] for feature in mean_map.json()["features"]]
+    assert mean_map.json()["color_scale"] == {
+        "positive_p95": pytest.approx(np.quantile(road_values, 0.95, method="linear")),
+        "maximum": max(road_values),
+        "positive_count": len(road_values),
+        "scope": "complete_query",
+    }
     assert (
         client.get(
             f"/api/v1/maps/{simulation.artifact_id}/movements",

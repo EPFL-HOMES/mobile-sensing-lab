@@ -46,11 +46,13 @@ def test_mismatched_asset_cannot_replace_existing_archive(tmp_path):
     entry = {
         "archive_size_bytes": len(b"new release"),
         "archive_sha256": _digest(b"new release"),
-        "parts": [{
-            "name": "lausanne.zip.part00",
-            "size_bytes": len(b"new release"),
-            "sha256": _digest(b"different bytes"),
-        }],
+        "parts": [
+            {
+                "name": "lausanne.zip.part00",
+                "size_bytes": len(b"new release"),
+                "sha256": _digest(b"different bytes"),
+            }
+        ],
     }
     with pytest.raises(ValueError, match="pass --replace"):
         install_one("lausanne", entry, destination, release.as_uri())

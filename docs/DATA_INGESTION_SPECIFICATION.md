@@ -49,6 +49,7 @@ The UI wizard selects a source layout and maps its columns into the following lo
 | Ordered task, long form | `task_id,step_index,release_s,location_id` or `x,y` | target time, service duration, signed quantity delta; release must agree across rows; normalize positive contiguous order without silently renumbering duplicates |
 | Canonical two-table tasks | Tasks table + steps table using the interface keys | Strict FK and order validation; preferred lossless interchange/export |
 | Sparse OD-rate model | interval start/end, origin/destination location IDs, nonnegative rate and explicit rate unit | Normalize rate to tasks/second; nonoverlapping intervals per OD key unless explicit aggregation is selected |
+| Workbench OD distribution | `origin_cell_id,destination_cell_id,weight` in CSV or Parquet | Register as demand; each pair occurs once, weights are nonnegative with positive total mass. Draw origin and destination jointly after normalization. Task volume and release-time profile are separate settings; this table is not a timed rate model. Cell-ID-only tables need no CRS. |
 
 The fleet is selected during import or supplied per row with an explicit mapping. IDs are strings, preserving leading zeros and punctuation. Generated fallback task IDs use immutable dataset fingerprint plus logical source record index; reordering an ID-less source changes its identity and must be disclosed. Explicit-ID inputs are stable under row reordering.
 

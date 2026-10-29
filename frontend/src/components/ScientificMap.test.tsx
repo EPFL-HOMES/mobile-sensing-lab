@@ -12,6 +12,8 @@ const mapHarness = vi.hoisted(() => ({
     fitCount: number;
     fitOptions: Record<string, unknown> | null;
     removed: boolean;
+    sourceUpdates: Array<{ id: string; data: GeoJsonValue }>;
+    paint: Array<{ id: string; property: string; value: unknown }>;
   }>,
   renderedFeatureCount: 1,
   emit: (_type: string, _event: { error?: Error; sourceId?: string }) => {},
@@ -27,12 +29,14 @@ vi.mock("maplibre-gl", () => ({
       layers: string[];
       resizeCount: number;
       fitCount: number;
-    fitOptions: Record<string, unknown> | null;
+      fitOptions: Record<string, unknown> | null;
       removed: boolean;
+      sourceUpdates: Array<{ id: string; data: GeoJsonValue }>;
+      paint: Array<{ id: string; property: string; value: unknown }>;
     };
 
     constructor(options: Record<string, unknown>) {
-      this.record = { options, sources: [], layers: [], resizeCount: 0, fitCount: 0, fitOptions: null, removed: false };
+      this.record = { options, sources: [], layers: [], resizeCount: 0, fitCount: 0, fitOptions: null, removed: false, sourceUpdates: [], paint: [] };
       mapHarness.instances.push(this.record);
       mapHarness.emit = (type, event) => this.handlers.get(type)?.forEach(listener => listener(event));
       queueMicrotask(() => mapHarness.emit("load", {}));
@@ -49,12 +53,12 @@ vi.mock("maplibre-gl", () => ({
     }
 
     off(type: string, listener: (event: { error?: Error }) => void) { this.handlers.get(type)?.delete(listener); return this; }
-    getSource(id: string) { return this.record.sources.includes(id) ? { setData: vi.fn() } : undefined; }
+    getSource(id: string) { return this.record.sources.includes(id) ? { setData: (data: GeoJsonValue) => this.record.sourceUpdates.push({ id, data }) } : undefined; }
     getLayer(id: string) { return this.record.layers.includes(id); }
     removeSource(id: string) { this.record.sources = this.record.sources.filter(value => value !== id); }
     removeLayer(id: string) { this.record.layers = this.record.layers.filter(value => value !== id); }
     setLayoutProperty() {}
-    setPaintProperty() {}
+    setPaintProperty(id: string, property: string, value: unknown) { this.record.paint.push({ id, property, value }); }
     areTilesLoaded() { return true; }
     addSource(id: string) { this.record.sources.push(id); }
     addLayer(layer: { id: string }) { this.record.layers.push(layer.id); }
@@ -82,6 +86,21 @@ const grid: GeoJsonValue = {
   crs: "EPSG:4326",
   aggregation: null,
 };
+
+function coloredGrid(p95 = 120, maximum = 60000): GeoJsonValue {
+  return { ...grid, color_scale: { positive_p95: p95, maximum, positive_count: 20, scope: "complete_query" },
+    features: grid.features.map(feature => ({ ...feature, properties: { ...feature.properties, value: maximum } })),
+  };
+}
+
+function lastPaint(id: string, property: string) {
+  return mapHarness.instances[0].paint.filter(item => item.id === id && item.property === property).at(-1)?.value;
+}
+
+async function chooseLimit(option: string) {
+  fireEvent.mouseDown(screen.getByRole("combobox", { name: "Color upper limit" }));
+  fireEvent.click(await screen.findByRole("option", { name: option }));
+}
 
 describe("ScientificMap lifecycle", () => {
   let resizeCallback: ResizeObserverCallback;
@@ -180,4 +199,118 @@ describe("ScientificMap lifecycle", () => {
     expect(await screen.findByText(/outside finite WGS84 longitude\/latitude bounds/)).toBeInTheDocument();
     await waitFor(() => expect(mapHarness.instances).toHaveLength(0));
   });
+
+  it("uses the backend positive P95 for every colored geometry without changing raw values", async () => {
+    const data = coloredGrid();
+    data.features.push({ type: "Feature", properties: { value: 60 }, geometry: { type: "Point", coordinates: [6.6, 46.5] } });
+    data.features.push({ type: "Feature", properties: { value: 30 }, geometry: { type: "LineString", coordinates: [[6.6, 46.5], [6.7, 46.6]] } });
+    render(<ScientificMap data={data} mode="feature" unit="count" fallback={<div>fallback</div>} />);
+    await screen.findByText("Map ready: 1 rendered features from 3 source features.");
+    expect(screen.getByRole("combobox", { name: "Color upper limit" })).toHaveTextContent("95th percentile");
+    expect(screen.getByText(/P95 of positive values in the selected query/)).toHaveTextContent("Highest color: ≥ 120.0 count");
+    for (const [id, property] of [["duration-fill", "fill-color"], ["feature-point", "circle-color"], ["movement-line", "line-color"]]) {
+      expect(lastPaint(id, property)).toEqual(expect.arrayContaining([Math.sqrt(120)]));
+      expect(lastPaint(id, property)).not.toEqual(expect.arrayContaining([Math.sqrt(60000)]));
+    }
+    const original = mapHarness.instances[0].sourceUpdates.find(update => update.id === "scientific-result");
+    expect(original?.data).toBe(data);
+    expect(original?.data.features[0].properties.value).toBe(60000);
+  });
+
+  it("changes only paint for manual caps, uses displayed minutes, and preserves the last valid cap", async () => {
+    render(<ScientificMap data={coloredGrid()} mode="duration" unit="s" fitKey="run:first" fallback={<div>fallback</div>} />);
+    await screen.findByText("Map ready: 1 rendered features from 1 source features.");
+    const record = mapHarness.instances[0];
+    const sourceUpdates = record.sourceUpdates.length;
+    const fitCount = record.fitCount;
+    await chooseLimit("Custom upper limit");
+    const input = screen.getByRole("spinbutton", { name: "Upper limit (min)" });
+    expect(input).toHaveValue(2);
+    fireEvent.change(input, { target: { value: "3" } });
+    expect(lastPaint("duration-fill", "fill-color")).toEqual(expect.arrayContaining([Math.sqrt(180)]));
+    expect(screen.getByText(/Highest color:/)).toHaveTextContent("Highest color: ≥ 3.000 min");
+    for (const value of ["0", "-2", "", "1e308"]) {
+      fireEvent.change(input, { target: { value } });
+      expect(screen.getByText(/Enter a finite value greater than zero/)).toBeInTheDocument();
+      expect(lastPaint("duration-fill", "fill-color")).toEqual(expect.arrayContaining([Math.sqrt(180)]));
+    }
+    fireEvent.change(input, { target: { value: "4" } });
+    expect(screen.queryByText(/Enter a finite value greater than zero/)).not.toBeInTheDocument();
+    expect(lastPaint("duration-fill", "fill-color")).toEqual(expect.arrayContaining([Math.sqrt(240)]));
+    expect(record.sourceUpdates).toHaveLength(sourceUpdates);
+    expect(record.fitCount).toBe(fitCount);
+    expect(mapHarness.instances).toHaveLength(1);
+    await chooseLimit("Data maximum");
+    expect(lastPaint("duration-fill", "fill-color")).toEqual(expect.arrayContaining([Math.sqrt(60000)]));
+    expect(screen.getByText(/0–1000 min/)).not.toHaveTextContent("Highest color:");
+    await chooseLimit("95th percentile");
+    expect(lastPaint("duration-fill", "fill-color")).toEqual(expect.arrayContaining([Math.sqrt(120)]));
+  });
+
+  it("preserves a manual cap across query values but resets it for a changed resource, unit, or layer", async () => {
+    const view = render(<ScientificMap data={coloredGrid()} mode="duration" unit="s" fitKey="run:first" fallback={<div>fallback</div>} />);
+    await screen.findByText("Map ready: 1 rendered features from 1 source features.");
+    await chooseLimit("Custom upper limit");
+    fireEvent.change(screen.getByRole("spinbutton", { name: "Upper limit (min)" }), { target: { value: "3" } });
+    view.rerender(<ScientificMap data={coloredGrid(240)} mode="duration" unit="s" fitKey="run:first" fallback={<div>fallback</div>} />);
+    expect(screen.getByRole("spinbutton", { name: "Upper limit (min)" })).toHaveValue(3);
+    expect(lastPaint("duration-fill", "fill-color")).toEqual(expect.arrayContaining([Math.sqrt(180)]));
+    view.rerender(<ScientificMap data={coloredGrid(240)} mode="duration" unit="s" fitKey="run:second" fallback={<div>fallback</div>} />);
+    expect(screen.getByRole("combobox", { name: "Color upper limit" })).toHaveTextContent("95th percentile");
+    expect(screen.queryByRole("spinbutton")).not.toBeInTheDocument();
+    expect(lastPaint("duration-fill", "fill-color")).toEqual(expect.arrayContaining([Math.sqrt(240)]));
+    await chooseLimit("Custom upper limit");
+    view.rerender(<ScientificMap data={coloredGrid(240)} mode="duration" unit="s^2" fitKey="run:second" fallback={<div>fallback</div>} />);
+    expect(screen.getByRole("combobox", { name: "Color upper limit" })).toHaveTextContent("95th percentile");
+    expect(screen.getByText(/0–240.0 s\^2/)).toBeInTheDocument();
+    await chooseLimit("Custom upper limit");
+    view.rerender(<ScientificMap data={coloredGrid(240)} mode="feature" unit="s^2" fitKey="run:second" fallback={<div>fallback</div>} />);
+    expect(screen.getByRole("combobox", { name: "Color upper limit" })).toHaveTextContent("95th percentile");
+  });
+
+  it.each([null, 0, -1, Number.NaN, Number.POSITIVE_INFINITY, 60001])("falls back to the maximum for unavailable or invalid P95 %s", async p95 => {
+    const data = coloredGrid();
+    data.color_scale!.positive_p95 = p95;
+    render(<ScientificMap data={data} mode="duration" unit="s" fallback={<div>fallback</div>} />);
+    await screen.findByText("Map ready: 1 rendered features from 1 source features.");
+    expect(screen.getByText(/P95 unavailable; using the data maximum/)).toBeInTheDocument();
+    expect(lastPaint("duration-fill", "fill-color")).toEqual(expect.arrayContaining([Math.sqrt(60000)]));
+  });
+
+  it("keeps zero cells transparent and an empty positive domain finite", async () => {
+    const data = coloredGrid(0, 0);
+    data.color_scale!.positive_p95 = null;
+    data.color_scale!.positive_count = 0;
+    mapHarness.renderedFeatureCount = 0;
+    render(<ScientificMap data={data} mode="duration" unit="s" fallback={<div>fallback</div>} />);
+    await screen.findByText("Map ready: 0 rendered features from 1 source features.");
+    expect(screen.getByText(/No positive values in the selected query/)).toBeInTheDocument();
+    expect(lastPaint("duration-fill", "fill-color")).toEqual(expect.arrayContaining([Number.EPSILON, Number.EPSILON * 2]));
+    expect(lastPaint("duration-fill", "fill-opacity")).toEqual(["case", [">", ["coalesce", ["get", "value"], 0], 0], .7, 0]);
+  });
+
+  it("labels legacy missing metadata and returned-feature summaries explicitly", async () => {
+    const view = render(<ScientificMap data={grid} mode="duration" unit="s" fallback={<div>fallback</div>} />);
+    await screen.findByText("Map ready: 1 rendered features from 1 source features.");
+    expect(screen.getByText(/P95 unavailable; using the data maximum/)).toBeInTheDocument();
+    const data = coloredGrid();
+    data.color_scale!.scope = "returned_features";
+    view.rerender(<ScientificMap data={data} mode="duration" unit="s" fallback={<div>fallback</div>} />);
+    expect(screen.getByText(/P95 of positive values in the returned features/)).toBeInTheDocument();
+  });
+
+  it("caps movement duration but omits numeric color controls for regions and plain networks", async () => {
+    const data: GeoJsonValue = { ...coloredGrid(), features: [{ type: "Feature", properties: { value: 60000 }, geometry: { type: "LineString", coordinates: [[6.6, 46.5], [6.7, 46.6]] } }] };
+    const view = render(<ScientificMap data={data} mode="movement" unit="s" fallback={<div>fallback</div>} />);
+    await screen.findByText("Map ready: 1 rendered features from 1 source features.");
+    expect(lastPaint("movement-line", "line-color")).toEqual(expect.arrayContaining([Math.sqrt(120)]));
+    expect(screen.getByRole("combobox", { name: "Color upper limit" })).toBeInTheDocument();
+    view.rerender(<ScientificMap data={data} mode="movement" unit="s" network fallback={<div>fallback</div>} />);
+    expect(screen.queryByRole("combobox", { name: "Color upper limit" })).not.toBeInTheDocument();
+    expect(lastPaint("movement-line", "line-color")).toBe("#79e6e6");
+    view.rerender(<ScientificMap data={grid} mode="region" fallback={<div>fallback</div>} />);
+    expect(screen.queryByRole("combobox", { name: "Color upper limit" })).not.toBeInTheDocument();
+    expect(lastPaint("duration-fill", "fill-color")).toBe("#24a0aa");
+  });
+
 });

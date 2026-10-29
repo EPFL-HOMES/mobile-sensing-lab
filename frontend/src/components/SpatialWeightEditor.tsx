@@ -18,7 +18,7 @@ export function SpatialWeightEditor({ label, features, legacyFeature, value, dis
     onChange(rows.map((row, i) => i === index ? { ...row, ...patch } : row));
   return <Stack gap={1.25}>
     <Typography fontWeight={700}>{label}</Typography>
-    <Typography variant="body2" color="text.secondary">Each feature is normalized over the full prepared grid first. The normalized layers are combined using these coefficients; routing eligibility is applied afterward.</Typography>
+    <Typography variant="body2" color="text.secondary">Each feature is normalized over the retained grid first (all prepared cells when no grid filter is selected). The normalized layers are combined using these coefficients; routing eligibility is applied afterward.</Typography>
     {rows.map((row, index) => <Stack direction={{ xs: "column", sm: "row" }} gap={1} key={`${index}-${row.feature}`}>
       <TextField select fullWidth size="small" label="Spatial feature" value={row.feature} disabled={disabled} onChange={(event) => update(index, { feature: event.target.value })}>
         {features.map((feature) => <MenuItem key={feature} value={feature}>{feature === "uniform" ? "Uniform" : feature}</MenuItem>)}

@@ -1,4 +1,4 @@
-"""Whole-grid spatial support shared by fleet generators and initial locations."""
+"""Retained-grid spatial support shared by fleet generators and initial locations."""
 
 from dataclasses import dataclass
 import numpy as np
@@ -63,7 +63,7 @@ class SpatialSupport:
         return ids, mixture / mixture.sum()
 
     def raw_mixture(self, components):
-        """Return the normalized whole-grid mixture keyed by cell for audit calculations."""
+        """Return the normalized retained-grid mixture keyed by cell for audit calculations."""
         components = tuple(
             (item.feature, item.weight) if hasattr(item, "feature") else item for item in components
         )
@@ -76,6 +76,8 @@ class SpatialSupport:
             raise ValueError("Spatial-feature mixture requires positive coefficient mass")
         result = np.zeros(len(cells), dtype=float)
         for feature, coefficient in components:
+            if coefficient == 0:
+                continue
             source = np.array([self.feature_values[feature].get(cell, 0.0) for cell in cells])
             if source.sum() <= 0:
                 raise ValueError(f"Spatial feature {feature!r} has no positive mass")
@@ -91,9 +93,21 @@ class SpatialSupport:
             ) from exc
 
 
-def prepare_support(root, environment, feature_ref, cancellation=None):
+def prepare_support(root, environment, feature_ref, cancellation=None, *, grid_filter=None):
     cells = environment.grid_cells.sort_values("cell_id")
     features = read_table(root, feature_ref, "grid_features")
+    if grid_filter is not None and grid_filter.enabled:
+        from mobile_sensing.application.grid_filter import select_grid_cells
+
+        retained = select_grid_cells(
+            cells.cell_id,
+            features,
+            grid_filter,
+            road_edges=environment.road_edges,
+            grid_cells=cells,
+        )
+        cells = cells.loc[cells.cell_id.isin(retained)]
+        features = features.loc[features.cell_id.isin(retained)]
     weights = {
         name: dict(zip(group.cell_id, group.value)) for name, group in features.groupby("feature")
     }

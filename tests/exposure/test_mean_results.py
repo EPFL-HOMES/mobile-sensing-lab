@@ -32,6 +32,12 @@ def test_mean_coverage_uses_replications_including_zero_not_union(tmp_path):
     )
     assert mean["overall_value"] == pytest.approx(20 / 3)
     assert mean["replications_R"] == 3
+    assert mean["color_scale"] == {
+        "positive_p95": pytest.approx(20 / 3),
+        "maximum": pytest.approx(20 / 3),
+        "positive_count": 1,
+        "scope": "complete_query",
+    }
     zero = query_matrix(
         tmp_path,
         MatrixQueryRequest(
@@ -48,6 +54,12 @@ def test_mean_coverage_uses_replications_including_zero_not_union(tmp_path):
     assert zero["coverage_p50_fraction"] == 0
     assert zero["coverage_p95_fraction"] == 0
     assert zero["overall_value"] == 0
+    assert zero["color_scale"] == {
+        "positive_p95": None,
+        "maximum": 0.0,
+        "positive_count": 0,
+        "scope": "complete_query",
+    }
 
 
 def test_mean_fleet_release_cohorts_and_active_time_bins(tmp_path):

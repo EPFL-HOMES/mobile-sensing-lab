@@ -37,6 +37,8 @@ from mobile_sensing.application.project_models import (
     ProjectResolutionResult,
     PortfolioEditor,
     PortfolioFleetEditor,
+    GridFilterPreviewRequest,
+    GridFilterPreview,
 )
 from mobile_sensing.application.run_models import (
     StudioRunRequest,
@@ -658,6 +660,22 @@ def install_workbench_routes(app, root, store):
         from mobile_sensing.api.workbench_maps import feature_preview
 
         return feature_preview(root, artifact_id, feature, store.limits)
+
+    @app.post("/api/v1/workbench/grid-filter/preview", response_model=GridFilterPreview)
+    def grid_filter_preview(request: GridFilterPreviewRequest):
+        from mobile_sensing.application.grid_filter import resolve_grid_filter
+        from mobile_sensing.application.resource_tables import read_table
+
+        features = read_table(root, request.prepared_environment.features, "grid_features")
+        cells = features.loc[features.feature == "uniform", "cell_id"]
+        selected = resolve_grid_filter(
+            root, request.prepared_environment, request.grid_filter, features=features
+        )
+        return GridFilterPreview(
+            total_cell_count=len(cells),
+            retained_cell_count=len(selected),
+            excluded_cell_count=len(cells) - len(selected),
+        )
 
     @app.get("/api/v1/workbench/environments/{artifact_id}/map")
     def environment_map(artifact_id: str):

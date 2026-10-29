@@ -581,6 +581,7 @@ class ExposureConfig(ContractModel):
     schema_version: SchemaVersion
     simulation_id: OpaqueId
     sensing_geometry_id: OpaqueId
+    included_cell_ids: tuple[OpaqueId, ...] | None = None
     bin_edges_s: tuple[FiniteFloat, ...]
     active_movement_kinds: tuple[
         Literal["service_pickup", "service_inter_step", "cruise", "depot_return", "reposition"],
@@ -600,6 +601,11 @@ class ExposureConfig(ContractModel):
 
     @model_validator(mode="after")
     def validate_operating_measurement(self):
+        if self.included_cell_ids is not None and (
+            not self.included_cell_ids
+            or tuple(sorted(set(self.included_cell_ids))) != self.included_cell_ids
+        ):
+            raise ValueError("Included cells must be nonempty, sorted and unique")
         if len(set(self.operating_fleet_ids)) != len(self.operating_fleet_ids):
             raise ValueError("Operating fleet identities must be unique")
         if self.measurement == "operating_duration":

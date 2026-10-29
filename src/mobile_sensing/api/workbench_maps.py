@@ -192,6 +192,8 @@ def source_feature_preview(root, selection, limits):
         frame["value"] = values.to_numpy()
     else:
         frame["value"] = 1.0
+    # One original source row determines one color sample, including multipart geometry.
+    color_values = frame["value"].to_numpy()
     frame = frame.explode(index_parts=False).reset_index(drop=True)
     supported = {"Point", "MultiPoint", "LineString", "MultiLineString", "Polygon", "MultiPolygon"}
     if not frame.geom_type.isin(supported).all():
@@ -200,6 +202,7 @@ def source_feature_preview(root, selection, limits):
         geojson(frame)["features"],
         limits=limits,
         filters={"input_id": selection.input_id, "year": selection.year},
+        color_values=color_values,
     )
     result.update(
         unit=selection.unit if selection.value_column else "feature",

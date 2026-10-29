@@ -1362,14 +1362,22 @@ class HeadlessApplication:
             raise ValueError(
                 "default M07 exposure requires the prepared environment sensing geometry"
             )
-        return publish_exposure_artifact(
-            artifact_root=self.artifact_root,
-            simulation=simulation,
-            environment=environment.reference,
-            road_edges=environment.road_edges,
-            grid_cells=environment.grid_cells,
-            working_crs=environment.metadata.working_crs,
-            config=config,
+        from mobile_sensing.application.exposure_cache import cached_exposure
+
+        return cached_exposure(
+            self.artifact_root,
+            environment.reference,
+            simulation,
+            config,
+            lambda: publish_exposure_artifact(
+                artifact_root=self.artifact_root,
+                simulation=simulation,
+                environment=environment.reference,
+                road_edges=environment.road_edges,
+                grid_cells=environment.grid_cells,
+                working_crs=environment.metadata.working_crs,
+                config=config,
+            ),
         )
 
     def preview_portfolios(

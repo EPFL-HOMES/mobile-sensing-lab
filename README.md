@@ -103,6 +103,8 @@ The earlier v0.1.0 release wheel and example assets contain the former Lausanne 
 
 Operational replications `R` generate joint fleet operations. Portfolio sampling rounds `J` reuse those retained realizations while sampling concrete physical vehicles. Increasing `J` does not rerun mobility. Sensor counts never change the operational vehicle supply.
 
+In **Environment → Grid → Grid filter**, add spatial features or **Road network** and set each rule to **Any of (OR)** or **Must include**. A cell must satisfy all required rules and at least one optional alternative when alternatives exist. For inhabited cells with roads, add a prepared population feature and Road network as two Must include rules. The full routing network is preserved.
+
 See [Quickstart](docs/QUICKSTART.md) for the detailed workflow, [Lausanne example](docs/LAUSANNE_EXAMPLE.md) and [San Francisco example](docs/SAN_FRANCISCO_EXAMPLE.md) for assumptions, and the [documentation index](docs/README.md) for scientific and developer references.
 
 ## Tutorials

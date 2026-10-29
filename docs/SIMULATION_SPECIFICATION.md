@@ -1,5 +1,17 @@
 # Simulation Specification
 
+## Equivalent queue lookahead and explicit grid selection
+
+Decision snapshots find the earliest strictly future queued time by inspecting the heap root and descending only through events at the current timestamp. Descendants of a future event cannot improve that event's time. Online pending releases and the horizon remain independent minimum candidates. Event phases, tie-breaking, cruise decision epochs and semantic RNG keys are unchanged.
+
+Waiting-task snapshots and fleet lookup indexes are rebuilt only when tasks enter or leave the waiting pool. Complete executions reuse immutable full-edge intervals; partial executions and tolerance-sized plan overshoots retain exact clipping. Canonical scientific identities preserve their existing byte representation while avoiding redundant normalization.
+
+For at most four pickup targets, dispatch lower bounds use directed reverse shortest-path trees, shared across vehicle origins. Larger target sets retain forward trees. Both directions share a 128-entry LRU and the existing conservative floating-point margin; every accepted pair still uses the original exact route and tie-breaking. The per-replication shared route cache holds at most 16,384 entries. Prepared neighbor lists use a bounded cache. Immediate-neighbor route searches use sparse labels; distance-dominated candidates avoid path-tuple allocation. The same heap ordering and complete edge sequences are retained.
+
+Under static travel times, a cruise first leg that does not fit the remaining shift cannot become feasible as time advances without a new vehicle execution. Such failed checks are reused until the execution generation changes. Stationary-idle and blocked-cruise diagnostics describe the first occurrence in each idle episode, rather than repeating for unrelated decision timestamps. Physical idle intervals, movements, lifecycle events and random draws are unchanged.
+
+An optional grid filter defines retained spatial support for generated demand and initial locations before the usual feature normalization and routing eligibility. Each selected geographic feature or the road network is assigned an any or must rule. Geographic features match strictly positive values. Roads match a positive-length intersection between the cell's clipped sensing geometry and at least one prepared road edge; point-only contact is insufficient. A cell is retained if it satisfies every must rule and, when any rules exist, at least one any rule. An empty group imposes no condition; no rules retain the complete grid. Roads can occur in either group or alone. The full physical catalog remains fixed across replications. Routing arcs and imported coordinate-based operations remain complete; explicit cell-ID inputs must resolve in retained support. Sensing intersects the retained cells with the existing positive-length road domain. Time outside that domain is retained in conservation diagnostics, and zero-exposure eligible cells remain in the coverage denominator. Positive population identifies inhabited cells according to the supplied population data; residential geometry is an explicitly selected proxy and does not establish occupancy.
+
 
 ## MR26 equivalent execution acceleration
 
@@ -156,7 +168,7 @@ Replication \(r\) is a joint scenario across all fleets. Baseline fleet generato
 
 ## 9. Exact interval exposure
 
-For an oriented edge, precompute disjoint ordered pieces \((g,f_0,f_1)\), \(0\le f_0<f_1\le1\), where fractions measure distance from its source. Repeated entry into the same cell produces multiple pieces. Include outside-grid pieces with null cell ID for conservation diagnostics. Overlapping uploaded grid interiors are invalid. A positive-length segment on a shared grid boundary belongs to one cell, deterministically the minimum canonical cell ID; point intersections contribute zero duration.
+For an oriented edge, precompute disjoint ordered pieces \((g,f_0,f_1)\), \(0\le f_0<f_1\le1\), where fractions measure distance from its source. Repeated entry into the same cell produces multiple pieces. Include outside-grid pieces with null cell ID for conservation diagnostics. Overlapping uploaded grid interiors are invalid. A positive-length segment on a shared grid boundary belongs to one cell, deterministically the minimum canonical cell ID among retained sensing cells; point intersections contribute zero duration. Filtering redefines this domain, so removing a boundary-owning cell can assign its shared-boundary segment to a retained neighbor.
 
 The `positive-length-road-grid@1` exposure domain retains a prepared cell iff its clipped sensing geometry intersects at least one prepared road edge with length greater than the geometry tolerance. A point-only contact cannot generate positive exposure and is excluded. This filters the exposure/utility axis and spatial-coverage denominator only; it does not remove the cell from the prepared environment, feature tables or demand-generation domain. The artifact records both prepared and eligible cell counts. Existing artifacts keep their original axis and semantics.
 

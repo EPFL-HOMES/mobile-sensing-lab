@@ -46,6 +46,13 @@ export interface MatrixTimeValue {
   value: number;
 }
 
+export interface ColorScaleValue {
+  positive_p95: number | null;
+  maximum: number;
+  positive_count: number;
+  scope: "complete_query" | "returned_features";
+}
+
 export interface MatrixSliceValue {
   resource_id?: string;
   exposure_id?: string;
@@ -75,6 +82,7 @@ export interface MatrixSliceValue {
   coverage_p95_fraction?: number | null;
   coverage_semantics?: "mean_within_observation_any_time_spatial_coverage_road_intersecting_cells" | "mean_within_observation_any_time_spatial_coverage_prepared_grid";
   summary_semantics: "statistic_of_within_observation_cell_sum";
+  color_scale?: ColorScaleValue;
 }
 
 export interface GeoJsonValue {
@@ -90,6 +98,7 @@ export interface GeoJsonValue {
   crs: "EPSG:4326";
   aggregation: string | null;
   filters?: Record<string, unknown>;
+  color_scale?: ColorScaleValue;
 }
 
 export function artifactFromJob(job: JobSnapshot): ArtifactRefValue | null {

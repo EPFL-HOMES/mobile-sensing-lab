@@ -8,6 +8,7 @@ Run from the repository root in the development environment with `python -m scri
 | `run_release_workflow` | Run the local Lausanne workflow with networking disabled; requires original local data |
 | `verify_browser_results` | Verify a prepared workspace's browser-facing/API results and cancellation records |
 | `measure_result_queries` | Measure and cross-check queries against an existing acceptance workspace |
+| `benchmark_queue_lookahead` | Time one retained replication and hash complete results/seeds; `--profile PATH` records execution-only cProfile data; `--variant reference` restores only the former snapshot scan, with other current optimizations retained |
 | `run_notebook_workflows` | Execute default/custom notebooks using installed example assets |
 | `verify_example_bundle` | Audit an example bundle and retained results |
 

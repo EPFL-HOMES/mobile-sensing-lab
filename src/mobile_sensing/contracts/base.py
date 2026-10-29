@@ -76,6 +76,15 @@ class ContractModel(BaseModel):
 
 
 def _canonical_value(value: Any) -> Any:
+    # Most identities consist of built-in scalar leaves. Resolve these before
+    # the comparatively expensive abstract Mapping/Sequence instance checks.
+    kind = type(value)
+    if kind is str or kind is int or kind is bool or value is None:
+        return value
+    if kind is float:
+        if not math.isfinite(value):
+            raise ValueError("canonical JSON rejects non-finite numbers")
+        return value
     if isinstance(value, BaseModel):
         return _canonical_value(value.model_dump(mode="python", round_trip=True))
     if isinstance(value, Enum):
@@ -103,7 +112,11 @@ def _canonical_value(value: Any) -> Any:
 def canonical_json_bytes(value: Any) -> bytes:
     """Serialize a contract deterministically using canonical-json@1."""
 
-    normalized = _canonical_value(value)
+    return _encode_canonical_json(_canonical_value(value))
+
+
+def _encode_canonical_json(normalized: Any) -> bytes:
+    """Encode an already normalized value without a second recursive walk."""
     return json.dumps(
         normalized,
         allow_nan=False,
@@ -118,6 +131,9 @@ def canonical_json_text(value: Any) -> str:
 
 
 def _scientific_value(value: Any) -> Any:
+    kind = type(value)
+    if kind is str or kind is int or kind is float or kind is bool or value is None:
+        return value
     if isinstance(value, ContractModel):
         excluded = value.scientific_identity_excluded_fields
         return {
@@ -144,7 +160,7 @@ def scientific_hash(value: Any) -> Sha256:
     preimage = (
         CANONICAL_JSON_VERSION.encode("ascii")
         + b"\x00"
-        + canonical_json_bytes(scientific_projection(value))
+        + _encode_canonical_json(scientific_projection(value))
     )
     return hashlib.sha256(preimage).hexdigest()
 

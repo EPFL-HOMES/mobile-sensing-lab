@@ -9,6 +9,7 @@ import { ApiIssues } from "../components/ApiIssues";
 import { JobMonitor } from "../components/JobMonitor";
 import { ScientificMap } from "../components/ScientificMap";
 import { Page } from "../components/Page";
+import { GridFilterEditor } from "../components/GridFilterEditor";
 import { useWorkspace } from "../app/workspace";
 import type { GeoJsonValue } from "./results/types";
 
@@ -116,6 +117,7 @@ export function EnvironmentPage() {
         <Typography variant="h6">2. Grid</Typography>
         {selectInput("Grid source", "grid_input", "grid", "Generate regular grid")}
         {!config.grid_input && <TextField label="Grid side length (m)" type="number" value={config.grid_size_m} onChange={(e) => update({ grid_size_m: Number(e.target.value) })} helperText="The backend fixes and records the grid origin." />}
+        <GridFilterEditor prepared={environment.prepared ? preparedFeatures ?? undefined : undefined} value={workspace.draft.authoring?.grid_filter} disabled={!workspace.draft.authoring || Boolean(workspace.draft.authoring.read_only)} onChange={grid_filter => workspace.updateDraft(draft => { if (draft.authoring) draft.authoring.grid_filter = grid_filter; draft.resolution = undefined; return draft; })} />
       </Stack></Paper>
       <Paper variant="outlined" sx={{ p: 3 }}><Stack gap={2}>
         <Typography variant="h6">3. Road network</Typography>
